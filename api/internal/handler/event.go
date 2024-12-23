@@ -5,7 +5,6 @@ import (
 	"errors"
 	"github.com/oklog/ulid/v2"
 	"log"
-	"strings"
 )
 
 type Event struct {
@@ -46,16 +45,7 @@ func (p *Processor) ProcessEvent(event *Event, exchange string) error {
 }
 
 func (p *Processor) HandleOcservEvent(event *Event) error {
-	var routingKey string
-	switch {
-	case strings.HasPrefix(event.Action, "group"):
-		routingKey = "ocserv.group.*"
-	case strings.HasPrefix(event.Action, "user"):
-		routingKey = "ocserv.user.*"
-	default:
-		return errors.New("invalid ocserv event")
-	}
-	return p.producer.Publish("ocserv", routingKey, event)
+	return p.producer.Publish("ocserv", "ocserv.*", event)
 }
 
 func (p *Processor) HandleLogEvent(event *Event) error {
