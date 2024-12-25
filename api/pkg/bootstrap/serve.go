@@ -2,14 +2,17 @@ package bootstrap
 
 import (
 	"api/pkg/config"
-	"api/pkg/postgres"
+	"api/pkg/database"
 	"api/pkg/rabbitmq"
 	"api/pkg/routing"
+	"log"
 )
 
 func Serve(debug bool) {
 	config.Set(debug)
-	postgres.Connect()
-	rabbitmq.Connect()
+	database.Connect()
+	if err := rabbitmq.CheckConnection(); err != nil {
+		log.Fatal(err)
+	}
 	routing.Serve()
 }

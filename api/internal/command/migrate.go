@@ -2,15 +2,16 @@ package command
 
 import (
 	"api/internal/model"
-	"api/pkg/postgres"
+	"api/pkg/database"
 	"log"
 )
 
 func Migrate() {
-	engine := postgres.GetEngine()
-	err := engine.Sync(
+	engine := database.Connection()
+	err := engine.AutoMigrate(
 		&model.Admin{},
 		&model.Permission{},
+		&model.PanelConfig{},
 		&model.User{},
 		&model.TrafficStatistics{},
 	)

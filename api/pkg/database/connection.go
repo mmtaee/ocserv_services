@@ -1,23 +1,27 @@
-package postgres
+package database
 
 import (
 	"api/pkg/config"
-	_ "github.com/lib/pq"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"time"
-	"xorm.io/xorm"
 )
 
-var engine *xorm.Engine
+var db *gorm.DB
 
 func Connect() {
 	dsn := config.GetDSN()
 	var err error
-	engine, err = xorm.NewEngine("postgres", dsn)
+	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-	sqlDB := engine.DB()
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
 	for i := 0; i < 5; i++ {
 		err = sqlDB.Ping()
 		if err == nil {
@@ -32,17 +36,21 @@ func Connect() {
 	log.Println("Database connection established")
 }
 
-func GetEngine() *xorm.Engine {
+func Connection() *gorm.DB {
 	cfg := config.GetApp()
 	if cfg.Debug {
-		engine.ShowSQL(true)
+		db.Debug()
+		db.Logger = logger.Default.LogMode(logger.Info)
 	}
-	return engine
+	return db
 }
 
 func Close() {
-	sqlDB := engine.DB()
-	err := sqlDB.Close()
+	sqlDB, err := db.DB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	err = sqlDB.Close()
 	if err != nil {
 		log.Fatal(err)
 	}

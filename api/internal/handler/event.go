@@ -39,7 +39,7 @@ func (p *Processor) ProcessEvent(event *Event, exchange string) error {
 	case "log":
 		return p.HandleLogEvent(event)
 	default:
-		log.Printf("[WARN] unknown exchange type: %s", exchange)
+		log.Printf("unknown exchange type: %s", exchange)
 	}
 	return nil
 }

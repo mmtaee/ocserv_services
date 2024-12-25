@@ -28,3 +28,5 @@ api/.env
 .vscode
 .code
 
+
+init_secret

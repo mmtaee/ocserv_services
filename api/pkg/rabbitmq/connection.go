@@ -8,12 +8,21 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
-var conn *amqp.Connection
+func CheckConnection() error {
+	conn, err := Connect()
+	defer Close(conn)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
-func Connect() {
+func Connect() (*amqp.Connection, error) {
 	rsn := config.GetRSN()
-	var err error
-
+	var (
+		conn *amqp.Connection
+		err  error
+	)
 	for i := 0; i < 5; i++ {
 		conn, err = amqp.Dial(rsn)
 		if err == nil {
@@ -22,14 +31,15 @@ func Connect() {
 		log.Printf("Retrying RabbitMQ connection (%d/5): %v", i+1, err)
 		time.Sleep(2 * time.Second)
 	}
-
 	if err != nil {
-		log.Fatalf("failed to connect to RabbitMQ: %v", err)
+		log.Printf("failed to connect to RabbitMQ: %v\n", err)
+		return nil, err
 	}
 	log.Println("RabbitMQ connection established")
+	return conn, err
 }
 
-func GetChannel() *amqp.Channel {
+func GetChannel(conn *amqp.Connection) *amqp.Channel {
 	ch, err := conn.Channel()
 	if err != nil {
 		log.Fatalf("Failed to open a channel: %v", err)
@@ -37,7 +47,7 @@ func GetChannel() *amqp.Channel {
 	return ch
 }
 
-func Close() {
+func Close(conn *amqp.Connection) {
 	defer func(conn *amqp.Connection) {
 		err := conn.Close()
 		if err != nil {

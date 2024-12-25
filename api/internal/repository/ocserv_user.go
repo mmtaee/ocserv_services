@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"api/pkg/postgres"
+	"api/pkg/database"
 	"api/pkg/rabbitmq"
-	"xorm.io/xorm"
+	"gorm.io/gorm"
 )
 
 type OcservUserRepository struct {
-	db       *xorm.Engine
+	db       *gorm.DB
 	producer *rabbitmq.Producer
 }
 
@@ -15,7 +15,7 @@ type OcservUserRepositoryInterface interface{}
 
 func NewOcservUserRepository() *OcservGroupRepository {
 	return &OcservGroupRepository{
-		db:       postgres.GetEngine(),
+		db:       database.Connection(),
 		producer: rabbitmq.NewProducer(),
 	}
 }

@@ -15,11 +15,12 @@ type Config struct {
 }
 
 type APP struct {
-	Debug        bool
-	SecretKey    string
-	Host         string
-	Port         string
-	AllowOrigins []string
+	Debug          bool
+	SecretKey      string
+	Host           string
+	Port           string
+	AllowOrigins   []string
+	InitSecretFile string
 }
 
 type DB struct {
@@ -54,6 +55,11 @@ func Set(debug bool) {
 		log.Println("SECRET_KEY environment variable not set. set default secret key to: " + secretKey)
 	}
 
+	InitSecretFile := os.Getenv("SECRET_KEY_FILE_NAME")
+	if InitSecretFile == "" {
+		InitSecretFile = "./init_secret"
+	}
+
 	host := os.Getenv("HOST")
 	if host == "" {
 		host = "0.0.0.0"
@@ -65,10 +71,11 @@ func Set(debug bool) {
 	}
 
 	config.APP = APP{
-		Debug:     debug,
-		SecretKey: secretKey,
-		Host:      host,
-		Port:      port,
+		Debug:          debug,
+		Host:           host,
+		Port:           port,
+		SecretKey:      secretKey,
+		InitSecretFile: InitSecretFile,
 	}
 
 	allowOrigins := os.Getenv("ALLOW_ORIGINS")

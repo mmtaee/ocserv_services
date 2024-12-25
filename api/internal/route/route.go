@@ -1,5 +1,11 @@
 package route
 
-import "github.com/labstack/echo/v4"
+import (
+	"api/internal/service/initialize"
+	"github.com/labstack/echo/v4"
+)
 
-func Register(e *echo.Echo) {}
+func Register(e *echo.Echo) {
+	group := e.Group("/api/v1")
+	initialize.Routes(group)
+}

@@ -3,19 +3,20 @@ package repository
 import (
 	"api/internal/handler"
 	"api/internal/model"
-	"api/pkg/postgres"
+	"api/pkg/database"
 	"api/pkg/rabbitmq"
 	"context"
 	"errors"
-	"xorm.io/xorm"
+	"gorm.io/gorm"
 )
 
 type OcservGroupRepository struct {
-	db       *xorm.Engine
+	db       *gorm.DB
 	producer *rabbitmq.Producer
 }
 
 type OcservGroupRepositoryInterface interface {
+	UpdateDefaultGroup(context.Context) error
 	CreateGroup(context.Context) error
 	UpdateGroup(context.Context) error
 	DeleteGroup(context.Context) error
@@ -23,9 +24,29 @@ type OcservGroupRepositoryInterface interface {
 
 func NewOcservGroupRepository() *OcservGroupRepository {
 	return &OcservGroupRepository{
-		db:       postgres.GetEngine(),
+		db:       database.Connection(),
 		producer: rabbitmq.NewProducer(),
 	}
+}
+
+func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context) error {
+	config, ok := ctx.Value("config").(*model.GroupConfig)
+	if !ok {
+		config = &model.GroupConfig{}
+	}
+	ch := make(chan error, 1)
+	go func() {
+		processor := handler.NewProcessor(o.producer)
+		event := handler.NewEvent(
+			"group_default_update",
+			map[string]interface{}{
+				"name":   "group_default",
+				"config": config,
+			},
+		)
+		ch <- processor.ProcessEvent(event, "ocserv")
+	}()
+	return <-ch
 }
 
 func (o *OcservGroupRepository) CreateGroup(ctx context.Context) error {
@@ -91,9 +112,7 @@ func (o *OcservGroupRepository) DeleteGroup(ctx context.Context) error {
 		return err
 	}
 	go func() {
-		_, err := o.db.Table(&model.User{}).Where("group = ?", name).Update(map[string]interface{}{
-			"group": "defaults",
-		})
+		err := o.db.Table("users").Where("group = ?", name).Update("group", "defaults").Error
 		ch <- err
 	}()
 	return <-ch

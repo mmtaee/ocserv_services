@@ -3,11 +3,11 @@ package bootstrap
 import (
 	"api/internal/command"
 	"api/pkg/config"
-	"api/pkg/postgres"
+	"api/pkg/database"
 )
 
 func Migrate(debug bool) {
 	config.Set(debug)
-	postgres.Connect()
+	database.Connect()
 	command.Migrate()
 }
