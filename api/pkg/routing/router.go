@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	LabstackLog "github.com/labstack/gommon/log"
+	echoSwagger "github.com/swaggo/echo-swagger"
 	"log"
 	"net/http"
 	"os"
@@ -43,6 +44,7 @@ func serve() {
 	server := fmt.Sprintf("%s:%s", appConf.Host, appConf.Port)
 
 	engine = echo.New()
+
 	engine.Pre(middleware.RemoveTrailingSlash())
 	engine.Use(middleware.Logger())
 	engine.Use(middleware.Recover())
@@ -59,11 +61,20 @@ func serve() {
 		engine.Debug = true
 		engine.Logger.SetLevel(LabstackLog.DEBUG)
 		verboseLog(server)
+		engine.GET("/swagger/*", echoSwagger.WrapHandler)
 	} else {
 		engine.Logger.SetLevel(LabstackLog.WARN)
 		engine.HideBanner = true
 	}
 
+	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+		Skipper: func(c echo.Context) bool {
+			if strings.Contains(c.Request().URL.Path, "swagger") {
+				return true
+			}
+			return false
+		},
+	}))
 	if err := engine.Start(server); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}

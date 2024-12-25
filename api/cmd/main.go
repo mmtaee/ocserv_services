@@ -1,6 +1,7 @@
 package main
 
 import (
+	_ "api/docs"
 	"api/pkg/bootstrap"
 	"flag"
 	"fmt"
@@ -11,6 +12,10 @@ import (
 
 var debug bool
 
+// @title Ocserv User management Example Api
+// @version 1.0
+// @description This is a sample Ocserv User management Api server.
+// @BasePath /api
 func main() {
 	if len(os.Args) < 2 {
 		errorHandler("insufficient command line arguments.\nuse 'serve' or 'migrate' command")
