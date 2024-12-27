@@ -34,8 +34,8 @@ func New() *Controller {
 // @Tags         init
 // @Accept       json
 // @Produce      json
-// @Param        secret_key query string false "check secret key from file init_secret"
-// @Param request body User true "query params"
+// @Param        secret_key query string true "check secret key from file 'init_secret'"
+// @Param        request    body  User   true "query params"
 // @Success      200  {object}  nil
 // @Router       /api/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
