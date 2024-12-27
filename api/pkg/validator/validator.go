@@ -61,7 +61,8 @@ func errorWrapper(err error) interface{} {
 	}
 
 	if errors.As(err, &httpErr) {
-		internalErr := httpErr.Internal.(*json.UnmarshalTypeError)
+		var internalErr *json.UnmarshalTypeError
+		errors.As(httpErr.Internal, &internalErr)
 		return errors.New(fmt.Sprintf(
 			"field %v expected %v got %v",
 			internalErr.Field,

@@ -1,8 +1,0 @@
-basePath: /api
-info:
-  contact: {}
-  description: This is a sample Ocserv User management Api server.
-  title: Ocserv User management Example Api
-  version: "1.0"
-paths: {}
-swagger: "2.0"

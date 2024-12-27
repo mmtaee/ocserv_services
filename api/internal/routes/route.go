@@ -1,7 +1,7 @@
-package route
+package routes
 
 import (
-	"api/internal/service/initialize"
+	"api/internal/services/initialize"
 	"github.com/labstack/echo/v4"
 )
 

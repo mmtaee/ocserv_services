@@ -1,6 +1,7 @@
-package model
+package models
 
 import (
+	"encoding/json"
 	"gorm.io/gorm"
 	"time"
 )
@@ -27,21 +28,15 @@ type User struct {
 	Description string    `json:"description" gorm:"type:text"`
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.TrafficType == Free {
-		u.TrafficSize = 0
-	}
-	return
-}
-
-func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	if u.TrafficType == Free {
-		u.TrafficSize = 0
-	}
-	return
+type UserActivity struct {
+	ID        uint            `json:"id" gorm:"primaryKey;autoIncrement"`
+	UserID    uint64          `json:"userId" gorm:"index"`
+	Log       json.RawMessage `json:"log" gorm:"type:json"`
+	CreatedAt time.Time       `json:"createdAt" gorm:"autoCreateTime"`
 }
 
 type TrafficStatistics struct {
+	ID     uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID uint64    `json:"userId" gorm:"index"`
 	Date   time.Time `json:"date" gorm:"date"`
 	Rx     float64   `json:"rx" gorm:"numeric default 0.00"`
@@ -67,4 +62,18 @@ type GroupConfig struct {
 	SessionTimeout       int      `json:"session-timeout"`
 	//NoRoutes             bool     `json:"no_routes"`
 	//Routes               []string `json:"routes"`
+}
+
+func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
+	if u.TrafficType == Free {
+		u.TrafficSize = 0
+	}
+	return
+}
+
+func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
+	if u.TrafficType == Free {
+		u.TrafficSize = 0
+	}
+	return
 }

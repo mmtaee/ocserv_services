@@ -1,7 +1,7 @@
 package routing
 
 import (
-	"api/internal/route"
+	"api/internal/routes"
 	"api/pkg/config"
 	"api/pkg/database"
 	"context"
@@ -55,7 +55,7 @@ func serve() {
 		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodHead, http.MethodOptions},
 	}))
 
-	route.Register(engine)
+	routes.Register(engine)
 
 	if appConf.Debug {
 		engine.Debug = true

@@ -1,7 +1,7 @@
-package command
+package handlers
 
 import (
-	"api/internal/model"
+	"api/internal/models"
 	"api/pkg/database"
 	"log"
 )
@@ -9,11 +9,11 @@ import (
 func Migrate() {
 	engine := database.Connection()
 	err := engine.AutoMigrate(
-		&model.Admin{},
-		&model.Permission{},
-		&model.PanelConfig{},
-		&model.User{},
-		&model.TrafficStatistics{},
+		&models.Admin{},
+		&models.Permission{},
+		&models.PanelConfig{},
+		&models.User{},
+		&models.TrafficStatistics{},
 	)
 	if err != nil {
 		log.Fatalf("error sync tables: %v", err)

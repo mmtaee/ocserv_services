@@ -21,6 +21,7 @@ type APP struct {
 	Port           string
 	AllowOrigins   []string
 	InitSecretFile string
+	Isolate        bool
 }
 
 type DB struct {
@@ -76,6 +77,13 @@ func Set(debug bool) {
 		Port:           port,
 		SecretKey:      secretKey,
 		InitSecretFile: InitSecretFile,
+	}
+
+	isolate := os.Getenv("ISOLATE")
+	if isolate == "" {
+		config.APP.Isolate = false
+	} else {
+		config.APP.Isolate = true
 	}
 
 	allowOrigins := os.Getenv("ALLOW_ORIGINS")

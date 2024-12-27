@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"api/internal/model"
+	"api/internal/models"
 	"api/pkg/database"
 	"context"
 	"gorm.io/gorm"
@@ -25,7 +25,7 @@ func NewAdminRepository() *AdminRepository {
 func (r *AdminRepository) CreateSuperUser(c context.Context) error {
 	ch := make(chan error, 1)
 	go func() {
-		ch <- r.db.WithContext(c).Create(&model.Admin{
+		ch <- r.db.WithContext(c).Create(&models.Admin{
 			Username: c.Value("username").(string),
 			Password: c.Value("password").(string),
 		}).Error
@@ -36,7 +36,7 @@ func (r *AdminRepository) CreateSuperUser(c context.Context) error {
 func (r *AdminRepository) CreateConfig(c context.Context) error {
 	ch := make(chan error, 1)
 	go func() {
-		ch <- r.db.WithContext(c).Create(&model.PanelConfig{
+		ch <- r.db.WithContext(c).Create(&models.PanelConfig{
 			GoogleCaptchaSecretKey: c.Value("googleCaptchaSecretKey").(string),
 			GoogleCaptchaSiteKey:   c.Value("googleCaptchaSiteKey").(string),
 		}).Error

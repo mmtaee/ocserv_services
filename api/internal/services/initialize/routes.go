@@ -39,7 +39,7 @@ func IntiRoutePermissionMiddleware() echo.MiddlewareFunc {
 func Routes(e *echo.Group) {
 	controller := New()
 	group := e.Group("/init", IntiRoutePermissionMiddleware())
-	group.POST("/admin", controller.InitSuperUser)
+	group.POST("/admin", controller.CreateSuperUser)
 	group.POST("/config", controller.InitPanelConfig)
 	group.POST("/group", controller.InitDefaultOcservGroup)
 }
