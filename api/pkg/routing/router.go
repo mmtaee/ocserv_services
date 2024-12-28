@@ -45,16 +45,6 @@ func serve() {
 
 	engine = echo.New()
 
-	if appConf.Debug {
-		engine.Debug = true
-		engine.Logger.SetLevel(LabstackLog.DEBUG)
-		verboseLog(server)
-		engine.GET("/swagger/*", echoSwagger.WrapHandler)
-	} else {
-		engine.Logger.SetLevel(LabstackLog.WARN)
-		engine.HideBanner = true
-	}
-
 	engine.Pre(middleware.RemoveTrailingSlash())
 	engine.Use(middleware.Logger())
 	engine.Use(middleware.Recover())
@@ -66,6 +56,16 @@ func serve() {
 	}))
 
 	routes.Register(engine)
+
+	if appConf.Debug {
+		engine.Debug = true
+		engine.Logger.SetLevel(LabstackLog.DEBUG)
+		verboseLog(server)
+		engine.GET("/swagger/*", echoSwagger.WrapHandler)
+	} else {
+		engine.Logger.SetLevel(LabstackLog.WARN)
+		engine.HideBanner = true
+	}
 
 	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {

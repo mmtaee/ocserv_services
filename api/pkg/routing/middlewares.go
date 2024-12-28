@@ -14,6 +14,13 @@ import (
 func TimeoutMiddleware(timeout time.Duration) echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
+			if c.Path() == "/swagger/*" {
+				err := next(c)
+				if err != nil {
+					return err
+				}
+				return nil
+			}
 			ctx, cancel := context.WithTimeout(c.Request().Context(), timeout)
 			defer cancel()
 
