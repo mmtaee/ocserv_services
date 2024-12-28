@@ -12,7 +12,7 @@ const (
 	Totally
 )
 
-type User struct {
+type OcUser struct {
 	ID          uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	Group       string    `json:"group" gorm:"type:varchar(16);default('defaults')"`
 	Username    string    `json:"username" gorm:"type:varchar(16);not null;unique"`
@@ -28,14 +28,14 @@ type User struct {
 	Description string    `json:"description" gorm:"type:text"`
 }
 
-type UserActivity struct {
+type OcUserActivity struct {
 	ID        uint            `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID    uint64          `json:"userId" gorm:"index"`
 	Log       json.RawMessage `json:"log" gorm:"type:json"`
 	CreatedAt time.Time       `json:"createdAt" gorm:"autoCreateTime"`
 }
 
-type TrafficStatistics struct {
+type OcUserTrafficStatistics struct {
 	ID     uint      `json:"id" gorm:"primaryKey;autoIncrement"`
 	UserID uint64    `json:"userId" gorm:"index"`
 	Date   time.Time `json:"date" gorm:"date"`
@@ -43,7 +43,7 @@ type TrafficStatistics struct {
 	Tx     float64   `json:"tx" gorm:"numeric default 0.00"`
 }
 
-type GroupConfig struct {
+type OcGroupConfig struct {
 	RxDataPerSec         string   `json:"rx-data-per-sec"`
 	TxDataPerSec         string   `json:"tx-data-per-sec"`
 	MaxSameClients       int      `json:"max-same-clients"`
@@ -64,16 +64,16 @@ type GroupConfig struct {
 	//Routes               []string `json:"routes"`
 }
 
-func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
-	if u.TrafficType == Free {
-		u.TrafficSize = 0
+func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
+	if o.TrafficType == Free {
+		o.TrafficSize = 0
 	}
 	return
 }
 
-func (u *User) BeforeUpdate(tx *gorm.DB) (err error) {
-	if u.TrafficType == Free {
-		u.TrafficSize = 0
+func (o *OcUser) BeforeUpdate(tx *gorm.DB) (err error) {
+	if o.TrafficType == Free {
+		o.TrafficSize = 0
 	}
 	return
 }

@@ -111,7 +111,7 @@ func verboseLog(service string) {
 				rowFormat,
 				strings.TrimSuffix(path.Name, "-fm"),
 				path.Method,
-				fmt.Sprintf("http://%s%s", service, path.Path),
+				fmt.Sprintf("http://%s%s/", service, path.Path),
 			)
 		}
 	}

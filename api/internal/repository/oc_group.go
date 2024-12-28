@@ -28,7 +28,7 @@ func NewOcservGroupRepository() *OcservGroupRepository {
 }
 
 func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context) error {
-	config := ctx.Value("config").(models.GroupConfig)
+	config := ctx.Value("config").(models.OcGroupConfig)
 	configMap := o.oc.ToMap(config)
 	err := o.oc.Group.UpdateDefaultGroup(configMap)
 	if err != nil {

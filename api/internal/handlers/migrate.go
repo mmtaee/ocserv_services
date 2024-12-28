@@ -8,13 +8,22 @@ import (
 
 func Migrate() {
 	engine := database.Connection()
-	err := engine.AutoMigrate(
-		&models.Admin{},
-		&models.Permission{},
-		&models.PanelConfig{},
+	tables := []interface{}{
 		&models.User{},
-		&models.TrafficStatistics{},
-	)
+		&models.UserPermission{},
+		&models.UserToken{},
+		&models.PanelConfig{},
+		&models.OcUser{},
+		&models.OcUserActivity{},
+		&models.OcUserTrafficStatistics{},
+	}
+
+	//errx := engine.Migrator().DropTable(tables...)
+	//if errx != nil {
+	//	return
+	//}
+
+	err := engine.AutoMigrate(tables...)
 	if err != nil {
 		log.Fatalf("error sync tables: %v", err)
 	}

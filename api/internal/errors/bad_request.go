@@ -7,6 +7,10 @@ import (
 	"net/http"
 )
 
+type ErrorResponse struct {
+	Error string `json:"error" validate:"required"`
+}
+
 func BadRequest(c echo.Context, err error) error {
 	var pqErr *pgconn.PgError
 	switch {

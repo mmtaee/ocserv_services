@@ -15,14 +15,16 @@ import (
 
 type Controller struct {
 	validator       validator.CustomValidatorInterface
-	adminRepo       repository.AdminRepositoryInterface
+	userRepo        *repository.UserRepository
+	panelRepo       repository.PanelConfigRepositoryInterface
 	ocservGroupRepo repository.OcservGroupRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
 		validator:       validator.NewCustomValidator(),
-		adminRepo:       repository.NewAdminRepository(),
+		userRepo:        repository.NewUserRepository(),
+		panelRepo:       repository.NewPanelConfigRepository(),
 		ocservGroupRepo: repository.NewOcservGroupRepository(),
 	}
 }
@@ -35,17 +37,18 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  User   true "query params"
-// @Success      200  {object}  nil
+// @Param        request    body  CreateAdminUserRequest   true "query params"
+// @Success      200  {object} nil
+// @Failure      400 {object} errors.ErrorResponse
 // @Router       /api/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
-	var user User
+	var user CreateAdminUserRequest
 	if err := ctrl.validator.Validate(c, &user); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
 	ctx := context.WithValue(c.Request().Context(), "username", user.Username)
 	ctx = context.WithValue(ctx, "password", user.Password)
-	err := ctrl.adminRepo.CreateSuperUser(ctx)
+	err := ctrl.userRepo.Admin.CreateSuperUser(ctx)
 	go func() {
 		err = os.Remove(config.GetApp().InitSecretFile)
 		if err != nil {
@@ -66,17 +69,18 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  Config   true "query params"
+// @Param        request    body  CreateSiteConfigRequest   true "query params"
 // @Success      200  {object}  nil
+// @Failure      400 {object} errors.ErrorResponse
 // @Router       /api/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
-	var data Config
+	var data CreateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
 	ctx := context.WithValue(c.Request().Context(), "googleCaptchaSecretKey", data.GoogleCaptchaSecretKey)
 	ctx = context.WithValue(ctx, "googleCaptchaSiteKey", data.GoogleCaptchaSiteKey)
-	err := ctrl.adminRepo.CreateConfig(ctx)
+	err := ctrl.panelRepo.CreateConfig(ctx)
 	if err != nil {
 		return errors.BadRequest(c, err)
 	}
@@ -91,11 +95,12 @@ func (ctrl *Controller) PanelConfig(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  models.GroupConfig   true "query params"
+// @Param        request    body  models.OcGroupConfig   true "query params"
 // @Success      200  {object}  nil
+// @Failure      400 {object} errors.ErrorResponse
 // @Router       /api/v1/init/group [post]
 func (ctrl *Controller) DefaultOcservGroup(c echo.Context) error {
-	var data models.GroupConfig
+	var data models.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
