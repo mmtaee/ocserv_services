@@ -40,6 +40,6 @@ func Routes(e *echo.Group) {
 	controller := New()
 	group := e.Group("/init", IntiRoutePermissionMiddleware())
 	group.POST("/admin", controller.CreateSuperUser)
-	group.POST("/config", controller.InitPanelConfig)
-	group.POST("/group", controller.InitDefaultOcservGroup)
+	group.POST("/config", controller.PanelConfig)
+	group.POST("/group", controller.DefaultOcservGroup)
 }

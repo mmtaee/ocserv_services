@@ -58,11 +58,19 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
-func (ctrl *Controller) InitPanelConfig(c echo.Context) error {
-	var data struct {
-		GoogleCaptchaSecretKey string `json:"google_captcha_secret_key" validate:"omitempty"`
-		GoogleCaptchaSiteKey   string `json:"google_captcha_site_key" validate:"omitempty"`
-	}
+// PanelConfig Create Superuser account
+//
+// @Summary      Create Panel Config
+// @Description  Create Panel Config initializing step
+// @Tags         init
+// @Accept       json
+// @Produce      json
+// @Param        secret_key query string true "check secret key from file 'init_secret'"
+// @Param        request    body  Config   true "query params"
+// @Success      200  {object}  nil
+// @Router       /api/v1/init/config [post]
+func (ctrl *Controller) PanelConfig(c echo.Context) error {
+	var data Config
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
@@ -75,7 +83,18 @@ func (ctrl *Controller) InitPanelConfig(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
-func (ctrl *Controller) InitDefaultOcservGroup(c echo.Context) error {
+// DefaultOcservGroup Create Superuser account
+//
+// @Summary      Update Ocserv Group
+// @Description  Update Ocserv Defaults Group initializing step
+// @Tags         init
+// @Accept       json
+// @Produce      json
+// @Param        secret_key query string true "check secret key from file 'init_secret'"
+// @Param        request    body  models.GroupConfig   true "query params"
+// @Success      200  {object}  nil
+// @Router       /api/v1/init/group [post]
+func (ctrl *Controller) DefaultOcservGroup(c echo.Context) error {
 	var data models.GroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))

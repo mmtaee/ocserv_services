@@ -34,7 +34,13 @@ func (o *OcGroup) UpdateDefaultGroup(config map[string]interface{}) error {
 			}
 		}(file)
 		for k, v := range config {
-			_, err = file.WriteString(fmt.Sprintf("%s=%s\n", k, v))
+			if k == "dns" {
+				for _, dns := range v.([]string) {
+					_, err = file.WriteString(fmt.Sprintf("dns=%s\n", dns))
+				}
+			} else {
+				_, err = file.WriteString(fmt.Sprintf("%s=%s\n", k, v))
+			}
 		}
 		ch <- err
 	}()
