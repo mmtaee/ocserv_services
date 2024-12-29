@@ -8,6 +8,7 @@ import (
 	"context"
 	"errors"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 	"time"
 )
 
@@ -18,9 +19,9 @@ type UserRepository struct {
 }
 
 type UserRepositoryInterface interface {
-	Login(context.Context) (string, error)
+	Login(context.Context, string, string, bool) (string, error)
 	Logout(context.Context) error
-	ChangePassword(context.Context) error
+	ChangePassword(context.Context, string, string) error
 }
 
 func NewUserRepository() *UserRepository {
@@ -31,28 +32,20 @@ func NewUserRepository() *UserRepository {
 	}
 }
 
-func (r *UserRepository) Login(c context.Context) (string, error) {
+func (r *UserRepository) Login(c context.Context, username, passwd string, rememberMe bool) (string, error) {
 	var (
 		user     models.User
 		expireAt time.Time
 	)
-	ch := make(chan error, 1)
-	go func() {
-		err := r.db.WithContext(c).Where("username = ?", c.Value("username").(string)).First(&user).Error
-		if err != nil {
-			ch <- err
-		}
-		passwordString := c.Value("password").(string)
-		passwordHash := password.Create(passwordString)
-		if user.Password != passwordHash {
-			ch <- errors.New("invalid password")
-		}
-		ch <- nil
-	}()
-	if err := <-ch; err != nil {
+	err := r.db.WithContext(c).Where("username = ?", username).First(&user).Error
+	if err != nil {
 		return "", err
 	}
-	if rememberMe := c.Value("rememberMe").(bool); rememberMe {
+	passwordHash := password.Create(passwd)
+	if user.Password != passwordHash {
+		return "", errors.New("invalid password")
+	}
+	if rememberMe {
 		expireAt = time.Now().Add(time.Hour * 24 * 30)
 	} else {
 		expireAt = time.Now().Add(time.Hour * 24)
@@ -62,26 +55,44 @@ func (r *UserRepository) Login(c context.Context) (string, error) {
 		Token:     TokenGenerator.Create(user.ID, expireAt),
 		ExpiresAt: expireAt,
 	}
-	go func() {
-		ch <- r.db.WithContext(c).Create(&token).Error
-	}()
-	if err := <-ch; err != nil {
+	err = r.db.WithContext(c).Create(&token).Error
+	if err != nil {
 		return "", err
 	}
 	return token.Token, nil
 }
 
 func (r *UserRepository) Logout(c context.Context) error {
-	ch := make(chan error, 1)
-	go func() {
-		ch <- r.db.WithContext(c).
-			Where("token = ? AND user_id = ? ", c.Value("token").(string), c.Value("userID").(string)).
-			Delete(&models.UserToken{}).Error
-	}()
-	return <-ch
+	userID, ok := c.Value("userID").(string)
+	if !ok {
+		return errors.New("userID not found in context")
+	}
+	token, ok := c.Value("token").(string)
+	if !ok {
+		return errors.New("token not found in context")
+	}
+	return r.db.WithContext(c).
+		Where("token = ? AND user_id = ? ", token, userID).
+		Delete(&models.UserToken{}).Error
 }
 
-func (r *UserRepository) ChangePassword(c context.Context) error {
-	// TODO: first get last password compare with request, then update.
-	return nil
+func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd string) error {
+	var user models.User
+	userID, ok := c.Value("userID").(string)
+	if !ok {
+		return errors.New("userID not found in context")
+	}
+	return r.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, userID).Error; err != nil {
+			return err
+		}
+		if user.Password != password.Create(oldPasswd) {
+			return errors.New("incorrect old password")
+		}
+		user.Password = password.Create(newPasswd)
+		if err := tx.Save(&user).Error; err != nil {
+			return err
+		}
+		return nil
+	})
 }

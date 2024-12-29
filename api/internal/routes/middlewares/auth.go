@@ -38,7 +38,7 @@ func IsAuthenticatedMiddleware() echo.MiddlewareFunc {
 			} else if err != nil {
 				return c.JSON(http.StatusInternalServerError, nil)
 			}
-			c.Set("id", token.User.ID)
+			c.Set("userID", token.User.ID)
 			c.Set("username", token.User.Username)
 			c.Set("isAdmin", token.User.IsAdmin)
 			c.Set("token", token.Token)

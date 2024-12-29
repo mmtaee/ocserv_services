@@ -39,8 +39,7 @@ func (ctrl *Controller) Login(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
-	ctx := context.WithValue(c.Request().Context(), "data", data)
-	token, err := ctrl.userRepo.Login(ctx)
+	token, err := ctrl.userRepo.Login(c.Request().Context(), data.Username, data.Password, data.RememberMe)
 	if err != nil {
 		return errors.BadRequest(c, err)
 	}
@@ -71,7 +70,28 @@ func (ctrl *Controller) Logout(c echo.Context) error {
 	return c.NoContent(http.StatusNoContent)
 }
 
+// ChangePassword Admin or Staff change password
+//
+// @Summary      ChangePassword Admin or Staff User change password
+// @Description  ChangePassword Admin or Staff User change password with send old and new password
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Failure      401 {object} middlewares.Unauthorized
+// @Param        request    body  LoginRequest   true "query params"
+// @Success      200  {object}  ChangePasswordRequest
+// @Failure      400 {object} errors.ErrorResponse
+// @Router       /api/v1/user/change_password [post]
 func (ctrl *Controller) ChangePassword(c echo.Context) error {
+	var data ChangePasswordRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return errors.BadRequest(c, err.(error))
+	}
+	err := ctrl.userRepo.ChangePassword(c.Request().Context(), data.OldPassword, data.NewPassword)
+	if err != nil {
+		return errors.BadRequest(c, err)
+	}
 	return nil
 }
 

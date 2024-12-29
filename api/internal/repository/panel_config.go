@@ -12,7 +12,7 @@ type PanelConfigRepository struct {
 }
 
 type PanelConfigRepositoryInterface interface {
-	CreateConfig(context.Context) error
+	CreateConfig(context.Context, models.PanelConfig) error
 }
 
 func NewPanelConfigRepository() PanelConfigRepositoryInterface {
@@ -21,13 +21,6 @@ func NewPanelConfigRepository() PanelConfigRepositoryInterface {
 	}
 }
 
-func (p *PanelConfigRepository) CreateConfig(c context.Context) error {
-	ch := make(chan error, 1)
-	go func() {
-		ch <- p.db.WithContext(c).Create(&models.PanelConfig{
-			GoogleCaptchaSecretKey: c.Value("googleCaptchaSecretKey").(string),
-			GoogleCaptchaSiteKey:   c.Value("googleCaptchaSiteKey").(string),
-		}).Error
-	}()
-	return <-ch
+func (p *PanelConfigRepository) CreateConfig(c context.Context, config models.PanelConfig) error {
+	return p.db.WithContext(c).Create(&config).Error
 }

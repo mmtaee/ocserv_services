@@ -14,7 +14,7 @@ type OcservGroupRepository struct {
 }
 
 type OcservGroupRepositoryInterface interface {
-	UpdateDefaultGroup(context.Context) error
+	UpdateDefaultGroup(context.Context, models.OcGroupConfig) error
 	CreateGroup(context.Context) error
 	UpdateGroup(context.Context) error
 	DeleteGroup(context.Context) error
@@ -27,8 +27,7 @@ func NewOcservGroupRepository() *OcservGroupRepository {
 	}
 }
 
-func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context) error {
-	config := ctx.Value("config").(models.OcGroupConfig)
+func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config models.OcGroupConfig) error {
 	configMap := o.oc.ToMap(config)
 	err := o.oc.Group.UpdateDefaultGroup(configMap)
 	if err != nil {

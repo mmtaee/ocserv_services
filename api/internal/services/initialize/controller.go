@@ -6,7 +6,6 @@ import (
 	"api/internal/repository"
 	"api/pkg/config"
 	"api/pkg/validator"
-	"context"
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
@@ -46,9 +45,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &user); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
-	ctx := context.WithValue(c.Request().Context(), "username", user.Username)
-	ctx = context.WithValue(ctx, "password", user.Password)
-	err := ctrl.userRepo.Admin.CreateSuperUser(ctx)
+	err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), user.Username, user.Password)
 	go func() {
 		err = os.Remove(config.GetApp().InitSecretFile)
 		if err != nil {
@@ -78,9 +75,11 @@ func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
-	ctx := context.WithValue(c.Request().Context(), "googleCaptchaSecretKey", data.GoogleCaptchaSecretKey)
-	ctx = context.WithValue(ctx, "googleCaptchaSiteKey", data.GoogleCaptchaSiteKey)
-	err := ctrl.panelRepo.CreateConfig(ctx)
+	panelConfig := models.PanelConfig{
+		GoogleCaptchaSecretKey: data.GoogleCaptchaSecretKey,
+		GoogleCaptchaSiteKey:   data.GoogleCaptchaSiteKey,
+	}
+	err := ctrl.panelRepo.CreateConfig(c.Request().Context(), panelConfig)
 	if err != nil {
 		return errors.BadRequest(c, err)
 	}
@@ -104,8 +103,7 @@ func (ctrl *Controller) DefaultOcservGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return errors.BadRequest(c, err.(error))
 	}
-	ctx := context.WithValue(c.Request().Context(), "config", data)
-	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(ctx)
+	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), data)
 	if err != nil {
 		return errors.BadRequest(c, err)
 	}

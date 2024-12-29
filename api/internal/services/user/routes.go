@@ -10,7 +10,7 @@ func Routes(e *echo.Group) {
 	group := e.Group("/user")
 	group.POST("/login", controller.Login)
 	group.DELETE("/logout", controller.Logout)
-	group.POST("/password", controller.ChangePassword, middlewares.IsAuthenticatedMiddleware())
+	group.POST("/change_password", controller.ChangePassword, middlewares.IsAuthenticatedMiddleware())
 
 	staffGroup := e.Group(
 		"/staff",
