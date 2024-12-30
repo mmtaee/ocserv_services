@@ -1,9 +1,9 @@
 package oc_group
 
 import (
-	"api/internal/custom_errors"
 	"api/internal/models"
 	"api/internal/repository"
+	"api/internal/utils"
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -32,7 +32,7 @@ func New() *Controller {
 // @Param        request body  models.OcGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} customErrors.ErrorResponse
-// @Router       /api/v1/ocserv/group [post]
+// @Router       /services/v1/ocserv/group [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data models.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {

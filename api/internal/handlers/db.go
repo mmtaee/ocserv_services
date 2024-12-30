@@ -18,7 +18,6 @@ var tables = []interface{}{
 
 func Migrate() {
 	engine := database.Connection()
-
 	err := engine.AutoMigrate(tables...)
 	if err != nil {
 		log.Fatalf("error sync tables: %v", err)

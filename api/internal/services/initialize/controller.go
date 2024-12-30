@@ -1,12 +1,11 @@
 package initialize
 
 import (
-	"api/internal/custom_errors"
 	"api/internal/models"
 	"api/internal/repository"
+	"api/internal/utils"
 	"api/pkg/config"
 	"api/pkg/validator"
-	"errors"
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
@@ -29,28 +28,6 @@ func New() *Controller {
 	}
 }
 
-func checkSecret(secret string) error {
-	if secret == "" {
-		return errors.New("secret parameter is required")
-	}
-	file := config.GetApp().InitSecretFile
-	_, err := os.Stat(file)
-	if err != nil {
-		if !errors.Is(err, os.ErrNotExist) {
-			log.Println(err)
-		}
-		return err
-	}
-	content, err := os.ReadFile(config.GetApp().InitSecretFile)
-	if err != nil {
-		return nil
-	}
-	if secret != string(content) {
-		return errors.New("invalid secret key or initial application preparation steps have already been completed")
-	}
-	return nil
-}
-
 // CheckSecretKey check and validate secret key
 //
 // @Summary      Check and validate secret key
@@ -61,7 +38,7 @@ func checkSecret(secret string) error {
 // @Param        secret query string true "check secret key from file 'init_secret'"
 // @Success      200  {object} nil
 // @Failure      400 {object} customErrors.ErrorResponse
-// @Router       /api/v1/init/check [get]
+// @Router       /services/v1/init/check [get]
 func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return customErrors.BadRequest(c, err)
@@ -80,7 +57,7 @@ func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 // @Param        request body  CreateAdminUserRequest true "admin user body data"
 // @Success      200  {object} nil
 // @Failure      400 {object} customErrors.ErrorResponse
-// @Router       /api/v1/init/admin [post]
+// @Router       /services/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return customErrors.BadRequest(c, err)
@@ -108,7 +85,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Param        request    body  CreateSiteConfigRequest   true "site config data"
 // @Success      200  {object}  nil
 // @Failure      400 {object} customErrors.ErrorResponse
-// @Router       /api/v1/init/config [post]
+// @Router       /services/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return customErrors.BadRequest(c, err)

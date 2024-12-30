@@ -10,7 +10,7 @@ import (
 )
 
 func Register(e *echo.Echo) {
-	group := e.Group("/api/v1")
+	group := e.Group("/services/v1")
 	initialize.Routes(group)
 	panel.Routes(group)
 	user.Routes(group)
