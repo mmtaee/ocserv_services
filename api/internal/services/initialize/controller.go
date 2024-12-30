@@ -70,11 +70,10 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-
 	return c.JSON(http.StatusCreated, nil)
 }
 
-// PanelConfig Create Superuser account
+// PanelConfig Create Panel Config
 //
 // @Summary      Create Panel Config
 // @Description  Create Panel Config initializing step
@@ -83,7 +82,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Produce      json
 // @Param        init_secret query string true "check secret key from file 'init_secret'"
 // @Param        request    body  CreateSiteConfigRequest   true "site config data"
-// @Success      200  {object}  nil
+// @Success      201  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
