@@ -5,7 +5,7 @@ import "time"
 type User struct {
 	ID         uint           `json:"id" gorm:"primaryKey;autoIncrement"`
 	Username   string         `json:"username" gorm:"type:varchar(16);not null;unique"`
-	Password   string         `json:"password" gorm:"type:varchar(16) not null"`
+	Password   string         `json:"password" gorm:"type:varchar(64); not null"`
 	IsAdmin    bool           `json:"is_admin" gorm:"type:bool;default(false)"`
 	LastLogin  time.Time      `json:"last_login"`
 	Token      []UserToken    `json:"tokens"`

@@ -18,9 +18,11 @@ func main() {
 	var (
 		debug   bool
 		migrate bool
+		drop    bool
 	)
 	flag.BoolVar(&debug, "debug", false, "debug mode")
 	flag.BoolVar(&migrate, "migrate", false, "migrate models to database")
+	flag.BoolVar(&drop, "drop", false, "drop models table from database")
 	flag.Parse()
 	if debug {
 		log.SetFlags(0)
@@ -29,6 +31,8 @@ func main() {
 	database.Connect()
 	if migrate {
 		handlers.Migrate()
+	} else if drop && debug {
+		handlers.Drop()
 	} else {
 		routing.Serve()
 	}

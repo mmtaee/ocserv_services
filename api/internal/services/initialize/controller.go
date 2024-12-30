@@ -1,11 +1,12 @@
 package initialize
 
 import (
-	"api/internal/errors"
+	"api/internal/cu_errors"
 	"api/internal/models"
 	"api/internal/repository"
 	"api/pkg/config"
 	"api/pkg/validator"
+	"errors"
 	"github.com/labstack/echo/v4"
 	"log"
 	"net/http"
@@ -28,33 +29,71 @@ func New() *Controller {
 	}
 }
 
+func checkSecret(secret string) error {
+	if secret == "" {
+		return errors.New("secret parameter is required")
+	}
+	file := config.GetApp().InitSecretFile
+	_, err := os.Stat(file)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			log.Println(err)
+		}
+		return err
+	}
+	content, err := os.ReadFile(config.GetApp().InitSecretFile)
+	if err != nil {
+		return nil
+	}
+	if secret != string(content) {
+		return errors.New("invalid secret key or initial application preparation steps have already been completed")
+	}
+	return nil
+}
+
+// CheckSecretKey check and validate secret key
+//
+// @Summary      Check and validate secret key
+// @Description  Check and validate secret key for continue initialing app
+// @Tags         Initial
+// @Accept       json
+// @Produce      json
+// @Param        secret query string true "check secret key from file 'init_secret'"
+// @Success      200  {object} nil
+// @Failure      400 {object} cu_errors.ErrorResponse
+// @Router       /api/v1/init/check [get]
+func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
+	if err := checkSecret(c.QueryParam("secret")); err != nil {
+		return cu_errors.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, nil)
+}
+
 // CreateSuperUser Create Superuser account
 //
 // @Summary      Create Superuser
 // @Description  Create Superuser in initializing step
-// @Tags         init
+// @Tags         Initial
 // @Accept       json
 // @Produce      json
-// @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  CreateAdminUserRequest   true "query params"
+// @Param        secret query string true "check secret key from file 'init_secret'"
+// @Param        request body  CreateAdminUserRequest true "admin user body data"
 // @Success      200  {object} nil
-// @Failure      400 {object} errors.ErrorResponse
+// @Failure      400 {object} cu_errors.ErrorResponse
 // @Router       /api/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
+	if err := checkSecret(c.QueryParam("secret")); err != nil {
+		return cu_errors.BadRequest(c, err)
+	}
 	var user CreateAdminUserRequest
 	if err := ctrl.validator.Validate(c, &user); err != nil {
-		return errors.BadRequest(c, err.(error))
+		return cu_errors.BadRequest(c, err.(error))
 	}
 	err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), user.Username, user.Password)
-	go func() {
-		err = os.Remove(config.GetApp().InitSecretFile)
-		if err != nil {
-			log.Println(err)
-		}
-	}()
 	if err != nil {
-		return errors.BadRequest(c, err)
+		return cu_errors.BadRequest(c, err)
 	}
+
 	return c.JSON(http.StatusCreated, nil)
 }
 
@@ -62,18 +101,21 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 //
 // @Summary      Create Panel Config
 // @Description  Create Panel Config initializing step
-// @Tags         init
+// @Tags         Initial
 // @Accept       json
 // @Produce      json
-// @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  CreateSiteConfigRequest   true "query params"
+// @Param        init_secret query string true "check secret key from file 'init_secret'"
+// @Param        request    body  CreateSiteConfigRequest   true "site config data"
 // @Success      200  {object}  nil
-// @Failure      400 {object} errors.ErrorResponse
+// @Failure      400 {object} cu_errors.ErrorResponse
 // @Router       /api/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
+	if err := checkSecret(c.QueryParam("secret")); err != nil {
+		return cu_errors.BadRequest(c, err)
+	}
 	var data CreateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return errors.BadRequest(c, err.(error))
+		return cu_errors.BadRequest(c, err.(error))
 	}
 	panelConfig := models.PanelConfig{
 		GoogleCaptchaSecretKey: data.GoogleCaptchaSecretKey,
@@ -81,31 +123,13 @@ func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	}
 	err := ctrl.panelRepo.CreateConfig(c.Request().Context(), panelConfig)
 	if err != nil {
-		return errors.BadRequest(c, err)
+		return cu_errors.BadRequest(c, err)
 	}
+	go func() {
+		err = os.Remove(config.GetApp().InitSecretFile)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
 	return c.JSON(http.StatusCreated, nil)
-}
-
-// DefaultOcservGroup Create Superuser account
-//
-// @Summary      Update Ocserv Group
-// @Description  Update Ocserv Defaults Group initializing step
-// @Tags         init
-// @Accept       json
-// @Produce      json
-// @Param        secret_key query string true "check secret key from file 'init_secret'"
-// @Param        request    body  models.OcGroupConfig   true "query params"
-// @Success      200  {object}  nil
-// @Failure      400 {object} errors.ErrorResponse
-// @Router       /api/v1/init/group [post]
-func (ctrl *Controller) DefaultOcservGroup(c echo.Context) error {
-	var data models.OcGroupConfig
-	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return errors.BadRequest(c, err.(error))
-	}
-	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), data)
-	if err != nil {
-		return errors.BadRequest(c, err)
-	}
-	return c.JSON(http.StatusAccepted, nil)
 }

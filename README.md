@@ -25,4 +25,10 @@ sudo docker run -d \
 
 
 swag init -g cmd/main.go
+
+env $(cat .env | xargs) go run cmd/main.go
+
+go run cmd/main.go -debug -drop 
+
+go run cmd/main.go -debug -migrate
 ```
