@@ -3,7 +3,7 @@ package oc_group
 import (
 	"api/internal/models"
 	"api/internal/repository"
-	"api/internal/utils"
+	"api/pkg/utils"
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
@@ -31,16 +31,16 @@ func New() *Controller {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Param        request body  models.OcGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
-// @Failure      400 {object} customErrors.ErrorResponse
+// @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/ocserv/group [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data models.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return customErrors.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err.(error))
 	}
 	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), data)
 	if err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusAccepted, nil)
 }

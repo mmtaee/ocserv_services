@@ -3,8 +3,8 @@ package initialize
 import (
 	"api/internal/models"
 	"api/internal/repository"
-	"api/internal/utils"
 	"api/pkg/config"
+	"api/pkg/utils"
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"log"
@@ -37,11 +37,11 @@ func New() *Controller {
 // @Produce      json
 // @Param        secret query string true "check secret key from file 'init_secret'"
 // @Success      200  {object} nil
-// @Failure      400 {object} customErrors.ErrorResponse
+// @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/init/check [get]
 func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, nil)
 }
@@ -56,19 +56,19 @@ func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 // @Param        secret query string true "check secret key from file 'init_secret'"
 // @Param        request body  CreateAdminUserRequest true "admin user body data"
 // @Success      200  {object} nil
-// @Failure      400 {object} customErrors.ErrorResponse
+// @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 	var user CreateAdminUserRequest
 	if err := ctrl.validator.Validate(c, &user); err != nil {
-		return customErrors.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err.(error))
 	}
 	err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), user.Username, user.Password)
 	if err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 
 	return c.JSON(http.StatusCreated, nil)
@@ -84,15 +84,15 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Param        init_secret query string true "check secret key from file 'init_secret'"
 // @Param        request    body  CreateSiteConfigRequest   true "site config data"
 // @Success      200  {object}  nil
-// @Failure      400 {object} customErrors.ErrorResponse
+// @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 	var data CreateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return customErrors.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err.(error))
 	}
 	panelConfig := models.PanelConfig{
 		GoogleCaptchaSecretKey: data.GoogleCaptchaSecretKey,
@@ -100,7 +100,7 @@ func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	}
 	err := ctrl.panelRepo.CreateConfig(c.Request().Context(), panelConfig)
 	if err != nil {
-		return customErrors.BadRequest(c, err)
+		return utils.BadRequest(c, err)
 	}
 	go func() {
 		err = os.Remove(config.GetApp().InitSecretFile)
