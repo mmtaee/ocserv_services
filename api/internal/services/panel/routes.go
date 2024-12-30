@@ -12,5 +12,5 @@ func Routes(e *echo.Group) {
 		middlewares.IsAuthenticatedMiddleware(),
 		middlewares.IsAdminPermissionMiddleware(),
 	)
-	panelGroup.PUT("/config", controller.UpdatePanelConfig)
+	panelGroup.PATCH("/config", controller.UpdatePanelConfig)
 }

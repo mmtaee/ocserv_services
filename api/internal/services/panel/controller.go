@@ -34,6 +34,7 @@ func New() *Controller {
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /services/v1/panel/config [put]
 func (ctrl *Controller) UpdatePanelConfig(c echo.Context) error {
+	// TODO: upgrade to support patch
 	var data UpdateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))

@@ -62,13 +62,15 @@ func errorWrapper(err error) interface{} {
 
 	if errors.As(err, &httpErr) {
 		var internalErr *json.UnmarshalTypeError
-		errors.As(httpErr.Internal, &internalErr)
-		return errors.New(fmt.Sprintf(
-			"field %v expected %v got %v",
-			internalErr.Field,
-			internalErr.Type,
-			internalErr.Value,
-		))
+		if errors.As(err, &internalErr) {
+			return errors.New(fmt.Sprintf(
+				"field %v expected %v got %v",
+				internalErr.Field,
+				internalErr.Type,
+				internalErr.Value,
+			))
+		}
+		return errors.New("json parse error")
 	}
 
 	for _, err := range err.(validator.ValidationErrors) {
