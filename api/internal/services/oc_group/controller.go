@@ -32,7 +32,7 @@ func New() *Controller {
 // @Param        request body  models.OcGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/ocserv/group [post]
+// @Router       /api/v1/ocserv/group [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data models.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {

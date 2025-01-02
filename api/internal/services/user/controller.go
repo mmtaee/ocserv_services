@@ -33,7 +33,7 @@ func New() *Controller {
 // @Param        request    body  LoginRequest   true "query params"
 // @Success      200  {object}  LoginResponse
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/user/login [post]
+// @Router       /api/v1/user/login [post]
 func (ctrl *Controller) Login(c echo.Context) error {
 	var data LoginRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
@@ -59,7 +59,7 @@ func (ctrl *Controller) Login(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Success      204  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/user/logout [delete]
+// @Router       /api/v1/user/logout [delete]
 func (ctrl *Controller) Logout(c echo.Context) error {
 	ctx := context.WithValue(c.Request().Context(), "token", c.Get("token"))
 	ctx = context.WithValue(ctx, "userID", c.Get("userID"))
@@ -82,7 +82,7 @@ func (ctrl *Controller) Logout(c echo.Context) error {
 // @Param        request    body  LoginRequest   true "query params"
 // @Success      200  {object}  ChangePasswordRequest
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/user/change_password [post]
+// @Router       /api/v1/user/change_password [post]
 func (ctrl *Controller) ChangePassword(c echo.Context) error {
 	var data ChangePasswordRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {

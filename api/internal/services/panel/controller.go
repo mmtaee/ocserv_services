@@ -32,7 +32,7 @@ func New() *Controller {
 // @Param        request    body  UpdateSiteConfigRequest   true "site config data"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/panel/config [put]
+// @Router       /api/v1/panel/config [put]
 func (ctrl *Controller) UpdatePanelConfig(c echo.Context) error {
 	// TODO: upgrade to support patch
 	var data UpdateSiteConfigRequest

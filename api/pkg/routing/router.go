@@ -74,14 +74,14 @@ func serve() {
 		engine.HideBanner = true
 	}
 
-	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
-		Skipper: func(c echo.Context) bool {
-			if strings.Contains(c.Request().URL.Path, "swagger") {
-				return true
-			}
-			return false
-		},
-	}))
+	//engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
+	//	Skipper: func(c echo.Context) bool {
+	//		if strings.Contains(c.Request().URL.Path, "swagger") {
+	//			return true
+	//		}
+	//		return false
+	//	},
+	//}))
 	if err := engine.Start(server); !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal(err)
 	}

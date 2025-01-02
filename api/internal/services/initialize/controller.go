@@ -38,7 +38,7 @@ func New() *Controller {
 // @Param        secret query string true "check secret key from file 'init_secret'"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/init/check [get]
+// @Router       /api/v1/init/check [get]
 func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return utils.BadRequest(c, err)
@@ -57,7 +57,7 @@ func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 // @Param        request body  CreateAdminUserRequest true "admin user body data"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/init/admin [post]
+// @Router       /api/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return utils.BadRequest(c, err)
@@ -84,7 +84,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Param        request    body  CreateSiteConfigRequest   true "site config data"
 // @Success      201  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /services/v1/init/config [post]
+// @Router       /api/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return utils.BadRequest(c, err)
