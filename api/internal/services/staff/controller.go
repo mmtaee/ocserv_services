@@ -1,6 +1,5 @@
 package staff
 
-import "C"
 import (
 	"api/internal/models"
 	"api/internal/repository"
