@@ -1,4 +1,4 @@
-package staff
+package staffManagement
 
 import (
 	"api/internal/models"
@@ -26,7 +26,7 @@ func New() *Controller {
 //
 // @Summary      Staffs
 // @Description  List of Staffs
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param page query int false "Page number, starting from 1" minimum(1)
@@ -55,7 +55,7 @@ func (ctrl *Controller) Staffs(c echo.Context) error {
 //
 // @Summary      Staff Permission
 // @Description  Staff Permission
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param 		 uid path string true "User UID"
@@ -74,7 +74,7 @@ func (ctrl *Controller) StaffPermission(c echo.Context) error {
 //
 // @Summary      Create Staff
 // @Description  Create Staff with Permission
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param        request body  CreateStaffRequest true "Staff user and permission body"
@@ -108,7 +108,7 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 //
 // @Summary      Update Staff Permission
 // @Description  Update Staff Permission
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param 		 uid path string true "User UID"
@@ -139,7 +139,7 @@ func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
 //
 // @Summary      Update Staff Password
 // @Description  Update Staff Password
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param 		 uid path string true "User UID"
@@ -163,7 +163,7 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 //
 // @Summary      Delete Staff
 // @Description  Delete Staff
-// @Tags         staffs
+// @Tags         Staff Management
 // @Accept       json
 // @Produce      json
 // @Param 		 uid path string true "User UID"

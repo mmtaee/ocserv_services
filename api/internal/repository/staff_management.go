@@ -64,9 +64,6 @@ func (s *StaffRepository) Permission(c context.Context, userUID string) (*models
 	if err != nil {
 		return nil, err
 	}
-	if err != nil {
-		return nil, err
-	}
 	return &permission, nil
 }
 

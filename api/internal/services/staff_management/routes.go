@@ -1,4 +1,4 @@
-package staff
+package staffManagement
 
 import (
 	"api/internal/routes/middlewares"
