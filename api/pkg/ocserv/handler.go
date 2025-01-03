@@ -1,8 +1,11 @@
 package ocserv
 
 import (
+	"bufio"
 	"encoding/json"
+	"log"
 	"os"
+	"strconv"
 	"strings"
 )
 
@@ -53,4 +56,98 @@ func (h *Handler) ReadOcpasswd() (userList []Sync) {
 		}
 	}
 	return userList
+}
+func ParseConfFile(filename string) (OcGroupConfig, error) {
+	var config OcGroupConfig
+	file, err := os.Open(filename)
+	if err != nil {
+		return config, err
+	}
+	defer func(file *os.File) {
+		err = file.Close()
+		if err != nil {
+			log.Println(err)
+		}
+	}(file)
+
+	scanner := bufio.NewScanner(file)
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		if len(line) == 0 || line[0] == '#' {
+			continue
+		}
+		parts := strings.SplitN(line, "=", 2)
+		if len(parts) != 2 {
+			continue
+		}
+
+		key := strings.TrimSpace(parts[0])
+		value := strings.TrimSpace(parts[1])
+
+		switch key {
+		case "rx-data-per-sec":
+			config.RxDataPerSec = value
+		case "tx-data-per-sec":
+			config.TxDataPerSec = value
+		case "max-same-clients":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.MaxSameClients = val
+			}
+		case "ipv4-network":
+			config.IPv4Network = value
+		case "dns":
+			config.DNS = strings.Split(value, ",")
+		case "no-udp":
+			if val, err := strconv.ParseBool(value); err == nil {
+				config.NoUDP = val
+			}
+		case "keepalive":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.KeepAlive = val
+			}
+		case "dpd":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.DPD = val
+			}
+		case "mobile-dpd":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.MobileDPD = val
+			}
+		case "tunnel-all-dns":
+			if val, err := strconv.ParseBool(value); err == nil {
+				config.TunnelAllDNS = val
+			}
+		case "restrict-user-to-routes":
+			if val, err := strconv.ParseBool(value); err == nil {
+				config.RestrictUserToRoutes = val
+			}
+		case "stats-report-time":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.StatsReportTime = val
+			}
+		case "mtu":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.MTU = val
+			}
+		case "idle-timeout":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.IdleTimeout = val
+			}
+		case "mobile-idle-timeout":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.MobileIdleTimeout = val
+			}
+		case "session-timeout":
+			if val, err := strconv.Atoi(value); err == nil {
+				config.SessionTimeout = val
+			}
+		}
+	}
+
+	if err = scanner.Err(); err != nil {
+		return config, err
+	}
+
+	return config, nil
 }

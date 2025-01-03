@@ -1,4 +1,4 @@
-package oc_group
+package ocGroup
 
 import (
 	"api/internal/routes/middlewares"
@@ -7,11 +7,14 @@ import (
 
 func Routes(e *echo.Group) {
 	controller := New()
-	group := e.Group("/ocserv/group")
+	group := e.Group("/ocserv/groups")
 	group.POST("",
 		controller.UpdateDefaultOcservGroup,
 		middlewares.IsAuthenticatedMiddleware(),
 		middlewares.IsAdminPermissionMiddleware(),
 	)
 
+	group.GET("", controller.Groups)
+	group.PATCH("/:name", controller.UpdateGroup)
+	group.DELETE("/:name", controller.DeleteGroup)
 }

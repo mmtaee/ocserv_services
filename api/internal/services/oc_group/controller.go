@@ -1,8 +1,8 @@
-package oc_group
+package ocGroup
 
 import (
-	"api/internal/models"
 	"api/internal/repository"
+	"api/pkg/ocserv"
 	"api/pkg/utils"
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
@@ -34,7 +34,7 @@ func New() *Controller {
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /api/v1/ocserv/group [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
-	var data models.OcGroupConfig
+	var data ocserv.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
@@ -43,4 +43,24 @@ func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusAccepted, nil)
+}
+
+func (ctrl *Controller) Groups(c echo.Context) error {
+	groups, err := ctrl.ocservGroupRepo.Groups(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, groups)
+}
+
+func (ctrl *Controller) CreateGroup(c echo.Context) error {
+	return nil
+}
+
+func (ctrl *Controller) UpdateGroup(c echo.Context) error {
+	return nil
+}
+
+func (ctrl *Controller) DeleteGroup(c echo.Context) error {
+	return nil
 }

@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"api/internal/models"
 	"api/pkg/database"
 	"api/pkg/ocserv"
 	"context"
@@ -14,7 +13,8 @@ type OcservGroupRepository struct {
 }
 
 type OcservGroupRepositoryInterface interface {
-	UpdateDefaultGroup(context.Context, models.OcGroupConfig) error
+	UpdateDefaultGroup(context.Context, ocserv.OcGroupConfig) error
+	Groups(context.Context) (*[]ocserv.OcGroupConfig, error)
 	CreateGroup(context.Context) error
 	UpdateGroup(context.Context) error
 	DeleteGroup(context.Context) error
@@ -27,13 +27,17 @@ func NewOcservGroupRepository() *OcservGroupRepository {
 	}
 }
 
-func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config models.OcGroupConfig) error {
+func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config ocserv.OcGroupConfig) error {
 	configMap := o.oc.ToMap(config)
-	err := o.oc.Group.UpdateDefaultGroup(configMap)
+	err := o.oc.Group.UpdateDefaultGroup(ctx, configMap)
 	if err != nil {
 		return err
 	}
 	return o.oc.Occtl.Reload()
+}
+
+func (o *OcservGroupRepository) Groups(ctx context.Context) (*[]ocserv.OcGroupConfig, error) {
+	return nil, nil
 }
 
 func (o *OcservGroupRepository) CreateGroup(ctx context.Context) error {
