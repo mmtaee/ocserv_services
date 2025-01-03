@@ -3,6 +3,7 @@ package routes
 import (
 	"api/internal/services/initialize"
 	ocGroup "api/internal/services/oc_group"
+	ocUser "api/internal/services/oc_user"
 	"api/internal/services/panel"
 	"api/internal/services/staff"
 	"api/internal/services/user"
@@ -16,4 +17,5 @@ func Register(e *echo.Echo) {
 	user.Routes(group)
 	staff.Routes(group)
 	ocGroup.Routes(group)
+	ocUser.Routes(group)
 }
