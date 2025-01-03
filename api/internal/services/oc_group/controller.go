@@ -21,7 +21,7 @@ func New() *Controller {
 	}
 }
 
-// UpdateDefaultOcservGroup Create Superuser account
+// UpdateDefaultOcservGroup  Update Ocserv Defaults Group
 //
 // @Summary      Update Ocserv Defaults Group
 // @Description  Update Ocserv Defaults Group initializing step
@@ -29,22 +29,33 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Failure      401 {object} middlewares.Unauthorized
-// @Param        request body  models.OcGroupConfig true "oc group default config"
+// @Param        request body  ocserv.OcGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /api/v1/ocserv/group [post]
+// @Router       /api/v1/ocserv/groups/defaults [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data ocserv.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), data)
+	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), &data)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusAccepted, nil)
 }
 
+// Groups 		 List Of Groups
+//
+// @Summary      List Of Groups
+// @Description  List Of Groups Sort By Name
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Failure      401 {object} middlewares.Unauthorized
+// @Success      200  {object}  []ocserv.OcGroupConfig
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/groups [get]
 func (ctrl *Controller) Groups(c echo.Context) error {
 	groups, err := ctrl.ocservGroupRepo.Groups(c.Request().Context())
 	if err != nil {
@@ -53,14 +64,72 @@ func (ctrl *Controller) Groups(c echo.Context) error {
 	return c.JSON(http.StatusOK, groups)
 }
 
+// CreateGroup   Create Ocserv Group
+//
+// @Summary      Create Ocserv Group
+// @Description  Create Ocserv Group by given name
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Failure      401 {object} middlewares.Unauthorized
+// @Param        request body  CreateGroupRequest true "oc group config"
+// @Success      200  {object}  nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/groups [post]
 func (ctrl *Controller) CreateGroup(c echo.Context) error {
-	return nil
+	var data CreateGroupRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), data.Name, &data.Config)
+	if err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
+// UpdateGroup   Update Ocserv Group
+//
+// @Summary      Update Ocserv Group
+// @Description  Update Ocserv Group
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Param 		 name path string true "Group Name"
+// @Failure      401 {object} middlewares.Unauthorized
+// @Param        request body  ocserv.OcGroupConfig true "oc group config"
+// @Success      200  {object}  nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/groups/:name [post]
 func (ctrl *Controller) UpdateGroup(c echo.Context) error {
-	return nil
+	var data ocserv.OcGroupConfig
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), c.Param("name"), &data)
+	if err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
+// DeleteGroup  Delete Ocserv Group
+//
+// @Summary      Delete Ocserv Group
+// @Description  Delete Ocserv Group by given name
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Param 		 name path string true "Group Name"
+// @Failure      401 {object} middlewares.Unauthorized
+// @Param        request body  ocserv.OcGroupConfig true "oc group config"
+// @Success      200  {object}  nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/groups/:name [delete]
 func (ctrl *Controller) DeleteGroup(c echo.Context) error {
-	return nil
+	err := ctrl.ocservGroupRepo.DeleteGroup(c.Request().Context(), c.Param("name"))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusNoContent, nil)
 }

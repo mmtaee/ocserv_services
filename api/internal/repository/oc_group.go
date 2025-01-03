@@ -13,11 +13,10 @@ type OcservGroupRepository struct {
 }
 
 type OcservGroupRepositoryInterface interface {
-	UpdateDefaultGroup(context.Context, ocserv.OcGroupConfig) error
+	UpdateDefaultGroup(context.Context, *ocserv.OcGroupConfig) error
 	Groups(context.Context) (*[]ocserv.OcGroupConfig, error)
-	CreateGroup(context.Context) error
-	UpdateGroup(context.Context) error
-	DeleteGroup(context.Context) error
+	CreateOrUpdateGroup(context.Context, string, *ocserv.OcGroupConfig) error
+	DeleteGroup(context.Context, string) error
 }
 
 func NewOcservGroupRepository() *OcservGroupRepository {
@@ -27,7 +26,7 @@ func NewOcservGroupRepository() *OcservGroupRepository {
 	}
 }
 
-func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config ocserv.OcGroupConfig) error {
+func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config *ocserv.OcGroupConfig) error {
 	configMap := o.oc.ToMap(config)
 	err := o.oc.Group.UpdateDefaultGroup(ctx, configMap)
 	if err != nil {
@@ -37,24 +36,22 @@ func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config o
 }
 
 func (o *OcservGroupRepository) Groups(ctx context.Context) (*[]ocserv.OcGroupConfig, error) {
-	return nil, nil
+	groups, err := o.oc.Group.Groups(ctx)
+	if err != nil {
+		return nil, err
+	}
+	return groups, nil
 }
 
-func (o *OcservGroupRepository) CreateGroup(ctx context.Context) error {
-	//name := ctx.Value("name").(string)
-	//config := ctx.Value("config").(models.GroupConfig)
-	//configMap := o.oc.ToMap(config)
+func (o *OcservGroupRepository) CreateOrUpdateGroup(ctx context.Context, name string, config *ocserv.OcGroupConfig) error {
+	configMap := o.oc.ToMap(config)
+	err := o.oc.Group.CreateOrUpdateGroup(ctx, name, configMap)
+	if err != nil {
+		return err
+	}
 	return o.oc.Occtl.Reload()
 }
 
-func (o *OcservGroupRepository) UpdateGroup(ctx context.Context) error {
-	//name := ctx.Value("name").(string)
-	//config := ctx.Value("config").(models.GroupConfig)
-	//configMap := o.oc.ToMap(config)
-	return nil
-}
-
-func (o *OcservGroupRepository) DeleteGroup(ctx context.Context) error {
-	//name := ctx.Value("name").(string)
-	return nil
+func (o *OcservGroupRepository) DeleteGroup(ctx context.Context, name string) error {
+	return o.oc.Group.DeleteGroup(ctx, name)
 }

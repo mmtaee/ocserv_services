@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"sort"
 	"sync"
 )
@@ -63,7 +64,9 @@ func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfig, error) {
 		if err != nil {
 			return err
 		}
+
 		sort.Strings(groupFiles)
+
 		for _, path := range groupFiles {
 			wg.Add(1)
 			go func(path string) {
@@ -149,12 +152,19 @@ func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config m
 			}
 		}()
 
-		for k, v := range config {
-			_, err = file.WriteString(fmt.Sprintf("%s=%s\n", k, v))
-			if err != nil {
-				break
+		val := reflect.ValueOf(config).Elem()
+		typ := val.Type()
+		for i := 0; i < val.NumField(); i++ {
+			fieldName := typ.Field(i).Name
+			fieldValue := val.Field(i)
+			if !fieldValue.IsZero() {
+				_, err = file.WriteString(fmt.Sprintf("%s=%v\n", fieldName, fieldValue.Interface()))
+				if err != nil {
+					break
+				}
 			}
 		}
+
 		if err != nil {
 			return err
 		}
