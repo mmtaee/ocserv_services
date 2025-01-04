@@ -28,10 +28,11 @@ func New() *Controller {
 // @Tags         Ocserv Group
 // @Accept       json
 // @Produce      json
-// @Failure      401 {object} middlewares.Unauthorized
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param        request body  ocserv.OcGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/defaults [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data ocserv.OcGroupConfig
@@ -52,9 +53,10 @@ func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 // @Tags         Ocserv Group
 // @Accept       json
 // @Produce      json
-// @Failure      401 {object} middlewares.Unauthorized
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Success      200  {object}  []ocserv.OcGroupConfig
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups [get]
 func (ctrl *Controller) Groups(c echo.Context) error {
 	groups, err := ctrl.ocservGroupRepo.Groups(c.Request().Context())
@@ -71,10 +73,11 @@ func (ctrl *Controller) Groups(c echo.Context) error {
 // @Tags         Ocserv Group
 // @Accept       json
 // @Produce      json
-// @Failure      401 {object} middlewares.Unauthorized
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param        request body  CreateGroupRequest true "oc group config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups [post]
 func (ctrl *Controller) CreateGroup(c echo.Context) error {
 	var data CreateGroupRequest
@@ -95,11 +98,12 @@ func (ctrl *Controller) CreateGroup(c echo.Context) error {
 // @Tags         Ocserv Group
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 name path string true "Group Name"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Param        request body  ocserv.OcGroupConfig true "oc group config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/:name [post]
 func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 	var data ocserv.OcGroupConfig
@@ -120,11 +124,12 @@ func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 // @Tags         Ocserv Group
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 name path string true "Group Name"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Param        request body  ocserv.OcGroupConfig true "oc group config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/:name [delete]
 func (ctrl *Controller) DeleteGroup(c echo.Context) error {
 	err := ctrl.ocservGroupRepo.DeleteGroup(c.Request().Context(), c.Param("name"))

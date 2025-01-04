@@ -29,10 +29,10 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Param        request    body  LoginRequest   true "query params"
 // @Success      200  {object}  LoginResponse
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/user/login [post]
 func (ctrl *Controller) Login(c echo.Context) error {
 	var data LoginRequest
@@ -56,9 +56,9 @@ func (ctrl *Controller) Login(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Success      204  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/user/logout [delete]
 func (ctrl *Controller) Logout(c echo.Context) error {
 	ctx := context.WithValue(c.Request().Context(), "token", c.Get("token"))
@@ -78,10 +78,10 @@ func (ctrl *Controller) Logout(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Param        request    body  LoginRequest   true "query params"
 // @Success      200  {object}  ChangePasswordRequest
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/user/change_password [post]
 func (ctrl *Controller) ChangePassword(c echo.Context) error {
 	var data ChangePasswordRequest

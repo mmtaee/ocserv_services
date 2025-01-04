@@ -6,6 +6,7 @@ import (
 	ocUser "api/internal/services/oc_user"
 	"api/internal/services/panel"
 	staffManagement "api/internal/services/staff_management"
+	"api/internal/services/statistics"
 	"api/internal/services/user"
 	"github.com/labstack/echo/v4"
 )
@@ -18,4 +19,5 @@ func Register(e *echo.Echo) {
 	staffManagement.Routes(group)
 	ocGroup.Routes(group)
 	ocUser.Routes(group)
+	statistics.Routes(group)
 }

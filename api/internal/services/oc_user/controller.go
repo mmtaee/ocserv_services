@@ -29,11 +29,13 @@ func New() *Controller {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 page query int false "Page number, starting from 1" minimum(1)
 // @Param 		 pager query string false "Field to order by"
 // @Param 		 sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
 // @Success      200  {object} OcservUsersResponse
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users [get]
 func (ctrl *Controller) Users(c echo.Context) error {
 	data := utils.NewPaginationRequest()
@@ -57,9 +59,11 @@ func (ctrl *Controller) Users(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Success      200  {object} models.OcUser
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid [get]
 func (ctrl *Controller) User(c echo.Context) error {
 	user, err := ctrl.ocservUserRepo.User(c.Request().Context(), c.Param("uid"))
@@ -76,9 +80,11 @@ func (ctrl *Controller) User(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param        request body  OcservUserCreateOrUpdateRequest true "Create Ocserv User Body"
 // @Success      201  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users [post]
 func (ctrl *Controller) Create(c echo.Context) error {
 	var data OcservUserCreateOrUpdateRequest
@@ -110,10 +116,12 @@ func (ctrl *Controller) Create(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param        request body  OcservUserCreateOrUpdateRequest true "Update Ocserv User Body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid [put]
 func (ctrl *Controller) Update(c echo.Context) error {
 	var data OcservUserCreateOrUpdateRequest
@@ -146,10 +154,12 @@ func (ctrl *Controller) Update(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param        request body  OcservUserLockRequest true "Update Ocserv User Body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/lock [post]
 func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 	var data OcservUserLockRequest
@@ -170,9 +180,11 @@ func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/disconnect [post]
 func (ctrl *Controller) Disconnect(c echo.Context) error {
 	err := ctrl.ocservUserRepo.Disconnect(c.Request().Context(), c.Param("uid"))
@@ -189,9 +201,11 @@ func (ctrl *Controller) Disconnect(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Success      204  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid [delete]
 func (ctrl *Controller) Delete(c echo.Context) error {
 	err := ctrl.ocservUserRepo.Delete(c.Request().Context(), c.Param("uid"))
@@ -208,11 +222,13 @@ func (ctrl *Controller) Delete(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param 		 start query string false "Start date in format YYYY-MM-DD, null=time.Now()"
 // @Param 		 end query string false "End date in format YYYY-MM-DD, null=time.Now().AddDate(0, 1, 0) 1 month"
 // @Success      200  {object} []repository.Statistics
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/statistics [get]
 func (ctrl *Controller) Statistics(c echo.Context) error {
 	var (
@@ -253,10 +269,12 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param 		 start query string true "Start date in format YYYY-MM-DD"
 // @Success      200  {object} []models.OcUserActivity
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/activities [get]
 func (ctrl *Controller) Activities(c echo.Context) error {
 	date, err := time.Parse("2006-01-02", c.QueryParam("date"))

@@ -28,10 +28,10 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Failure      401 {object} middlewares.Unauthorized
 // @Param        request    body  UpdateSiteConfigRequest   true "site config data"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/panel/config [put]
 func (ctrl *Controller) UpdatePanelConfig(c echo.Context) error {
 	// TODO: upgrade to support patch

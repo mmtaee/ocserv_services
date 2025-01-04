@@ -29,16 +29,14 @@ func New() *Controller {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
-// @Param page query int false "Page number, starting from 1" minimum(1)
-// @Param pager query string false "Field to order by"
-// @Param sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Param 		 page query int false "Page number, starting from 1" minimum(1)
+// @Param 		 pager query string false "Field to order by"
+// @Param 		 sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
 // @Success      200  {object} StaffsResponse
 // @Failure      400 {object} utils.ErrorResponse
-// @Router       /api/v1/staffs [get]e_size query int false "Number of items per page" minimum(1) maximum(100)
-// @Param order query string false "Field to order by"
-// @Param sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
-// @Success      200  {object} StaffsResponse
-// @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs [get]
 func (ctrl *Controller) Staffs(c echo.Context) error {
 	data := utils.NewPaginationRequest()
@@ -62,9 +60,12 @@ func (ctrl *Controller) Staffs(c echo.Context) error {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "User UID"
 // @Success      200  {object} models.UserPermission
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs/:uid/permission [get]
 func (ctrl *Controller) StaffPermission(c echo.Context) error {
 	permission, err := ctrl.staffRepo.Permission(c.Request().Context(), c.Param("uid"))
@@ -81,9 +82,12 @@ func (ctrl *Controller) StaffPermission(c echo.Context) error {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param        request body  CreateStaffRequest true "Staff user and permission body"
 // @Success      201  {object} models.User
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs [post]
 func (ctrl *Controller) CreateStaff(c echo.Context) error {
 	var data CreateStaffRequest
@@ -115,10 +119,13 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "User UID"
 // @Param        request body  UpdateStaffPermissionRequest true "Staff permission body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs/:uid/permission [patch]
 func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
 	var data UpdateStaffPermissionRequest
@@ -146,10 +153,13 @@ func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "User UID"
 // @Param        request body  UpdateStaffPasswordRequest true "Staff password update body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs/:uid [patch]
 func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 	var data UpdateStaffPasswordRequest
@@ -170,9 +180,12 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 // @Tags         Staff Management
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "User UID"
 // @Success      204  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Failure		 403 {object} nil
 // @Router       /api/v1/staffs/:uid [delete]
 func (ctrl *Controller) DeleteStaff(c echo.Context) error {
 	err := ctrl.staffRepo.DeleteStaff(c.Request().Context(), c.Param("uid"))
