@@ -32,3 +32,19 @@ go run cmd/main.go -debug -drop
 
 go run cmd/main.go -debug -migrate
 ```
+
+# develop & Deploy
+```bash
+POSTGRES_HOST=127.0.0.1 go run cmd/main.go -debug -drop
+
+go build  -o build/ocserv_api cmd/main.go  
+
+sudo docker build -t ocserv:api .
+
+sudo docker run -it --rm -v "./build:/app" \
+    -v "./volumes/ocserv:/etc/ocserv" \
+    -v "./volumes/certs:/etc/ocserv/certs" \
+    --env-file=.env --link ocserv:ocserv \
+     -p "8080:8080" -p "20443:443" \
+     --privileged ocserv:api
+```

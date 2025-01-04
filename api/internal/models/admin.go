@@ -29,8 +29,8 @@ type UserPermission struct {
 
 type UserToken struct {
 	ID        uint       `json:"-" gorm:"primaryKey;autoIncrement"`
+	UserID    uint       `json:"-" gorm:"index"`
 	UID       string     `json:"uid" gorm:"type:varchar(26);not null;unique"`
-	UserID    uint64     `json:"-" gorm:"index"`
 	Token     string     `json:"token" gorm:"type:varchar(128)"`
 	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	ExpireAt  *time.Time `json:"expire_at"`

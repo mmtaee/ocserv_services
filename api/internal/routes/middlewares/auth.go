@@ -30,7 +30,7 @@ func IsAuthenticatedMiddleware() echo.MiddlewareFunc {
 			db := database.Connection()
 			err := db.WithContext(c.Request().Context()).
 				Table("user_tokens").
-				Preload("user").Preload("user.permissions").
+				Preload("User").Preload("User.Permission").
 				Where("token = ? AND expire_at > ?", tokenString, time.Now()).
 				First(&token).Error
 			if errors.Is(err, gorm.ErrRecordNotFound) {

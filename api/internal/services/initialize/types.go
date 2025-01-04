@@ -5,6 +5,10 @@ type CreateAdminUserRequest struct {
 	Password string `json:"password" validate:"required,min=2,max=16" example:"doe123456"`
 }
 
+type CreateAdminUserResponse struct {
+	Token string `json:"token"`
+}
+
 type CreateSiteConfigRequest struct {
 	GoogleCaptchaSecretKey string `json:"google_captcha_secret_key" validate:"omitempty"`
 	GoogleCaptchaSiteKey   string `json:"google_captcha_site_key" validate:"omitempty"`

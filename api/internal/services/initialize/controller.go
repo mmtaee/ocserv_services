@@ -28,24 +28,6 @@ func New() *Controller {
 	}
 }
 
-// CheckSecretKey check and validate secret key
-//
-// @Summary      Check and validate secret key
-// @Description  Check and validate secret key for continue initialing app
-// @Tags         Initial
-// @Accept       json
-// @Produce      json
-// @Param        secret query string true "check secret key from file 'init_secret'"
-// @Success      200  {object} nil
-// @Failure      400 {object} utils.ErrorResponse
-// @Router       /api/v1/init/check [get]
-func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
-	if err := checkSecret(c.QueryParam("secret")); err != nil {
-		return utils.BadRequest(c, err)
-	}
-	return c.JSON(http.StatusOK, nil)
-}
-
 // CreateSuperUser Create Superuser account
 //
 // @Summary      Create Superuser
@@ -55,22 +37,32 @@ func (ctrl *Controller) CheckSecretKey(c echo.Context) error {
 // @Produce      json
 // @Param        secret query string true "check secret key from file 'init_secret'"
 // @Param        request body  CreateAdminUserRequest true "admin user body data"
-// @Success      200  {object} nil
+// @Success      200  {object} CreateAdminUserResponse
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /api/v1/init/admin [post]
 func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err := checkSecret(c.QueryParam("secret")); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	var user CreateAdminUserRequest
-	if err := ctrl.validator.Validate(c, &user); err != nil {
+	var data CreateAdminUserRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-	err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), user.Username, user.Password)
+	user, err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), data.Username, data.Password)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusCreated, nil)
+	token, err := ctrl.userRepo.CreateToken(c.Request().Context(), user.ID)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	go func() {
+		err = os.Remove(config.GetApp().InitSecretFile)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+	return c.JSON(http.StatusCreated, CreateAdminUserResponse{Token: token})
 }
 
 // PanelConfig Create Panel Config
@@ -80,15 +72,14 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Tags         Initial
 // @Accept       json
 // @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
 // @Param        init_secret query string true "check secret key from file 'init_secret'"
 // @Param        request    body  CreateSiteConfigRequest   true "site config data"
 // @Success      201  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/init/config [post]
 func (ctrl *Controller) PanelConfig(c echo.Context) error {
-	if err := checkSecret(c.QueryParam("secret")); err != nil {
-		return utils.BadRequest(c, err)
-	}
 	var data CreateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
@@ -101,11 +92,5 @@ func (ctrl *Controller) PanelConfig(c echo.Context) error {
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	go func() {
-		err = os.Remove(config.GetApp().InitSecretFile)
-		if err != nil {
-			log.Println(err)
-		}
-	}()
 	return c.JSON(http.StatusCreated, nil)
 }

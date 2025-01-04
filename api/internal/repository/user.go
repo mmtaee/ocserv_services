@@ -19,9 +19,10 @@ type UserRepository struct {
 }
 
 type UserRepositoryInterface interface {
-	Login(context.Context, string, string, bool) (string, error)
+	Login(c context.Context, username, password string, rememberMe bool) (string, error)
 	Logout(context.Context) error
-	ChangePassword(context.Context, string, string) error
+	ChangePassword(c context.Context, oldPassword, newPassword string) error
+	CreateToken(c context.Context, id uint) (string, error)
 }
 
 func NewUserRepository() *UserRepository {
@@ -51,7 +52,7 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 		expireAt = time.Now().Add(time.Hour * 24)
 	}
 	token := models.UserToken{
-		ID:       user.ID,
+		UserID:   user.ID,
 		Token:    TokenGenerator.Create(user.ID, expireAt),
 		ExpireAt: &expireAt,
 	}
@@ -95,4 +96,18 @@ func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd 
 		}
 		return nil
 	})
+}
+
+func (r *UserRepository) CreateToken(c context.Context, id uint) (string, error) {
+	expireAt := time.Now().Add(time.Hour * 24 * 30)
+	token := models.UserToken{
+		UserID:   id,
+		Token:    TokenGenerator.Create(id, expireAt),
+		ExpireAt: &expireAt,
+	}
+	err := r.db.WithContext(c).Create(&token).Error
+	if err != nil {
+		return "", err
+	}
+	return token.Token, nil
 }

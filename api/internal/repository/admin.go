@@ -13,7 +13,7 @@ type AdminRepository struct {
 }
 
 type AdminRepositoryInterface interface {
-	CreateSuperUser(context.Context, string, string) error
+	CreateSuperUser(c context.Context, username, passwd string) (*models.User, error)
 }
 
 func NewAdminRepository() *AdminRepository {
@@ -22,11 +22,14 @@ func NewAdminRepository() *AdminRepository {
 	}
 }
 
-func (a *AdminRepository) CreateSuperUser(c context.Context, username, passwd string) error {
-	passwordHash := password.Create(passwd)
-	return a.db.WithContext(c).Create(&models.User{
+func (a *AdminRepository) CreateSuperUser(c context.Context, username, passwd string) (*models.User, error) {
+	user := models.User{
 		Username: username,
-		Password: passwordHash,
-	}).Error
-
+		Password: password.Create(passwd),
+	}
+	err := a.db.WithContext(c).Create(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	return &user, nil
 }

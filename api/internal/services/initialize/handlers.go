@@ -5,6 +5,7 @@ import (
 	"errors"
 	"log"
 	"os"
+	"strings"
 )
 
 func checkSecret(secret string) error {
@@ -23,7 +24,7 @@ func checkSecret(secret string) error {
 	if err != nil {
 		return nil
 	}
-	if secret != string(content) {
+	if strings.TrimSpace(secret) != strings.TrimSpace(string(content)) {
 		return errors.New("invalid secret key or initial application preparation steps have already been completed")
 	}
 	return nil
