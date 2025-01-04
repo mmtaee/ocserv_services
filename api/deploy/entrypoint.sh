@@ -114,9 +114,8 @@ mkdir -p /dev/net               #TUN device
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 
-SECRET=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32)
-echo "Generated Secret: ${SECRET}"
-echo "${SECRET}" > /tmp/init_secret
-export SECRET_KEY_FILE_NAME=/tmp/init_secret
+if [ -f "${SECRET_KEY_FILE_NAME}" ]; then
+    echo -e "\e[0;32mSecret Key: $(cat "${SECRET_KEY_FILE_NAME}")\e[0m"
+fi
 
 exec "$@"
