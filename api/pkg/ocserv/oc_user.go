@@ -11,8 +11,8 @@ type OcUser struct{}
 
 type OcUserInterface interface {
 	CreateOrUpdateUser(c context.Context, username, password, group string) error
-	DeleteUser(string) error
-	LockUnLockUser(string, bool) error
+	LockUnLockUser(c context.Context, username string, lock bool) error
+	DeleteUser(username string) error
 }
 
 func NewOcUser() *OcUser {
@@ -55,17 +55,19 @@ func (o *OcUser) DeleteUser(username string) error {
 	return nil
 }
 
-func (o *OcUser) LockUnLockUser(username string, lock bool) error {
+func (o *OcUser) LockUnLockUser(c context.Context, username string, lock bool) error {
 	lockAction := "-u"
 	if lock {
 		lockAction = "-l"
 	}
-	command := fmt.Sprintf("%s %s -c %s %s", ocpasswdCMD, lockAction, passwdFile, username)
-	cmd := exec.Command(command)
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	log.Println("Command Output:\n", string(output))
-	return nil
+	return WithContext(c, func() error {
+		command := fmt.Sprintf("%s %s -c %s %s", ocpasswdCMD, lockAction, passwdFile, username)
+		cmd := exec.Command(command)
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		log.Println("Command Output:\n", string(output))
+		return nil
+	})
 }

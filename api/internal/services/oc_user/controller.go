@@ -137,9 +137,27 @@ func (ctrl *Controller) Update(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
-func (ctrl *Controller) Lock(c echo.Context) error {
-	// TODO: get lock true or false from body
-	return nil
+// LockOrUnlock  Ocserv User Lock or Unlock
+//
+// @Summary      Lock or Unlock Ocserv User
+// @Description  Lock or Unlock Ocserv User
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param        request body  OcservUserLockRequest true "Update Ocserv User Body"
+// @Success      200  {object} nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid/lock [post]
+func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
+	var data OcservUserLockRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	err := ctrl.ocservUserRepo.LockOrUnLock(c.Request().Context(), c.Param("uid"), data.Lock)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (ctrl *Controller) Disconnect(c echo.Context) error {

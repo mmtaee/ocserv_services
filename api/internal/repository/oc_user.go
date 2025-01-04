@@ -22,6 +22,7 @@ type OcservUserRepositoryInterface interface {
 	User(c context.Context, username string) (*models.OcUser, error)
 	Create(c context.Context, user *models.OcUser) error
 	Update(c context.Context, uid string, user *models.OcUser) error
+	LockOrUnLock(c context.Context, uid string, lock bool) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -165,6 +166,41 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		return err
 	}
 
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock bool) error {
+	user := models.OcUser{}
+	tx := o.db.WithContext(c).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table("oc_users").Where("uid = ?", uid).First(&user).Error; err != nil {
+		return err
+	}
+	if lock {
+		user.IsLocked = true
+	} else {
+		user.IsLocked = false
+	}
+	if err := tx.Table("oc_users").Save(&user).Error; err != nil {
+		return err
+	}
+	ch := make(chan error, 1)
+	go func() {
+		ch <- o.oc.User.LockUnLockUser(c, user.Username, user.IsLocked)
+	}()
+	if err := <-ch; err != nil {
+		return err
+	}
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}

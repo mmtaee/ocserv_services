@@ -19,3 +19,7 @@ type OcservUserCreateOrUpdateRequest struct {
 	TrafficSize *int32     `json:"traffic_size"`
 	ExpireAt    *time.Time `json:"expire_at" validate:"required;omitempty"`
 }
+
+type OcservUserLockRequest struct {
+	Lock bool `json:"lock" validate:"required" default:"false"`
+}
