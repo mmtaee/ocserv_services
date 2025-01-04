@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Controller struct {
@@ -52,7 +53,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	token, err := ctrl.userRepo.CreateToken(c.Request().Context(), user.ID)
+	token, err := ctrl.userRepo.CreateToken(c.Request().Context(), user.ID, time.Now().Add(time.Hour*24*30))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}

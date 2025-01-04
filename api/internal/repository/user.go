@@ -51,16 +51,11 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 	} else {
 		expireAt = time.Now().Add(time.Hour * 24)
 	}
-	token := models.UserToken{
-		UserID:   user.ID,
-		Token:    TokenGenerator.Create(user.ID, expireAt),
-		ExpireAt: &expireAt,
-	}
-	err = r.db.WithContext(c).Create(&token).Error
+	token, err := r.CreateToken(c, user.ID, expireAt)
 	if err != nil {
 		return "", err
 	}
-	return token.Token, nil
+	return token, nil
 }
 
 func (r *UserRepository) Logout(c context.Context) error {
@@ -98,8 +93,7 @@ func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd 
 	})
 }
 
-func (r *UserRepository) CreateToken(c context.Context, id uint) (string, error) {
-	expireAt := time.Now().Add(time.Hour * 24 * 30)
+func (r *UserRepository) CreateToken(c context.Context, id uint, expireAt time.Time) (string, error) {
 	token := models.UserToken{
 		UserID:   id,
 		Token:    TokenGenerator.Create(id, expireAt),
