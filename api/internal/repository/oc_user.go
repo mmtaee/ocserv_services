@@ -20,6 +20,7 @@ type OcservUserRepository struct {
 type OcservUserRepositoryInterface interface {
 	Users(context.Context, utils.RequestPagination) (*[]models.OcUser, *utils.ResponsePagination, error)
 	User(context.Context, string) (*models.OcUser, error)
+	Create(context.Context, *models.OcUser) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -98,4 +99,32 @@ func (o *OcservUserRepository) User(c context.Context, uid string) (*models.OcUs
 	}
 	user.IsOnline = true
 	return &user, nil
+}
+
+func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) error {
+	tx := o.db.WithContext(c).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table("oc_users").Create(user).Error; err != nil {
+		return err
+	}
+
+	ch := make(chan error, 1)
+	go func() {
+		ch <- o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group)
+	}()
+	if err := <-ch; err != nil {
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }

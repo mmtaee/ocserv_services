@@ -1,6 +1,7 @@
 package ocUser
 
 import (
+	"api/internal/models"
 	"api/internal/repository"
 	"api/pkg/utils"
 	"api/pkg/validator"
@@ -30,7 +31,7 @@ func New() *Controller {
 // @Param 		 page query int false "Page number, starting from 1" minimum(1)
 // @Param 		 pager query string false "Field to order by"
 // @Param 		 sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
-// @Success      200  {object} OcUsersResponse
+// @Success      200  {object} OcservUsersResponse
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /api/v1/ocserv/users [get]
 func (ctrl *Controller) Users(c echo.Context) error {
@@ -42,7 +43,7 @@ func (ctrl *Controller) Users(c echo.Context) error {
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusOK, OcUsersResponse{
+	return c.JSON(http.StatusOK, OcservUsersResponse{
 		OcUsers: users,
 		Meta:    meta,
 	})
@@ -67,8 +68,36 @@ func (ctrl *Controller) User(c echo.Context) error {
 	return c.JSON(http.StatusOK, user)
 }
 
+// Create  Ocserv User Create
+//
+// @Summary      Create Ocserv User
+// @Description  Create Ocserv User
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param        request body  OcservUserCreateRequest true "Create Ocserv User Body"
+// @Success      201  {object} nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users [post]
 func (ctrl *Controller) Create(c echo.Context) error {
-	return nil
+	var data OcservUserCreateRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	user := models.OcUser{
+		Username:    data.Username,
+		Password:    data.Password,
+		TrafficType: data.TrafficType,
+		TrafficSize: data.TrafficSize,
+	}
+	if data.ExpireAt != nil {
+		user.ExpireAt = *data.ExpireAt
+	}
+	err := ctrl.ocservUserRepo.Create(c.Request().Context(), &user)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusCreated, nil)
 }
 
 func (ctrl *Controller) Update(c echo.Context) error {

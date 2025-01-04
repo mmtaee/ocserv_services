@@ -22,7 +22,7 @@ type OcUser struct {
 	IsLocked    bool      `json:"isLocked" gorm:"default(false)"`
 	CreatedAt   time.Time `json:"createdAt" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time `json:"updatedAt" gorm:"autoUpdateTime"`
-	ExpiresAt   time.Time `json:"expiresAt"`
+	ExpireAt    time.Time `json:"expire_at"`
 	TrafficType int32     `json:"trafficType" gorm:"not null;default(0)"`
 	TrafficSize int32     `json:"trafficSize" gorm:"not null;default(10)"`
 	Rx          float64   `json:"rx" gorm:"not null;default(0.00)"`
