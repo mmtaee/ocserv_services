@@ -17,6 +17,13 @@ type Handler struct {
 	Occtl OcctlInterface
 }
 
+var (
+	ocpasswdCMD  = "sudo /usr/bin/ocpasswd"
+	passwdFile   = "/etc/ocserv/ocpasswd"
+	groupDir     = "/etc/ocserv/groups"
+	defaultGroup = "/etc/ocserv/defaults/group.conf"
+)
+
 func NewHandler() *Handler {
 	return &Handler{
 		Group: NewOcGroup(),
@@ -24,13 +31,6 @@ func NewHandler() *Handler {
 		Occtl: NewOcctl(),
 	}
 }
-
-var (
-	ocpasswdCMD  = "sudo /usr/bin/ocpasswd"
-	passwdFile   = "/etc/ocserv/ocpasswd"
-	groupDir     = "/etc/ocserv/groups"
-	defaultGroup = "/etc/ocserv/defaults/group.conf"
-)
 
 func WithContext(ctx context.Context, operation func() error) error {
 	done := make(chan error, 1)

@@ -2,27 +2,24 @@ package ocUser
 
 import (
 	"api/internal/repository"
-	"api/pkg/database"
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 type Controller struct {
-	db             *gorm.DB
 	validator      validator.CustomValidatorInterface
 	ocservUserRepo repository.OcservUserRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		db:             database.Connection(),
 		validator:      validator.NewCustomValidator(),
 		ocservUserRepo: repository.NewOcservUserRepository(),
 	}
 }
 
 func (ctrl *Controller) Users(c echo.Context) error {
+
 	return nil
 }
 

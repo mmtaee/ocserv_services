@@ -1,6 +1,7 @@
 package ocserv
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"os/exec"
@@ -11,7 +12,7 @@ type Occtl struct {
 
 type OcctlInterface interface {
 	Reload() error
-	OnlineUsers() []OcctlUser
+	OnlineUsers(ctx context.Context) []OcctlUser
 	Disconnect(string) error
 	ShowIPBans(bool) []IPBan
 	UnBanIP(string) error
@@ -35,16 +36,19 @@ func (o *Occtl) Reload() error {
 	return nil
 }
 
-func (o *Occtl) OnlineUsers() []OcctlUser {
-	cmd := exec.Command(occtlCMD, "-j", "show", "users", "--output=json-pretty")
-	output, err := cmd.Output()
-	if err != nil {
-		return nil
-	}
+func (o *Occtl) OnlineUsers(ctx context.Context) []OcctlUser {
 	var users []OcctlUser
-	err = json.Unmarshal(output, &users)
+	err := WithContext(ctx, func() error {
+		cmd := exec.Command(occtlCMD, "-j", "show", "users", "--output=json-pretty")
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+
+		return json.Unmarshal(output, &users)
+	})
 	if err != nil {
-		return nil
+		return err
 	}
 	return users
 }

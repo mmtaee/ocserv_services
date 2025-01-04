@@ -28,6 +28,7 @@ type OcUser struct {
 	Rx          float64   `json:"rx" gorm:"not null;default(0.00)"`
 	Tx          float64   `json:"tx" gorm:"not null;default(0.00)"`
 	Description string    `json:"description" gorm:"type:text"`
+	IsOnline    bool      `json:"is_online" gorm:"-:migration;->"`
 }
 
 type OcUserActivity struct {
