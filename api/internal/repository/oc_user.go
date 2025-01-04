@@ -23,6 +23,7 @@ type OcservUserRepositoryInterface interface {
 	Create(c context.Context, user *models.OcUser) error
 	Update(c context.Context, uid string, user *models.OcUser) error
 	LockOrUnLock(c context.Context, uid string, lock bool) error
+	Disconnect(c context.Context, uid string) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -205,4 +206,13 @@ func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock 
 		return err
 	}
 	return nil
+}
+
+func (o *OcservUserRepository) Disconnect(c context.Context, uid string) error {
+	user := models.OcUser{}
+	err := o.db.WithContext(c).Table("oc_users").Where("uid = ?", uid).First(&user).Error
+	if err != nil {
+		return err
+	}
+	return o.oc.Occtl.Disconnect(c, user.Username)
 }

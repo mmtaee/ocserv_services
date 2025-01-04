@@ -109,6 +109,7 @@ func (ctrl *Controller) Create(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
 // @Param        request body  OcservUserCreateOrUpdateRequest true "Update Ocserv User Body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
@@ -144,6 +145,7 @@ func (ctrl *Controller) Update(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
 // @Param        request body  OcservUserLockRequest true "Update Ocserv User Body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
@@ -160,8 +162,23 @@ func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+// Disconnect  Ocserv User Disconnect
+//
+// @Summary      Disconnect Ocserv User
+// @Description  Disconnect Ocserv User
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
+// @Success      200  {object} nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid/disconnect [post]
 func (ctrl *Controller) Disconnect(c echo.Context) error {
-	return nil
+	err := ctrl.ocservUserRepo.Disconnect(c.Request().Context(), c.Param("uid"))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, nil)
 }
 
 func (ctrl *Controller) Delete(c echo.Context) error {

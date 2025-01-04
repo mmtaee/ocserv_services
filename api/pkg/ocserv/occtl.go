@@ -12,13 +12,13 @@ type Occtl struct {
 
 type OcctlInterface interface {
 	Reload() error
-	OnlineUsers(ctx context.Context) ([]OcctlUser, error)
-	Disconnect(string) error
+	OnlineUsers(c context.Context) ([]OcctlUser, error)
+	Disconnect(c context.Context, username string) error
 	ShowIPBans(bool) []IPBan
 	UnBanIP(string) error
 	ShowStatus() string
 	ShowIRoutes() []IRoute
-	ShowUser(context.Context, string) (OcctlUser, error)
+	ShowUser(c context.Context, username string) (OcctlUser, error)
 }
 
 var occtlCMD = "sudo /usr/bin/occtl"
@@ -53,14 +53,16 @@ func (o *Occtl) OnlineUsers(c context.Context) ([]OcctlUser, error) {
 	return users, nil
 }
 
-func (o *Occtl) Disconnect(username string) error {
-	cmd := exec.Command(occtlCMD, "disconnect", "user", username)
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	log.Println("Command Output:\n", string(output))
-	return nil
+func (o *Occtl) Disconnect(c context.Context, username string) error {
+	return WithContext(c, func() error {
+		cmd := exec.Command(occtlCMD, "disconnect", "user", username)
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		log.Println("Command Output:\n", string(output))
+		return nil
+	})
 }
 
 func (o *Occtl) ShowIPBans(points bool) []IPBan {
