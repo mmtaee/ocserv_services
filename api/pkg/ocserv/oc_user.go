@@ -12,7 +12,7 @@ type OcUser struct{}
 type OcUserInterface interface {
 	CreateOrUpdateUser(c context.Context, username, password, group string) error
 	LockUnLockUser(c context.Context, username string, lock bool) error
-	DeleteUser(username string) error
+	DeleteUser(ctx context.Context, username string) error
 }
 
 func NewOcUser() *OcUser {
@@ -44,17 +44,6 @@ func (o *OcUser) CreateOrUpdateUser(c context.Context, username, password, group
 	})
 }
 
-func (o *OcUser) DeleteUser(username string) error {
-	command := fmt.Sprintf("%s -c %s -d %s", ocpasswdCMD, passwdFile, username)
-	cmd := exec.Command(command)
-	output, err := cmd.Output()
-	if err != nil {
-		return err
-	}
-	log.Println("Command Output:\n", string(output))
-	return nil
-}
-
 func (o *OcUser) LockUnLockUser(c context.Context, username string, lock bool) error {
 	lockAction := "-u"
 	if lock {
@@ -62,6 +51,19 @@ func (o *OcUser) LockUnLockUser(c context.Context, username string, lock bool) e
 	}
 	return WithContext(c, func() error {
 		command := fmt.Sprintf("%s %s -c %s %s", ocpasswdCMD, lockAction, passwdFile, username)
+		cmd := exec.Command(command)
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		log.Println("Command Output:\n", string(output))
+		return nil
+	})
+}
+
+func (o *OcUser) DeleteUser(c context.Context, username string) error {
+	return WithContext(c, func() error {
+		command := fmt.Sprintf("%s -c %s -d %s", ocpasswdCMD, passwdFile, username)
 		cmd := exec.Command(command)
 		output, err := cmd.Output()
 		if err != nil {

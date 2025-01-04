@@ -24,6 +24,7 @@ type OcservUserRepositoryInterface interface {
 	Update(c context.Context, uid string, user *models.OcUser) error
 	LockOrUnLock(c context.Context, uid string, lock bool) error
 	Disconnect(c context.Context, uid string) error
+	Delete(c context.Context, uid string) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -118,11 +119,7 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 		return err
 	}
 
-	ch := make(chan error, 1)
-	go func() {
-		ch <- o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group)
-	}()
-	if err := <-ch; err != nil {
+	if err := o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group); err != nil {
 		return err
 	}
 
@@ -159,11 +156,7 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		return err
 	}
 
-	ch := make(chan error, 1)
-	go func() {
-		ch <- o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group)
-	}()
-	if err := <-ch; err != nil {
+	if err := o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group); err != nil {
 		return err
 	}
 
@@ -195,11 +188,8 @@ func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock 
 	if err := tx.Table("oc_users").Save(&user).Error; err != nil {
 		return err
 	}
-	ch := make(chan error, 1)
-	go func() {
-		ch <- o.oc.User.LockUnLockUser(c, user.Username, user.IsLocked)
-	}()
-	if err := <-ch; err != nil {
+
+	if err := o.oc.User.LockUnLockUser(c, user.Username, user.IsLocked); err != nil {
 		return err
 	}
 	if err := tx.Commit().Error; err != nil {
@@ -215,4 +205,28 @@ func (o *OcservUserRepository) Disconnect(c context.Context, uid string) error {
 		return err
 	}
 	return o.oc.Occtl.Disconnect(c, user.Username)
+}
+func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
+	var user models.OcUser
+	tx := o.db.WithContext(c).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table("oc_users").Where("uid = ?", uid).Delete(&user).Error; err != nil {
+		return err
+	}
+
+	if err := o.oc.User.DeleteUser(c, user.Username); err != nil {
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
 }

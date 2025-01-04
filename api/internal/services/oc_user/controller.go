@@ -181,8 +181,23 @@ func (ctrl *Controller) Disconnect(c echo.Context) error {
 	return c.JSON(http.StatusOK, nil)
 }
 
+// Delete  Ocserv User Delete
+//
+// @Summary      Delete Ocserv User
+// @Description  Delete Ocserv User
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
+// @Success      204  {object} nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid [delete]
 func (ctrl *Controller) Delete(c echo.Context) error {
-	return nil
+	err := ctrl.ocservUserRepo.Delete(c.Request().Context(), c.Param("uid"))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusNoContent, nil)
 }
 
 func (ctrl *Controller) Statistics(c echo.Context) error {
