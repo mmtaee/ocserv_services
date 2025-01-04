@@ -1,7 +1,6 @@
 package routes
 
 import (
-	"api/internal/services/initialize"
 	ocGroup "api/internal/services/oc_group"
 	ocUser "api/internal/services/oc_user"
 	"api/internal/services/panel"
@@ -13,7 +12,6 @@ import (
 
 func Register(e *echo.Echo) {
 	group := e.Group("/api/v1")
-	initialize.Routes(group)
 	panel.Routes(group)
 	user.Routes(group)
 	staffManagement.Routes(group)

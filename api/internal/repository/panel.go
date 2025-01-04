@@ -13,8 +13,9 @@ type PanelConfigRepository struct {
 }
 
 type PanelConfigRepositoryInterface interface {
-	CreateConfig(context.Context, models.PanelConfig) error
-	UpdateConfig(context.Context, string, string) error
+	CreateConfig(c context.Context, config models.PanelConfig) error
+	UpdateConfig(c context.Context, siteKey, secretKet string) error
+	GetConfig(c context.Context) (*models.PanelConfig, error)
 }
 
 func NewPanelConfigRepository() PanelConfigRepositoryInterface {
@@ -37,4 +38,13 @@ func (p *PanelConfigRepository) UpdateConfig(c context.Context, siteKey, secretK
 		config.GoogleCaptchaSecretKey = secretKet
 		return tx.WithContext(c).Save(&config).Error
 	})
+}
+
+func (p *PanelConfigRepository) GetConfig(c context.Context) (*models.PanelConfig, error) {
+	config := &models.PanelConfig{}
+	err := p.db.WithContext(c).Model(models.PanelConfig{}).First(&config).Error
+	if err != nil {
+		return nil, err
+	}
+	return config, nil
 }

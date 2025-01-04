@@ -2,16 +2,22 @@ package user
 
 import (
 	"api/internal/repository"
+	"api/pkg/config"
 	"api/pkg/utils"
 	"api/pkg/validator"
 	"context"
+	"errors"
 	"github.com/labstack/echo/v4"
+	"log"
 	"net/http"
+	"os"
+	"strings"
+	"time"
 )
 
 type Controller struct {
 	validator validator.CustomValidatorInterface
-	userRepo  repository.UserRepositoryInterface
+	userRepo  *repository.UserRepository
 }
 
 func New() *Controller {
@@ -19,6 +25,65 @@ func New() *Controller {
 		validator: validator.NewCustomValidator(),
 		userRepo:  repository.NewUserRepository(),
 	}
+}
+
+// CreateSuperUser Create Superuser account
+//
+// @Summary      Create Superuser
+// @Description  Create Superuser in initializing step
+// @Tags         Site User
+// @Accept       json
+// @Produce      json
+// @Param        secret query string true "check secret key from file 'init_secret'"
+// @Param        request body  CreateAdminUserRequest true "admin user body data"
+// @Success      200  {object} CreateAdminUserResponse
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/user/admin [post]
+func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
+	var data CreateAdminUserRequest
+	secret := c.QueryParam("secret")
+
+	if secret == "" {
+		return utils.BadRequest(c, errors.New("secret parameter is required"))
+	}
+	file := config.GetApp().InitSecretFile
+	_, err := os.Stat(file)
+	if err != nil {
+		if !errors.Is(err, os.ErrNotExist) {
+			log.Println(err)
+		}
+		return utils.BadRequest(c, err)
+	}
+	content, err := os.ReadFile(config.GetApp().InitSecretFile)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	if strings.TrimSpace(secret) != strings.TrimSpace(string(content)) {
+		return utils.BadRequest(
+			c,
+			errors.New("invalid secret key or initial application preparation steps have already been completed"),
+		)
+	}
+
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	user, err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), data.Username, data.Password)
+	go func() {
+		err = os.Remove(config.GetApp().InitSecretFile)
+		if err != nil {
+			log.Println(err)
+		}
+	}()
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+
+	token, err := ctrl.userRepo.CreateToken(c.Request().Context(), user.ID, time.Now().Add(time.Hour*24*30))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusCreated, CreateAdminUserResponse{Token: token})
 }
 
 // Login Admin or Staff login

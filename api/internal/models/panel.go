@@ -8,6 +8,7 @@ import (
 
 type PanelConfig struct {
 	ID                     uint   `json:"-" gorm:"primaryKey;autoIncrement"`
+	Init                   bool   `json:"init" gorm:"default:false"`
 	GoogleCaptchaSecretKey string `json:"google_captcha_secret" gorm:"type:text"`
 	GoogleCaptchaSiteKey   string `json:"google_captcha_site_key" gorm:"type:text"`
 }
