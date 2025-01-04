@@ -2,7 +2,9 @@ package ocserv
 
 import (
 	"bufio"
+	"context"
 	"encoding/json"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -29,6 +31,22 @@ var (
 	groupDir     = "/etc/ocserv/groups"
 	defaultGroup = "/etc/ocserv/defaults/group.conf"
 )
+
+func withContext(ctx context.Context, operation func() error) error {
+	done := make(chan error, 1)
+
+	go func() {
+		defer close(done)
+		done <- operation()
+	}()
+
+	select {
+	case <-ctx.Done():
+		return fmt.Errorf("operation canceled or timed out: %w", ctx.Err())
+	case err := <-done:
+		return err
+	}
+}
 
 func (h *Handler) ToMap(data interface{}) map[string]interface{} {
 	b, _ := json.Marshal(&data)
