@@ -33,19 +33,19 @@ type OcUser struct {
 
 type OcUserActivity struct {
 	ID        uint            `json:"-" gorm:"primaryKey;autoIncrement"`
-	UserID    uint64          `json:"-" gorm:"index"`
+	OcUserID  uint64          `json:"-" gorm:"index"`
 	UID       string          `json:"uid" gorm:"type:varchar(26);not null;unique"`
 	Log       json.RawMessage `json:"log" gorm:"type:json"`
 	CreatedAt time.Time       `json:"createdAt" gorm:"autoCreateTime"`
 }
 
 type OcUserTrafficStatistics struct {
-	ID     uint      `json:"-" gorm:"primaryKey;autoIncrement"`
-	UserID uint64    `json:"-" gorm:"index"`
-	UID    string    `json:"uid" gorm:"type:varchar(26);not null;unique"`
-	Date   time.Time `json:"date" gorm:"date"`
-	Rx     float64   `json:"rx" gorm:"numeric default 0.00"`
-	Tx     float64   `json:"tx" gorm:"numeric default 0.00"`
+	ID       uint      `json:"-" gorm:"primaryKey;autoIncrement"`
+	OcUserID uint64    `json:"-" gorm:"index"`
+	UID      string    `json:"uid" gorm:"type:varchar(26);not null;unique"`
+	Date     time.Time `json:"date" gorm:"date"`
+	Rx       float64   `json:"rx" gorm:"numeric default 0.00"`
+	Tx       float64   `json:"tx" gorm:"numeric default 0.00"`
 }
 
 func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {

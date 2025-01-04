@@ -10,6 +10,7 @@ import (
 	"gorm.io/gorm"
 	"slices"
 	"sync"
+	"time"
 )
 
 type OcservUserRepository struct {
@@ -25,6 +26,13 @@ type OcservUserRepositoryInterface interface {
 	LockOrUnLock(c context.Context, uid string, lock bool) error
 	Disconnect(c context.Context, uid string) error
 	Delete(c context.Context, uid string) error
+	Statistics(c context.Context, uid string, startDate, endDate time.Time) (*[]Statistics, error)
+}
+
+type Statistics struct {
+	Date  string  `json:"date"`
+	SumRx float64 `json:"sum_rx"`
+	SumTx float64 `json:"sum_tx"`
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -229,4 +237,20 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 		return err
 	}
 	return nil
+}
+
+func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDate, endDate time.Time) (
+	*[]Statistics, error,
+) {
+	var results []Statistics
+	err := o.db.Table("oc_user_traffic_statistics").Preload("oc_users").
+		Where("oc_user.uid = ? AND date BETWEEN ? AND ?", uid, startDate, endDate).
+		Select("date, SUM(rx) as sum_rx, SUM(tx) as sum_tx").
+		Group("date").
+		Order("date").
+		Scan(&results).Error
+	if err != nil {
+		return nil, err
+	}
+	return &results, nil
 }

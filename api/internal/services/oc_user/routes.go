@@ -12,6 +12,6 @@ func Routes(e *echo.Group) {
 	group.POST("/:uid/lock", controller.LockOrUnlock)
 	group.POST("/:uid/disconnect", controller.Disconnect)
 	group.DELETE("/:uid", controller.Delete)
-	group.GET("/:uid/activity", controller.Activity)
 	group.GET("/:uid/statistics", controller.Statistics)
+	group.GET("/:uid/activity", controller.Activity)
 }

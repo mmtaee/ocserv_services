@@ -7,6 +7,7 @@ import (
 	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
+	"time"
 )
 
 type Controller struct {
@@ -200,8 +201,49 @@ func (ctrl *Controller) Delete(c echo.Context) error {
 	return c.JSON(http.StatusNoContent, nil)
 }
 
+// Statistics  Ocserv User Statistics
+//
+// @Summary      Statistics for Ocserv User
+// @Description  Statistics for Ocserv User by given user UID
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
+// @Param 		 start query string false "Start date in format YYYY-MM-DD, null=time.Now()"
+// @Param 		 end query string false "End date in format YYYY-MM-DD, null=time.Now().AddDate(0, 1, 0) 1 month"
+// @Success      200  {object} []repository.Statistics
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid/statistics [get]
 func (ctrl *Controller) Statistics(c echo.Context) error {
-	return nil
+	var (
+		err       error
+		dateStart time.Time
+		dateEnd   time.Time
+	)
+	dataStartStr := c.QueryParam("start")
+	dataEndStr := c.QueryParam("end")
+
+	if dataStartStr == "" {
+		dateStart = time.Now()
+	} else {
+		dateStart, err = time.Parse("2006-01-02", dataStartStr)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+	}
+	if dataEndStr == "" {
+		dateEnd = time.Now().AddDate(0, 1, 0)
+	} else {
+		dateEnd, err = time.Parse("2006-01-02", dataEndStr)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+	}
+	stats, err := ctrl.ocservUserRepo.Statistics(c.Request().Context(), c.Param("uid"), dateStart, dateEnd)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, stats)
 }
 
 func (ctrl *Controller) Activity(c echo.Context) error {
