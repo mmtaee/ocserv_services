@@ -19,6 +19,7 @@ type OcservUserRepository struct {
 
 type OcservUserRepositoryInterface interface {
 	Users(context.Context, utils.RequestPagination) (*[]models.OcUser, *utils.ResponsePagination, error)
+	User(context.Context, string) (*models.OcUser, error)
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -83,4 +84,18 @@ func (o *OcservUserRepository) Users(c context.Context, page utils.RequestPagina
 		}
 	}
 	return &users, pageResponse, nil
+}
+
+func (o *OcservUserRepository) User(c context.Context, uid string) (*models.OcUser, error) {
+	var user models.OcUser
+	err := o.db.WithContext(c).Table("oc_users").Where("uid = ?", uid).First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	_, err = o.oc.Occtl.ShowUser(c, user.Username)
+	if err != nil {
+		return &user, err
+	}
+	user.IsOnline = true
+	return &user, nil
 }

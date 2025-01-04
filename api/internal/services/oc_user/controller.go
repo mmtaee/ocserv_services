@@ -48,8 +48,23 @@ func (ctrl *Controller) Users(c echo.Context) error {
 	})
 }
 
+// User Retrieve Ocserv User
+//
+// @Summary      Retrieve Ocserv User
+// @Description  Retrieve Ocserv User by given uid
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
+// @Success      200  {object} models.OcUser
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid [get]
 func (ctrl *Controller) User(c echo.Context) error {
-	return nil
+	user, err := ctrl.ocservUserRepo.User(c.Request().Context(), c.Param("uid"))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, user)
 }
 
 func (ctrl *Controller) Create(c echo.Context) error {

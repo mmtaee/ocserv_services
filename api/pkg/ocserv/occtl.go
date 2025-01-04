@@ -18,6 +18,7 @@ type OcctlInterface interface {
 	UnBanIP(string) error
 	ShowStatus() string
 	ShowIRoutes() []IRoute
+	ShowUser(context.Context, string) (OcctlUser, error)
 }
 
 var occtlCMD = "sudo /usr/bin/occtl"
@@ -36,9 +37,9 @@ func (o *Occtl) Reload() error {
 	return nil
 }
 
-func (o *Occtl) OnlineUsers(ctx context.Context) ([]OcctlUser, error) {
+func (o *Occtl) OnlineUsers(c context.Context) ([]OcctlUser, error) {
 	var users []OcctlUser
-	err := WithContext(ctx, func() error {
+	err := WithContext(c, func() error {
 		cmd := exec.Command(occtlCMD, "-j", "show", "users", "--output=json-pretty")
 		output, err := cmd.Output()
 		if err != nil {
@@ -111,4 +112,17 @@ func (o *Occtl) ShowIRoutes() []IRoute {
 		return nil
 	}
 	return routes
+}
+
+func (o *Occtl) ShowUser(c context.Context, username string) (OcctlUser, error) {
+	var user OcctlUser
+	err := WithContext(c, func() error {
+		cmd := exec.Command(occtlCMD, "-j", "show", "user", username)
+		output, err := cmd.Output()
+		if err != nil {
+			return err
+		}
+		return json.Unmarshal(output, &user)
+	})
+	return user, err
 }
