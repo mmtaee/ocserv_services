@@ -32,7 +32,7 @@ var (
 	defaultGroup = "/etc/ocserv/defaults/group.conf"
 )
 
-func withContext(ctx context.Context, operation func() error) error {
+func WithContext(ctx context.Context, operation func() error) error {
 	done := make(chan error, 1)
 
 	go func() {

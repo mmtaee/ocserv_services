@@ -35,7 +35,7 @@ func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfig, error) {
 	ch := make(chan OcGroupConfig, len(groupFiles))
 	errCh := make(chan error, len(groupFiles))
 
-	err := withContext(ctx, func() error {
+	err := WithContext(ctx, func() error {
 		err := filepath.Walk(groupDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -89,7 +89,7 @@ func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfig, error) {
 }
 
 func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config map[string]interface{}) error {
-	return withContext(ctx, func() error {
+	return WithContext(ctx, func() error {
 		file, err := os.Create(defaultGroup)
 		if err != nil {
 			return fmt.Errorf("failed to create file: %w", err)
@@ -125,7 +125,7 @@ func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config map[string]inte
 }
 
 func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config map[string]interface{}) error {
-	return withContext(ctx, func() error {
+	return WithContext(ctx, func() error {
 		file, err := os.Create(fmt.Sprintf("%s/%s", groupDir, name))
 		if err != nil {
 			return err
@@ -157,7 +157,7 @@ func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config m
 }
 
 func (o *OcGroup) DeleteGroup(ctx context.Context, name string) error {
-	return withContext(ctx, func() error {
+	return WithContext(ctx, func() error {
 		if name == "defaults" {
 			return errors.New("default group cannot be deleted")
 		}
