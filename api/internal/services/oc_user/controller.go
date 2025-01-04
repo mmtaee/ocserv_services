@@ -246,6 +246,26 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 	return c.JSON(http.StatusOK, stats)
 }
 
-func (ctrl *Controller) Activity(c echo.Context) error {
-	return nil
+// Activities  Ocserv User Activities
+//
+// @Summary      Activities for Ocserv User
+// @Description  Activities for Ocserv User by given user UID and Date
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param 		 uid path string true "Ocserv User UID"
+// @Param 		 start query string true "Start date in format YYYY-MM-DD"
+// @Success      200  {object} []models.OcUserActivity
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid/activities [get]
+func (ctrl *Controller) Activities(c echo.Context) error {
+	date, err := time.Parse("2006-01-02", c.QueryParam("date"))
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	activities, err := ctrl.ocservUserRepo.Activity(c.Request().Context(), c.Param("uid"), date)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, activities)
 }

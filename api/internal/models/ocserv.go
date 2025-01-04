@@ -1,7 +1,6 @@
 package models
 
 import (
-	"encoding/json"
 	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"time"
@@ -32,17 +31,15 @@ type OcUser struct {
 }
 
 type OcUserActivity struct {
-	ID        uint            `json:"-" gorm:"primaryKey;autoIncrement"`
-	OcUserID  uint64          `json:"-" gorm:"index"`
-	UID       string          `json:"uid" gorm:"type:varchar(26);not null;unique"`
-	Log       json.RawMessage `json:"log" gorm:"type:json"`
-	CreatedAt time.Time       `json:"createdAt" gorm:"autoCreateTime"`
+	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
+	OcUserID  uint64    `json:"-" gorm:"index"`
+	Log       string    `json:"log" gorm:"type:text"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
 type OcUserTrafficStatistics struct {
 	ID       uint      `json:"-" gorm:"primaryKey;autoIncrement"`
 	OcUserID uint64    `json:"-" gorm:"index"`
-	UID      string    `json:"uid" gorm:"type:varchar(26);not null;unique"`
 	Date     time.Time `json:"date" gorm:"date"`
 	Rx       float64   `json:"rx" gorm:"numeric default 0.00"`
 	Tx       float64   `json:"tx" gorm:"numeric default 0.00"`
@@ -60,15 +57,5 @@ func (o *OcUser) BeforeUpdate(tx *gorm.DB) (err error) {
 	if o.TrafficType == Free {
 		o.TrafficSize = 0
 	}
-	return
-}
-
-func (a *OcUserActivity) BeforeCreate(tx *gorm.DB) (err error) {
-	a.UID = ulid.Make().String()
-	return
-}
-
-func (s *OcUserTrafficStatistics) BeforeCreate(tx *gorm.DB) (err error) {
-	s.UID = ulid.Make().String()
 	return
 }

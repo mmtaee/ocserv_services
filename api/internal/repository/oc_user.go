@@ -27,6 +27,7 @@ type OcservUserRepositoryInterface interface {
 	Disconnect(c context.Context, uid string) error
 	Delete(c context.Context, uid string) error
 	Statistics(c context.Context, uid string, startDate, endDate time.Time) (*[]Statistics, error)
+	Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error)
 }
 
 type Statistics struct {
@@ -243,7 +244,7 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 	*[]Statistics, error,
 ) {
 	var results []Statistics
-	err := o.db.Table("oc_user_traffic_statistics").Preload("oc_users").
+	err := o.db.WithContext(c).Table("oc_user_traffic_statistics").Preload("oc_users").
 		Where("oc_user.uid = ? AND date BETWEEN ? AND ?", uid, startDate, endDate).
 		Select("date, SUM(rx) as sum_rx, SUM(tx) as sum_tx").
 		Group("date").
@@ -253,4 +254,17 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 		return nil, err
 	}
 	return &results, nil
+}
+
+func (o *OcservUserRepository) Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error) {
+	var activities []models.OcUserActivity
+	startOfDay := date.String() + " 00:00:00"
+	endOfDay := date.String() + " 23:59:59"
+	err := o.db.WithContext(c).Table("oc_user_activities").Preload("oc_users").
+		Where("oc_user.uid = ? AND created_at BETWEEN ? AND ?", uid, startOfDay, endOfDay).
+		Find(&activities).Error
+	if err != nil {
+		return nil, err
+	}
+	return &activities, nil
 }
