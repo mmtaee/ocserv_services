@@ -30,7 +30,11 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Param page query int false "Page number, starting from 1" minimum(1)
-// @Param page_size query int false "Number of items per page" minimum(1) maximum(100)
+// @Param pager query string false "Field to order by"
+// @Param sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
+// @Success      200  {object} StaffsResponse
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/staffs [get]e_size query int false "Number of items per page" minimum(1) maximum(100)
 // @Param order query string false "Field to order by"
 // @Param sort query string false "Sort order, either ASC or DESC" Enums(ASC, DESC)
 // @Success      200  {object} StaffsResponse

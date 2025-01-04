@@ -12,7 +12,7 @@ type Occtl struct {
 
 type OcctlInterface interface {
 	Reload() error
-	OnlineUsers(ctx context.Context) []OcctlUser
+	OnlineUsers(ctx context.Context) ([]OcctlUser, error)
 	Disconnect(string) error
 	ShowIPBans(bool) []IPBan
 	UnBanIP(string) error
@@ -36,7 +36,7 @@ func (o *Occtl) Reload() error {
 	return nil
 }
 
-func (o *Occtl) OnlineUsers(ctx context.Context) []OcctlUser {
+func (o *Occtl) OnlineUsers(ctx context.Context) ([]OcctlUser, error) {
 	var users []OcctlUser
 	err := WithContext(ctx, func() error {
 		cmd := exec.Command(occtlCMD, "-j", "show", "users", "--output=json-pretty")
@@ -44,13 +44,12 @@ func (o *Occtl) OnlineUsers(ctx context.Context) []OcctlUser {
 		if err != nil {
 			return err
 		}
-
 		return json.Unmarshal(output, &users)
 	})
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return users
+	return users, nil
 }
 
 func (o *Occtl) Disconnect(username string) error {
