@@ -22,7 +22,7 @@ type UserRepositoryInterface interface {
 	Login(c context.Context, username, password string, rememberMe bool) (string, error)
 	Logout(context.Context) error
 	ChangePassword(c context.Context, oldPassword, newPassword string) error
-	CreateToken(c context.Context, id uint) (string, error)
+	CreateToken(c context.Context, id uint, expireAt time.Time) (string, error)
 }
 
 func NewUserRepository() *UserRepository {
