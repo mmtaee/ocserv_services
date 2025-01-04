@@ -51,9 +51,9 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 		expireAt = time.Now().Add(time.Hour * 24)
 	}
 	token := models.UserToken{
-		ID:        user.ID,
-		Token:     TokenGenerator.Create(user.ID, expireAt),
-		ExpiresAt: expireAt,
+		ID:       user.ID,
+		Token:    TokenGenerator.Create(user.ID, expireAt),
+		ExpireAt: &expireAt,
 	}
 	err = r.db.WithContext(c).Create(&token).Error
 	if err != nil {

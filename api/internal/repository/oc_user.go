@@ -18,9 +18,10 @@ type OcservUserRepository struct {
 }
 
 type OcservUserRepositoryInterface interface {
-	Users(context.Context, utils.RequestPagination) (*[]models.OcUser, *utils.ResponsePagination, error)
-	User(context.Context, string) (*models.OcUser, error)
-	Create(context.Context, *models.OcUser) error
+	Users(c context.Context, page utils.RequestPagination) (*[]models.OcUser, *utils.ResponsePagination, error)
+	User(c context.Context, username string) (*models.OcUser, error)
+	Create(c context.Context, user *models.OcUser) error
+	Update(c context.Context, uid string, user *models.OcUser) error
 }
 
 func NewOcservUserRepository() *OcservUserRepository {
@@ -112,6 +113,47 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 	}()
 
 	if err := tx.Table("oc_users").Create(user).Error; err != nil {
+		return err
+	}
+
+	ch := make(chan error, 1)
+	go func() {
+		ch <- o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group)
+	}()
+	if err := <-ch; err != nil {
+		return err
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		return err
+	}
+	return nil
+}
+
+func (o *OcservUserRepository) Update(c context.Context, uid string, user *models.OcUser) error {
+	var existing models.OcUser
+
+	tx := o.db.WithContext(c).Begin()
+	defer func() {
+		if r := recover(); r != nil {
+			tx.Rollback()
+		} else if tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	if err := tx.Table("oc_users").Where("uid = ?", uid).First(&existing).Error; err != nil {
+		return err
+	}
+
+	existing.Group = user.Group
+	existing.Username = user.Username
+	existing.Password = user.Password
+	existing.ExpireAt = user.ExpireAt
+	existing.TrafficType = user.TrafficType
+	existing.TrafficSize = user.TrafficSize
+
+	if err := tx.Table("oc_users").Save(&existing).Error; err != nil {
 		return err
 	}
 

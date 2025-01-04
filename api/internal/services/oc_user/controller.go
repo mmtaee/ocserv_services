@@ -75,12 +75,12 @@ func (ctrl *Controller) User(c echo.Context) error {
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
-// @Param        request body  OcservUserCreateRequest true "Create Ocserv User Body"
+// @Param        request body  OcservUserCreateOrUpdateRequest true "Create Ocserv User Body"
 // @Success      201  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Router       /api/v1/ocserv/users [post]
 func (ctrl *Controller) Create(c echo.Context) error {
-	var data OcservUserCreateRequest
+	var data OcservUserCreateOrUpdateRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
@@ -88,10 +88,12 @@ func (ctrl *Controller) Create(c echo.Context) error {
 		Username:    data.Username,
 		Password:    data.Password,
 		TrafficType: data.TrafficType,
-		TrafficSize: data.TrafficSize,
+		ExpireAt:    data.ExpireAt,
 	}
-	if data.ExpireAt != nil {
-		user.ExpireAt = *data.ExpireAt
+	if data.TrafficSize != nil {
+		user.TrafficSize = *data.TrafficSize
+	} else {
+		user.TrafficSize = 0
 	}
 	err := ctrl.ocservUserRepo.Create(c.Request().Context(), &user)
 	if err != nil {
@@ -100,8 +102,39 @@ func (ctrl *Controller) Create(c echo.Context) error {
 	return c.JSON(http.StatusCreated, nil)
 }
 
+// Update  Ocserv User Update
+//
+// @Summary      Update Ocserv User
+// @Description  Update Ocserv User
+// @Tags         Ocserv Users
+// @Accept       json
+// @Produce      json
+// @Param        request body  OcservUserCreateOrUpdateRequest true "Update Ocserv User Body"
+// @Success      200  {object} nil
+// @Failure      400 {object} utils.ErrorResponse
+// @Router       /api/v1/ocserv/users/:uid [put]
 func (ctrl *Controller) Update(c echo.Context) error {
-	return nil
+	var data OcservUserCreateOrUpdateRequest
+	if err := ctrl.validator.Validate(c, &data); err != nil {
+		return utils.BadRequest(c, err.(error))
+	}
+	user := models.OcUser{
+		Group:       data.Group,
+		Username:    data.Username,
+		Password:    data.Password,
+		ExpireAt:    data.ExpireAt,
+		TrafficType: data.TrafficType,
+	}
+	if data.TrafficSize != nil {
+		user.TrafficSize = *data.TrafficSize
+	} else {
+		user.TrafficSize = 0
+	}
+	err := ctrl.ocservUserRepo.Update(c.Request().Context(), c.Param("uid"), &user)
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusCreated, nil)
 }
 
 func (ctrl *Controller) Lock(c echo.Context) error {

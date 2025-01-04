@@ -12,7 +12,7 @@ type User struct {
 	Username   string         `json:"username" gorm:"type:varchar(16);not null;unique"`
 	Password   string         `json:"password" gorm:"type:varchar(64); not null"`
 	IsAdmin    bool           `json:"is_admin" gorm:"type:bool;default(false)"`
-	LastLogin  time.Time      `json:"last_login"`
+	LastLogin  *time.Time     `json:"last_login"`
 	Token      []UserToken    `json:"tokens"`
 	Permission UserPermission `json:"permission"`
 }
@@ -28,13 +28,13 @@ type UserPermission struct {
 }
 
 type UserToken struct {
-	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
-	UID       string    `json:"uid" gorm:"type:varchar(26);not null;unique"`
-	UserID    uint64    `json:"-" gorm:"index"`
-	Token     string    `json:"token" gorm:"type:varchar(128)"`
-	CreatedAt time.Time `json:"createdAt" gorm:"autoCreateTime"`
-	ExpiresAt time.Time `json:"expiresAt"`
-	User      User      `json:"user"`
+	ID        uint       `json:"-" gorm:"primaryKey;autoIncrement"`
+	UID       string     `json:"uid" gorm:"type:varchar(26);not null;unique"`
+	UserID    uint64     `json:"-" gorm:"index"`
+	Token     string     `json:"token" gorm:"type:varchar(128)"`
+	CreatedAt time.Time  `json:"created_at" gorm:"autoCreateTime"`
+	ExpireAt  *time.Time `json:"expire_at"`
+	User      User       `json:"user"`
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) (err error) {
