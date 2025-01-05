@@ -54,7 +54,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 		}
 		return utils.BadRequest(c, err)
 	}
-	content, err := os.ReadFile(config.GetApp().InitSecretFile)
+	content, err := os.ReadFile(file)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -70,7 +70,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	}
 	user, err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), data.Username, data.Password)
 	go func() {
-		err = os.Remove(config.GetApp().InitSecretFile)
+		err = os.Remove(file)
 		if err != nil {
 			log.Println(err)
 		}
