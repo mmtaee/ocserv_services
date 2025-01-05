@@ -32,6 +32,6 @@ api/.env
 init_secret
 
 docs/
-build/*
+build/
 volumes/
 .volumes/
