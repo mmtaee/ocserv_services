@@ -20,7 +20,7 @@ RUN SECRET=$(tr -dc 'A-Za-z0-9' </dev/urandom | head -c 32) && \
 
 EXPOSE 443/tcp 443/udp
 
-VOLUME ["/etc/ocserv", "/app"]
+VOLUME ["/etc/ocserv", "/app", "/var/log/"]
 
 ENTRYPOINT ["/entrypoint.sh"]
 

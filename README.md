@@ -44,6 +44,7 @@ sudo docker build -t ocserv:api .
 sudo docker run -it --rm -v "./build:/app" \
     -v "./volumes/ocserv:/etc/ocserv" \
     -v "./volumes/certs:/etc/ocserv/certs" \
+    -v "./volumes/logs:/var/log/ocserv" \
     --env-file=.env --link ocserv-postgres:ocserv-postgres \
      -p "8080:8080" -p "20443:443" \
      --name ocserv_api --privileged ocserv:api

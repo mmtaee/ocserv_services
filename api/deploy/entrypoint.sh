@@ -19,7 +19,6 @@ if [ -z "$HOST" ]; then
     fi
 fi
 
-
 cat <<EOT >/etc/ocserv/ocserv.conf
 # custom config
 auth="plain[passwd=/etc/ocserv/ocpasswd]"
@@ -64,7 +63,7 @@ config-per-group=/etc/ocserv/groups/
 log-level=2
 EOT
 
-mkdir /etc/ocserv/defaults /etc/ocserv/groups
+mkdir -p /etc/ocserv/defaults /etc/ocserv/groups
 >/etc/ocserv/defaults/group.conf
 
 if [ ! -f /etc/ocserv/certs/cert.pem ]; then
@@ -106,17 +105,16 @@ _EOF_
     cp "${serverkey}" /etc/ocserv/certs/cert.key
 fi
 
-echo -e "\e[0;32m"Adding iptables rules."\e[0m"
 iptables -t nat -A POSTROUTING -j MASQUERADE
 sysctl -w net.ipv4.ip_forward=1 # ipv4 ip forward
 sysctl -p
 mkdir -p /dev/net               #TUN device
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
+mkdir -p /var/log/ocserv/
 
-# ocserv rotate configs
 cat <<\EOT >/etc/logrotate.d/ocserv
-/var/log/ocserv.log {
+/var/log/ocserv/ocserv.log {
     daily
     size 500M
     rotate 4
