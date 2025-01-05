@@ -55,3 +55,7 @@ sudo docker exec -it ocserv_api bash
 echo -e "1234\n1234\n" | ocpasswd -c /etc/ocserv/ocpasswd test
      
 ```
+
+```text
+main[test]:192.168.100.21:41448 user disconnected (reason: user disconnected, rx: 483392, tx: 2330)
+```

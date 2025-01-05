@@ -19,8 +19,8 @@ if [ -z "$HOST" ]; then
     fi
 fi
 
-if [ ! -f '/etc/ocserv/ocserv.conf' ] || [ $(grep -r "custom config" /etc/ocserv/ocserv.conf | wc -l) == "0" ]; then
-    cat <<EOT >/etc/ocserv/ocserv.conf
+
+cat <<EOT >/etc/ocserv/ocserv.conf
 # custom config
 auth="plain[passwd=/etc/ocserv/ocpasswd]"
 run-as-user=root
@@ -61,11 +61,11 @@ udp-port=443
 max-same-clients=2
 ipv4-network=${OC_NET}
 config-per-group=/etc/ocserv/groups/
+log-level=2
 EOT
-    mkdir /etc/ocserv/defaults
-    >/etc/ocserv/defaults/group.conf
-    mkdir /etc/ocserv/groups
-fi
+
+mkdir /etc/ocserv/defaults /etc/ocserv/groups
+>/etc/ocserv/defaults/group.conf
 
 if [ ! -f /etc/ocserv/certs/cert.pem ]; then
     mkdir -p /etc/ocserv/certs
@@ -113,6 +113,28 @@ sysctl -p
 mkdir -p /dev/net               #TUN device
 mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
+
+# ocserv rotate configs
+cat <<\EOT >/etc/logrotate.d/ocserv
+/var/log/ocserv.log {
+    daily
+    size 500M
+    rotate 4
+    missingok
+    notifempty
+    compress
+    delaycompress
+    postrotate
+        for pidfile in /run/ocserv.pid*; do
+            if [ -f "$pidfile" ] && kill -0 $(cat "$pidfile") >/dev/null 2>&1; then
+                kill -USR1 $(cat "$pidfile")
+            fi
+        done
+    endscript
+}
+EOT
+
+crontab -l | echo "@daily /usr/sbin/logrotate /etc/logrotate.conf" | crontab -
 
 if [ -f "${SECRET_KEY_FILE_NAME}" ]; then
     echo -e "\e[0;32mSecret Key: $(cat "${SECRET_KEY_FILE_NAME}")\e[0m"
