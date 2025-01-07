@@ -23,6 +23,13 @@ sudo docker run -d \
   -p 5432:5432 \
   postgres:latest 
 
+sudo docker run -d --name rabbitmq-ocserv \
+  -p 5672:5672 \
+  -p 15672:15672 \
+  -e RABBITMQ_DEFAULT_USER=ocserv \
+  -e RABBITMQ_DEFAULT_PASS=ocserv \
+  # -e RABBITMQ_DEFAULT_VHOST=/ocserv\
+  rabbitmq:management
 
 swag init -g cmd/main.go
 
@@ -43,11 +50,11 @@ sudo docker build -t ocserv:api .
 
 sudo docker run -it --rm -v "./build:/app" \
     -v "./volumes/ocserv:/etc/ocserv" \
-    -v "./volumes/certs:/etc/ocserv/certs" \
     -v "./volumes/logs:/var/log/ocserv" \
-    --env-file=.env --link ocserv-postgres:ocserv-postgres \
-     -p "8080:8080" -p "20443:443" \
-     --name ocserv_api --privileged ocserv:api
+    --env-file=.env -p "8080:8080" -p "20443:443" \
+    --link ocserv-postgres:ocserv-postgres \
+    --link rabbitmq-ocserv:rabbitmq-ocserv \
+    --name ocserv_api --privileged ocserv:api
      
 ocpasswd -c /etc/ocserv/ocpasswd USERNAME
 
