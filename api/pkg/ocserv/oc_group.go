@@ -102,19 +102,18 @@ func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config map[string]inte
 		}()
 
 		for k, v := range config {
+			log.Println("Updating default group", k, v)
 			if k == "dns" {
-				dnsValues, ok := v.([]string)
-				if !ok {
-					return fmt.Errorf("invalid type for dns, expected []string but got %T", v)
-
-				}
-				for _, dns := range dnsValues {
+				for _, dns := range v.([]interface{}) {
 					if _, err := file.WriteString(fmt.Sprintf("dns=%s\n", dns)); err != nil {
 						return fmt.Errorf("failed to write to file: %w", err)
-
 					}
 				}
+				continue
 			} else {
+				if v == nil || v == 0 {
+					continue
+				}
 				if _, err := file.WriteString(fmt.Sprintf("%s=%v\n", k, v)); err != nil {
 					return fmt.Errorf("failed to write to file: %w", err)
 				}

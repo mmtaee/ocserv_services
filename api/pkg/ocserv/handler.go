@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"strings"
 )
@@ -89,7 +90,7 @@ func ParseConfFile(filename string) (OcGroupConfig, error) {
 	}(file)
 
 	scanner := bufio.NewScanner(file)
-
+	var dnsList []string
 	for scanner.Scan() {
 		line := scanner.Text()
 		if len(line) == 0 || line[0] == '#' {
@@ -105,67 +106,79 @@ func ParseConfFile(filename string) (OcGroupConfig, error) {
 
 		switch key {
 		case "rx-data-per-sec":
-			config.RxDataPerSec = value
+			config.RxDataPerSec = &value
 		case "tx-data-per-sec":
-			config.TxDataPerSec = value
+			config.TxDataPerSec = &value
 		case "max-same-clients":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.MaxSameClients = val
+				config.MaxSameClients = &val
 			}
 		case "ipv4-network":
-			config.IPv4Network = value
+			config.IPv4Network = &value
 		case "dns":
-			config.DNS = strings.Split(value, ",")
+			dnsList = append(dnsList, value)
 		case "no-udp":
 			if val, err := strconv.ParseBool(value); err == nil {
-				config.NoUDP = val
+				config.NoUDP = &val
 			}
 		case "keepalive":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.KeepAlive = val
+				config.KeepAlive = &val
 			}
 		case "dpd":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.DPD = val
+				config.DPD = &val
 			}
 		case "mobile-dpd":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.MobileDPD = val
+				config.MobileDPD = &val
 			}
 		case "tunnel-all-dns":
 			if val, err := strconv.ParseBool(value); err == nil {
-				config.TunnelAllDNS = val
+				config.TunnelAllDNS = &val
 			}
 		case "restrict-user-to-routes":
 			if val, err := strconv.ParseBool(value); err == nil {
-				config.RestrictUserToRoutes = val
+				config.RestrictUserToRoutes = &val
 			}
 		case "stats-report-time":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.StatsReportTime = val
+				config.StatsReportTime = &val
 			}
 		case "mtu":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.MTU = val
+				config.MTU = &val
 			}
 		case "idle-timeout":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.IdleTimeout = val
+				config.IdleTimeout = &val
 			}
 		case "mobile-idle-timeout":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.MobileIdleTimeout = val
+				config.MobileIdleTimeout = &val
 			}
 		case "session-timeout":
 			if val, err := strconv.Atoi(value); err == nil {
-				config.SessionTimeout = val
+				config.SessionTimeout = &val
 			}
 		}
 	}
+
+	config.DNS = &dnsList
 
 	if err = scanner.Err(); err != nil {
 		return config, err
 	}
 
 	return config, nil
+}
+
+func OcctlExec(command string) ([]byte, error) {
+	cmd := exec.Command("sh", "-c", fmt.Sprintf("sudo /usr/bin/occtl %s", command))
+	output, err := cmd.Output()
+	if err != nil {
+		return nil, err
+	}
+	log.Println("Command Output:\n", string(output))
+	return output, nil
 }
