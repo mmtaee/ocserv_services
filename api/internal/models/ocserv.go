@@ -23,7 +23,7 @@ type OcUser struct {
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
 	ExpireAt    *time.Time `json:"expire_at"`
 	TrafficType int32      `json:"traffic_type" gorm:"not null;default(0)"`
-	TrafficSize int32      `json:"traffic_size" gorm:"not null;default(10)"`
+	TrafficSize float64    `json:"traffic_size" gorm:"not null;default(10)"`
 	Rx          float64    `json:"rx" gorm:"not null;default(0.00)"`
 	Tx          float64    `json:"tx" gorm:"not null;default(0.00)"`
 	Description string     `json:"description" gorm:"type:text"`
