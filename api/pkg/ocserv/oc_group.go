@@ -15,7 +15,8 @@ type OcGroup struct{}
 
 // OcGroupInterface all method in this interface need reload server config
 type OcGroupInterface interface {
-	Groups(ctx context.Context) (*[]OcGroupConfigInfo, error)
+	Groups(c context.Context) (*[]OcGroupConfigInfo, error)
+	GroupNames(c context.Context) (*[]string, error)
 	UpdateDefaultGroup(c context.Context, config *map[string]interface{}) error
 	CreateOrUpdateGroup(c context.Context, name string, config *map[string]interface{}) error
 	DeleteGroup(context.Context, string) error
@@ -71,6 +72,30 @@ func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfigInfo, error) {
 		return result[i].Name < result[j].Name
 	})
 	return &result, err
+}
+
+func (o *OcGroup) GroupNames(c context.Context) (*[]string, error) {
+	var result []string
+	err := WithContext(c, func() error {
+		err := filepath.Walk(groupDir, func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.IsDir() {
+				result = append(result, info.Name())
+			}
+			return nil
+		})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	sort.Strings(result)
+	return &result, nil
 }
 
 func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config *map[string]interface{}) error {

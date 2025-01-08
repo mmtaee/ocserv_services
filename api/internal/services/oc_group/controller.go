@@ -41,6 +41,26 @@ func (ctrl *Controller) Groups(c echo.Context) error {
 	return c.JSON(http.StatusOK, groups)
 }
 
+// GroupNames 		 List Of Group Names
+//
+// @Summary      List Of Group Names
+// @Description  List Of Group Names Sort By Name
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Success      200  {object}  []string
+// @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Router       /api/v1/ocserv/groups/names [get]
+func (ctrl *Controller) GroupNames(c echo.Context) error {
+	names, err := ctrl.ocservGroupRepo.GroupNames(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, names)
+}
+
 // UpdateDefaultOcservGroup  Update Ocserv Defaults Group
 //
 // @Summary      Update Ocserv Defaults Group
