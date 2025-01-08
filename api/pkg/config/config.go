@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"sync"
 )
 
 type Config struct {
@@ -41,8 +42,23 @@ type RabbitMQ struct {
 	Vhost    string
 }
 
-var config Config
+var (
+	config  Config
+	AppInit bool
+	mutex   sync.RWMutex
+)
 
+func GetAppInit() bool {
+	mutex.RLock()
+	defer mutex.RUnlock()
+	return AppInit
+}
+
+func ActiveAppInit() {
+	mutex.Lock()
+	defer mutex.Unlock()
+	AppInit = true
+}
 func Set(debug bool) {
 	if debug {
 		err := godotenv.Load()

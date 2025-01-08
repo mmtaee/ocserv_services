@@ -90,7 +90,10 @@ func (ctrl *Controller) UpdatePanelConfig(c echo.Context) error {
 func (ctrl *Controller) GetPanelInitConfig(c echo.Context) error {
 	config, err := ctrl.panelRepo.GetConfig(c.Request().Context())
 	if err != nil {
-		return utils.BadRequest(c, err)
+		return c.JSON(http.StatusOK, GetPanelConfigResponse{
+			Init:                 false,
+			GoogleCaptchaSiteKey: "",
+		})
 	}
 	return c.JSON(http.StatusOK, GetPanelConfigResponse{
 		Init:                 config.Init,

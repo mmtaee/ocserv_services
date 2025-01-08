@@ -20,7 +20,7 @@ sudo docker run -d \
   -e POSTGRES_USER=ocserv \
   -e POSTGRES_PASSWORD=ocserv \
   -e POSTGRES_DB=ocserv \
-  -v /home/masoud/Documents/docker-volumes/ocserv/db:/var/lib/postgresql/data \
+  -v ./volumes/db:/var/lib/postgresql/data \
   --restart always \
   postgres:latest 
 
