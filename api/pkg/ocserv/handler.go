@@ -76,11 +76,11 @@ func (h *Handler) ReadOcpasswd() (userList []Sync) {
 	}
 	return userList
 }
-func ParseConfFile(filename string) (OcGroupConfig, error) {
+func ParseConfFile(filename string) (*OcGroupConfig, error) {
 	var config OcGroupConfig
 	file, err := os.Open(filename)
 	if err != nil {
-		return config, err
+		return nil, err
 	}
 	defer func(file *os.File) {
 		err = file.Close()
@@ -167,10 +167,10 @@ func ParseConfFile(filename string) (OcGroupConfig, error) {
 	config.DNS = &dnsList
 
 	if err = scanner.Err(); err != nil {
-		return config, err
+		return &config, err
 	}
 
-	return config, nil
+	return &config, nil
 }
 
 func OcctlExec(command string) ([]byte, error) {
@@ -181,4 +181,25 @@ func OcctlExec(command string) ([]byte, error) {
 	}
 	log.Println("Command Output:\n", string(output))
 	return output, nil
+}
+
+func GroupWriter(file *os.File, config *map[string]interface{}) error {
+	for k, v := range *config {
+		if v == nil {
+			continue
+		}
+		if k == "dns" {
+			for _, dns := range v.([]interface{}) {
+				if _, err := file.WriteString(fmt.Sprintf("dns=%s\n", dns)); err != nil {
+					return fmt.Errorf("failed to write to file: %w", err)
+				}
+			}
+			continue
+		} else {
+			if _, err := file.WriteString(fmt.Sprintf("%s=%v\n", k, v)); err != nil {
+				return fmt.Errorf("failed to write to file: %w", err)
+			}
+		}
+	}
+	return nil
 }

@@ -50,3 +50,9 @@ type OcGroupConfig struct {
 	MobileIdleTimeout    *int      `json:"mobile-idle-timeout"`
 	SessionTimeout       *int      `json:"session-timeout"`
 }
+
+type OcGroupConfigInfo struct {
+	Name   string         `json:"name"`
+	Path   string         `json:"-"`
+	Config *OcGroupConfig `json:"config"`
+}

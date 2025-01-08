@@ -7,7 +7,6 @@ import (
 	"log"
 	"os"
 	"path/filepath"
-	"reflect"
 	"sort"
 	"sync"
 )
@@ -16,9 +15,9 @@ type OcGroup struct{}
 
 // OcGroupInterface all method in this interface need reload server config
 type OcGroupInterface interface {
-	Groups(ctx context.Context) (*[]OcGroupConfig, error)
-	UpdateDefaultGroup(context.Context, map[string]interface{}) error
-	CreateOrUpdateGroup(context.Context, string, map[string]interface{}) error
+	Groups(ctx context.Context) (*[]OcGroupConfigInfo, error)
+	UpdateDefaultGroup(c context.Context, config *map[string]interface{}) error
+	CreateOrUpdateGroup(c context.Context, name string, config *map[string]interface{}) error
 	DeleteGroup(context.Context, string) error
 }
 
@@ -26,22 +25,21 @@ func NewOcGroup() *OcGroup {
 	return &OcGroup{}
 }
 
-func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfig, error) {
+func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfigInfo, error) {
 	var (
-		result     []OcGroupConfig
-		groupFiles []string
-		wg         sync.WaitGroup
+		result []OcGroupConfigInfo
+		wg     sync.WaitGroup
 	)
-	ch := make(chan OcGroupConfig, len(groupFiles))
-	errCh := make(chan error, len(groupFiles))
-
 	err := WithContext(ctx, func() error {
 		err := filepath.Walk(groupDir, func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
 			}
 			if !info.IsDir() {
-				groupFiles = append(groupFiles, path)
+				result = append(result, OcGroupConfigInfo{
+					Name: info.Name(),
+					Path: path,
+				})
 			}
 			return nil
 		})
@@ -49,46 +47,33 @@ func (o *OcGroup) Groups(ctx context.Context) (*[]OcGroupConfig, error) {
 			return err
 		}
 
-		sort.Strings(groupFiles)
-
-		for _, path := range groupFiles {
+		for i := range result {
 			wg.Add(1)
-			go func(path string) {
+			go func(data *OcGroupConfigInfo) {
 				defer wg.Done()
-				config, err := ParseConfFile(path)
+				config, err := ParseConfFile(data.Path)
 				if err != nil {
-					errCh <- fmt.Errorf("error parsing file %s: %v", path, err)
+					fmt.Printf("Error parsing file %s: %v\n", data.Path, err)
+					return
 				}
-				ch <- config
-			}(path)
+				data.Config = config
+			}(&result[i])
 		}
-
-		go func() {
-			wg.Wait()
-			close(ch)
-			close(errCh)
-		}()
-
-		for {
-			select {
-			case config, ok := <-ch:
-				if ok {
-					result = append(result, config)
-				}
-			}
-			if len(result) == len(groupFiles) && len(errCh) == 0 {
-				break
-			}
-		}
+		wg.Wait()
 		return nil
 	})
+
 	if err != nil {
 		return nil, err
 	}
+
+	sort.Slice(result, func(i, j int) bool {
+		return result[i].Name < result[j].Name
+	})
 	return &result, err
 }
 
-func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config map[string]interface{}) error {
+func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config *map[string]interface{}) error {
 	return WithContext(ctx, func() error {
 		file, err := os.Create(defaultGroup)
 		if err != nil {
@@ -100,30 +85,11 @@ func (o *OcGroup) UpdateDefaultGroup(ctx context.Context, config map[string]inte
 				log.Printf("failed to close file: %v", closeErr)
 			}
 		}()
-
-		for k, v := range config {
-			log.Println("Updating default group", k, v)
-			if k == "dns" {
-				for _, dns := range v.([]interface{}) {
-					if _, err := file.WriteString(fmt.Sprintf("dns=%s\n", dns)); err != nil {
-						return fmt.Errorf("failed to write to file: %w", err)
-					}
-				}
-				continue
-			} else {
-				if v == nil || v == 0 {
-					continue
-				}
-				if _, err := file.WriteString(fmt.Sprintf("%s=%v\n", k, v)); err != nil {
-					return fmt.Errorf("failed to write to file: %w", err)
-				}
-			}
-		}
-		return nil
+		return GroupWriter(file, config)
 	})
 }
 
-func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config map[string]interface{}) error {
+func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config *map[string]interface{}) error {
 	return WithContext(ctx, func() error {
 		file, err := os.Create(fmt.Sprintf("%s/%s", groupDir, name))
 		if err != nil {
@@ -134,24 +100,7 @@ func (o *OcGroup) CreateOrUpdateGroup(ctx context.Context, name string, config m
 				log.Printf("failed to close file: %v", closeErr)
 			}
 		}()
-
-		val := reflect.ValueOf(config).Elem()
-		typ := val.Type()
-		for i := 0; i < val.NumField(); i++ {
-			fieldName := typ.Field(i).Name
-			fieldValue := val.Field(i)
-			if !fieldValue.IsZero() {
-				_, err = file.WriteString(fmt.Sprintf("%s=%v\n", fieldName, fieldValue.Interface()))
-				if err != nil {
-					break
-				}
-			}
-		}
-
-		if err != nil {
-			return err
-		}
-		return nil
+		return GroupWriter(file, config)
 	})
 }
 
@@ -160,6 +109,13 @@ func (o *OcGroup) DeleteGroup(ctx context.Context, name string) error {
 		if name == "defaults" {
 			return errors.New("default group cannot be deleted")
 		}
-		return os.Remove(fmt.Sprintf("%s/%s", groupDir, name))
+		err := os.Remove(fmt.Sprintf("%s/%s", groupDir, name))
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return fmt.Errorf("group %s does not exist", name)
+			}
+			return fmt.Errorf("failed to delete group %s: %w", name, err)
+		}
+		return nil
 	})
 }

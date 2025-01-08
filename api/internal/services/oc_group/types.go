@@ -11,6 +11,6 @@ type GroupsResponse struct {
 }
 
 type CreateGroupRequest struct {
-	Name   string               `json:"name" validate:"required"`
-	Config ocserv.OcGroupConfig `json:"config" validate:"required"`
+	Name   string                `json:"name" validate:"required"`
+	Config *ocserv.OcGroupConfig `json:"config" validate:"required"`
 }

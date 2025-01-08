@@ -8,6 +8,7 @@ import (
 func Routes(e *echo.Group) {
 	controller := New()
 	group := e.Group("/ocserv/groups")
+
 	group.POST("/defaults",
 		controller.UpdateDefaultOcservGroup,
 		middlewares.IsAuthenticatedMiddleware(),
