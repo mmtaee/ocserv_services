@@ -11,8 +11,8 @@ func Routes(e *echo.Group) {
 
 	group.POST("/defaults",
 		controller.UpdateDefaultOcservGroup,
-		middlewares.IsAdminPermissionMiddleware(),
 		middlewares.IsAuthenticatedMiddleware(),
+		middlewares.IsAdminPermissionMiddleware(),
 	)
 
 	group.GET("", controller.Groups)

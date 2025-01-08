@@ -24,7 +24,11 @@ func PermissionDeniedResponse(c echo.Context, msg ...string) error {
 func IsAdminPermissionMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			if isAdmin := c.Get("isAdmin"); !isAdmin.(bool) {
+			isAdmin := c.Get("isAdmin")
+			if isAdmin == nil {
+				return PermissionDeniedResponse(c, "admin permission required")
+			}
+			if !isAdmin.(bool) {
 				return PermissionDeniedResponse(c, "admin permission required")
 			}
 			return next(c)

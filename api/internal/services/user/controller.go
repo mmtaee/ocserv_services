@@ -49,10 +49,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	file := config.GetApp().InitSecretFile
 	_, err := os.Stat(file)
 	if err != nil {
-		if !errors.Is(err, os.ErrNotExist) {
-			log.Println(err)
-		}
-		return utils.BadRequest(c, err)
+		return utils.BadRequest(c, errors.New("secret file does not exist"))
 	}
 	content, err := os.ReadFile(file)
 	if err != nil {
@@ -100,17 +97,17 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/user/login [post]
 func (ctrl *Controller) Login(c echo.Context) error {
-	var data LoginRequest
+	var (
+		data LoginRequest
+	)
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	token, err := ctrl.userRepo.Login(c.Request().Context(), data.Username, data.Password, data.RememberMe)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusOK, LoginResponse{
-		Token: token,
-	})
+	return c.JSON(http.StatusOK, LoginResponse{Token: token})
 }
 
 // Logout Admin or Staff logout

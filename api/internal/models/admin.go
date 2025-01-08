@@ -12,6 +12,7 @@ type User struct {
 	Username   string         `json:"username" gorm:"type:varchar(16);not null;unique"`
 	Password   string         `json:"password" gorm:"type:varchar(64); not null"`
 	IsAdmin    bool           `json:"is_admin" gorm:"type:bool;default(false)"`
+	Salt       string         `json:"-" gorm:"type:varchar(6);"`
 	LastLogin  *time.Time     `json:"last_login"`
 	Token      []UserToken    `json:"tokens"`
 	Permission UserPermission `json:"permission"`

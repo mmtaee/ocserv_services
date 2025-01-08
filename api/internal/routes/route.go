@@ -11,7 +11,6 @@ import (
 	"api/pkg/config"
 	"api/pkg/database"
 	"github.com/labstack/echo/v4"
-	"log"
 	"net/http"
 	"slices"
 )
@@ -19,7 +18,6 @@ import (
 func NeedInitMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			log.Println(c.Path())
 			if c.Path() == "/api/v1/panel/config/init" {
 				return next(c)
 			}

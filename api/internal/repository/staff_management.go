@@ -16,12 +16,12 @@ type StaffRepository struct {
 }
 
 type StaffRepositoryInterface interface {
-	Staffs(context.Context, *utils.RequestPagination) (*[]models.User, *utils.ResponsePagination, error)
-	Permission(context.Context, string) (*models.UserPermission, error)
-	CreateStaff(context.Context, *models.User, *models.UserPermission) error
-	UpdateStaffPermission(context.Context, string, *models.UserPermission) error
-	UpdateStaffPassword(context.Context, string, string) error
-	DeleteStaff(context.Context, string) error
+	Staffs(c context.Context, page *utils.RequestPagination) (*[]models.User, *utils.ResponsePagination, error)
+	Permission(c context.Context, userUID string) (*models.UserPermission, error)
+	CreateStaff(c context.Context, user *models.User, permission *models.UserPermission) error
+	UpdateStaffPermission(c context.Context, userUID string, permission *models.UserPermission) error
+	UpdateStaffPassword(c context.Context, userUID, password, salt string) error
+	DeleteStaff(c context.Context, userUID string) error
 }
 
 func NewStaffRepository() *StaffRepository {
@@ -110,7 +110,7 @@ func (s *StaffRepository) UpdateStaffPermission(c context.Context, userUID strin
 	})
 }
 
-func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID string, password string) error {
+func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID, password, salt string) error {
 	return s.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
 		var user models.User
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
@@ -119,6 +119,7 @@ func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID string,
 			return err
 		}
 		user.Password = password
+		user.Salt = salt
 		if err := tx.Save(&user).Error; err != nil {
 			return err
 		}

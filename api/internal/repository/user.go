@@ -42,9 +42,9 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 	if err != nil {
 		return "", err
 	}
-	passwordHash := password.Create(passwd)
-	if user.Password != passwordHash {
-		return "", errors.New("invalid password")
+
+	if !password.Check(passwd, user.Password, user.Salt) {
+		return "", errors.New("invalid username and password")
 	}
 	if rememberMe {
 		expireAt = time.Now().Add(time.Hour * 24 * 30)
@@ -82,10 +82,14 @@ func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd 
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, userID).Error; err != nil {
 			return err
 		}
-		if user.Password != password.Create(oldPasswd) {
+
+		if !password.Check(oldPasswd, user.Password, user.Salt) {
 			return errors.New("incorrect old password")
 		}
-		user.Password = password.Create(newPasswd)
+
+		pass := password.NewPassword(newPasswd)
+		user.Password = pass.Hash
+		user.Salt = pass.Salt
 		if err := tx.Save(&user).Error; err != nil {
 			return err
 		}

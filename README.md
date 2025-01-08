@@ -20,7 +20,7 @@ sudo docker run -d \
   -e POSTGRES_USER=ocserv \
   -e POSTGRES_PASSWORD=ocserv \
   -e POSTGRES_DB=ocserv \
-  -v ./volumes/db:/var/lib/postgresql/data \
+  -v ./.volumes/db:/var/lib/postgresql/data \
   --restart always \
   postgres:latest 
 
@@ -52,16 +52,16 @@ go build  -o build/ocserv_api cmd/main.go
 sudo docker build -t ocserv:api .
 
 sudo docker run -it --rm -v "./build:/app" \
-    -v "./volumes/ocserv:/etc/ocserv" \
-    -v "./volumes/logs:/var/log/ocserv" \
+    -v "./.volumes/ocserv:/etc/ocserv" \
+    -v "./.volumes/logs:/var/log/ocserv" \
     --env-file=.env -p "8080:8080" -p "20443:443" \
     --link ocserv-postgres:ocserv-postgres \
     --link rabbitmq-ocserv:rabbitmq-ocserv \
     --name ocserv_api --privileged ocserv:api
 
 sudo docker run -it --rm -v "./build:/app" \
-    -v "./volumes/ocserv:/etc/ocserv" \
-    -v "./volumes/logs:/var/log/ocserv" \
+    -v "./.volumes/ocserv:/etc/ocserv" \
+    -v "./.volumes/logs:/var/log/ocserv" \
     --env-file=.env -p "8080:8080" -p "20443:443" \
     --link ocserv-postgres:ocserv-postgres \
     --name ocserv_api --privileged ocserv:api

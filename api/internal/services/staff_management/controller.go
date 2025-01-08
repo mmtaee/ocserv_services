@@ -94,9 +94,12 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
+
+	pass := password.NewPassword(data.User.Password)
 	staff := models.User{
 		Username: data.User.Username,
-		Password: password.Create(data.User.Password),
+		Password: pass.Hash,
+		Salt:     pass.Salt,
 	}
 	permission := models.UserPermission{
 		OcUser:    data.Permission.OcUser,
@@ -166,7 +169,10 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-	err := ctrl.staffRepo.UpdateStaffPassword(c.Request().Context(), c.Param("uid"), password.Create(data.Password))
+
+	pass := password.NewPassword(data.Password)
+
+	err := ctrl.staffRepo.UpdateStaffPassword(c.Request().Context(), c.Param("uid"), pass.Hash, pass.Salt)
 	if err != nil {
 		return utils.BadRequest(c, err.(error))
 	}

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/labstack/echo/v4"
 	"golang.org/x/time/rate"
-	"log"
 	"net/http"
 	"strings"
 	"sync"
@@ -18,7 +17,6 @@ func TimeoutMiddleware(timeout time.Duration) echo.MiddlewareFunc {
 			if c.Path() == "/swagger/*" {
 				err := next(c)
 				if err != nil {
-					log.Println("swagger error: ", err)
 					return err
 				}
 				return nil
