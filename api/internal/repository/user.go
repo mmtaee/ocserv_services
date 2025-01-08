@@ -59,14 +59,8 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 }
 
 func (r *UserRepository) Logout(c context.Context) error {
-	userID, ok := c.Value("userID").(string)
-	if !ok {
-		return errors.New("userID not found in context")
-	}
-	token, ok := c.Value("token").(string)
-	if !ok {
-		return errors.New("token not found in context")
-	}
+	userID := c.Value("userID")
+	token := c.Value("token")
 	return r.db.WithContext(c).
 		Where("token = ? AND user_id = ? ", token, userID).
 		Delete(&models.UserToken{}).Error
