@@ -26,10 +26,12 @@ func BadRequest(c echo.Context, err interface{}) error {
 			"error": err.(string),
 		})
 	case map[string]interface{}:
-		return c.JSON(http.StatusBadRequest, errors.New(err.(map[string]interface{})["error"].([]string)[0]))
-	case interface{}:
-		return c.JSON(http.StatusBadRequest, err.(interface{}))
+		return c.JSON(http.StatusBadRequest, map[string][]string{
+			"error": err.(map[string]interface{})["error"].([]string),
+		})
 	default:
-		return c.JSON(http.StatusBadRequest, errors.New(http.StatusText(http.StatusBadRequest)))
+		return c.JSON(http.StatusBadRequest, map[string]string{
+			"error": "unknown error",
+		})
 	}
 }

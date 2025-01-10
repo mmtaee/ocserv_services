@@ -89,13 +89,20 @@ func (ctrl *Controller) User(c echo.Context) error {
 func (ctrl *Controller) Create(c echo.Context) error {
 	var data OcservUserCreateOrUpdateRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	user := models.OcUser{
-		Username:    data.Username,
-		Password:    data.Password,
-		TrafficType: data.TrafficType,
-		ExpireAt:    data.ExpireAt,
+		Group:       *data.Group,
+		Username:    *data.Username,
+		Password:    *data.Password,
+		TrafficType: *data.TrafficType,
+	}
+	if data.ExpireAt != nil {
+		t, err := time.Parse("2006-06-02", *data.ExpireAt)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+		user.ExpireAt = &t
 	}
 	if data.TrafficSize != nil {
 		user.TrafficSize = *data.TrafficSize
@@ -129,11 +136,17 @@ func (ctrl *Controller) Update(c echo.Context) error {
 		return utils.BadRequest(c, err.(error))
 	}
 	user := models.OcUser{
-		Group:       data.Group,
-		Username:    data.Username,
-		Password:    data.Password,
-		ExpireAt:    data.ExpireAt,
-		TrafficType: data.TrafficType,
+		Group:       *data.Group,
+		Username:    *data.Username,
+		Password:    *data.Password,
+		TrafficType: *data.TrafficType,
+	}
+	if data.ExpireAt != nil {
+		t, err := time.Parse("2006-06-02", *data.ExpireAt)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+		user.ExpireAt = &t
 	}
 	if data.TrafficSize != nil {
 		user.TrafficSize = *data.TrafficSize

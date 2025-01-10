@@ -27,40 +27,40 @@ func NewOcservGroupRepository() *OcservGroupRepository {
 	}
 }
 
-func (o *OcservGroupRepository) Groups(ctx context.Context) (*[]ocserv.OcGroupConfigInfo, error) {
-	groups, err := o.oc.Group.Groups(ctx)
+func (o *OcservGroupRepository) Groups(c context.Context) (*[]ocserv.OcGroupConfigInfo, error) {
+	groups, err := o.oc.Group.Groups(c)
 	if err != nil {
 		return nil, err
 	}
 	return groups, nil
 }
 
-func (o *OcservGroupRepository) GroupNames(ctx context.Context) (*[]string, error) {
-	groups, err := o.oc.Group.GroupNames(ctx)
+func (o *OcservGroupRepository) GroupNames(c context.Context) (*[]string, error) {
+	groups, err := o.oc.Group.GroupNames(c)
 	if err != nil {
 		return nil, err
 	}
 	return groups, nil
 }
 
-func (o *OcservGroupRepository) UpdateDefaultGroup(ctx context.Context, config *ocserv.OcGroupConfig) error {
+func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *ocserv.OcGroupConfig) error {
 	configMap := o.oc.ToMap(config)
-	err := o.oc.Group.UpdateDefaultGroup(ctx, &configMap)
+	err := o.oc.Group.UpdateDefaultGroup(c, &configMap)
 	if err != nil {
 		return err
 	}
-	return o.oc.Occtl.Reload()
+	return o.oc.Occtl.Reload(c)
 }
 
-func (o *OcservGroupRepository) CreateOrUpdateGroup(ctx context.Context, name string, config *ocserv.OcGroupConfig) error {
+func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name string, config *ocserv.OcGroupConfig) error {
 	configMap := o.oc.ToMap(config)
-	err := o.oc.Group.CreateOrUpdateGroup(ctx, name, &configMap)
+	err := o.oc.Group.CreateOrUpdateGroup(c, name, &configMap)
 	if err != nil {
 		return err
 	}
-	return o.oc.Occtl.Reload()
+	return o.oc.Occtl.Reload(c)
 }
 
-func (o *OcservGroupRepository) DeleteGroup(ctx context.Context, name string) error {
-	return o.oc.Group.DeleteGroup(ctx, name)
+func (o *OcservGroupRepository) DeleteGroup(c context.Context, name string) error {
+	return o.oc.Group.DeleteGroup(c, name)
 }

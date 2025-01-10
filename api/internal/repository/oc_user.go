@@ -47,9 +47,9 @@ func (o *OcservUserRepository) Users(c context.Context, page utils.RequestPagina
 	*[]models.OcUser, *utils.ResponsePagination, error,
 ) {
 	var (
-		users        []models.OcUser
-		totalRecords int64
-		online       []string
+		users             []models.OcUser
+		totalRecords      int64
+		ocservOnlineUsers []string
 	)
 	pageResponse := utils.NewPaginationResponse()
 	pageResponse.Page = page.Page
@@ -62,41 +62,42 @@ func (o *OcservUserRepository) Users(c context.Context, page utils.RequestPagina
 	}
 	pageResponse.TotalRecords = int(totalRecords)
 
-	var wg sync.WaitGroup
-	var usersErr, onlineErr error
-
+	ch := make(chan error, 1)
 	go func() {
-		defer wg.Done()
-		offset := (page.Page - 1) * page.PageSize
-		order := fmt.Sprintf("%s %s", page.Order, page.Sort)
-		usersErr = o.db.WithContext(c).Table("oc_users").
-			Order(order).Limit(page.PageSize).Offset(offset).Scan(&users).Error
-	}()
-
-	go func() {
-		ocservOnlineUsers, err := o.oc.Occtl.OnlineUsers(c)
+		onlineUsers, err := o.oc.Occtl.OnlineUsers(c)
 		if err != nil {
-			onlineErr = err
+			ch <- err
 			return
 		}
-		for _, user := range ocservOnlineUsers {
-			online = append(online, user.Username)
+		for _, u := range *onlineUsers {
+			ocservOnlineUsers = append(ocservOnlineUsers, u.Username)
 		}
+		ch <- nil
 	}()
+	if err := <-ch; err != nil {
+		return nil, pageResponse, err
+	}
+
+	offset := (page.Page - 1) * page.PageSize
+	order := fmt.Sprintf("%s %s", page.Order, page.Sort)
+	if err := o.db.WithContext(c).Table("oc_users").
+		Order(order).Limit(page.PageSize).Offset(offset).Scan(&users).Error; err != nil {
+		return nil, pageResponse, err
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(len(users))
+	for i := range users {
+		user := users[i]
+		go func(user *models.OcUser) {
+			defer wg.Done()
+			if slices.Contains(ocservOnlineUsers, user.Username) {
+				user.IsOnline = true
+			}
+		}(&user)
+	}
 	wg.Wait()
 
-	if usersErr != nil {
-		return nil, pageResponse, usersErr
-	}
-	if onlineErr != nil {
-		return nil, pageResponse, onlineErr
-	}
-
-	for _, user := range users {
-		if slices.Contains(online, user.Username) {
-			user.IsOnline = true
-		}
-	}
 	return &users, pageResponse, nil
 }
 
@@ -123,15 +124,12 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 			tx.Rollback()
 		}
 	}()
-
 	if err := tx.Table("oc_users").Create(user).Error; err != nil {
 		return err
 	}
-
 	if err := o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group); err != nil {
 		return err
 	}
-
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}

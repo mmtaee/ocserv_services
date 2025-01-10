@@ -173,8 +173,8 @@ func ParseConfFile(filename string) (*OcGroupConfig, error) {
 	return &config, nil
 }
 
-func OcctlExec(command string) ([]byte, error) {
-	cmd := exec.Command("sh", "-c", fmt.Sprintf("sudo /usr/bin/occtl %s", command))
+func OcctlExec(c context.Context, command string) ([]byte, error) {
+	cmd := exec.CommandContext(c, "sh", "-c", fmt.Sprintf("sudo /usr/bin/occtl %s", command))
 	output, err := cmd.Output()
 	if err != nil {
 		return nil, err
