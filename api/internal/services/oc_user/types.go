@@ -11,12 +11,12 @@ type OcservUsersResponse struct {
 }
 
 type OcservUserCreateOrUpdateRequest struct {
-	Group       *string  `json:"group" validate:"required"`
-	Username    *string  `json:"username" validate:"required,min=3,max=16"`
-	Password    *string  `json:"password" validate:"required,min=1,max=16"`
-	TrafficType *int32   `json:"traffic_type" validate:"required"`
-	TrafficSize *float64 `json:"traffic_size"`
-	ExpireAt    *string  `json:"expire_at" validate:"required"`
+	Group       *string `json:"group" validate:"required"`
+	Username    *string `json:"username" validate:"required,min=3,max=16"`
+	Password    *string `json:"password" validate:"required,min=1,max=16"`
+	TrafficType *int    `json:"traffic_type" validate:"required"`
+	TrafficSize *int    `json:"traffic_size"`
+	ExpireAt    *string `json:"expire_at" validate:"required"`
 }
 
 type OcservUserLockRequest struct {

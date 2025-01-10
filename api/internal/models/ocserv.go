@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	Free int32 = iota + 1
+	Free int = iota + 1
 	Monthly
 	Totally
 )
@@ -16,34 +16,34 @@ const (
 type OcUser struct {
 	ID          uint       `json:"-" gorm:"primaryKey;autoIncrement"`
 	UID         string     `json:"uid" gorm:"type:varchar(26);not null;unique"`
-	Group       string     `json:"group" gorm:"type:varchar(16);default('defaults')"`
+	Group       string     `json:"group" gorm:"type:varchar(16);default:'defaults'"`
 	Username    string     `json:"username" gorm:"type:varchar(16);not null;unique"`
 	Password    string     `json:"password" gorm:"type:varchar(16);not null"`
 	IsLocked    bool       `json:"is_locked" gorm:"default(false)"`
 	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
 	ExpireAt    *time.Time `json:"expire_at"`
-	TrafficType int32      `json:"traffic_type" gorm:"not null;default(1)"`
-	TrafficSize float64    `json:"traffic_size" gorm:"not null;default(10)"`
-	Rx          float64    `json:"rx" gorm:"not null;default(0.00)"`
-	Tx          float64    `json:"tx" gorm:"not null;default(0.00)"`
+	TrafficType int        `json:"traffic_type" gorm:"not null;default:1"`
+	TrafficSize int        `json:"traffic_size" gorm:"not null;default:10"` // in GiB  >> x * 1024 ** 3
+	Rx          int        `json:"rx" gorm:"not null;default:0"`            // in bytes
+	Tx          int        `json:"tx" gorm:"not null;default:0"`            // in bytes
 	Description string     `json:"description" gorm:"type:text"`
 	IsOnline    bool       `json:"is_online" gorm:"-:migration;->"`
 }
 
 type OcUserActivity struct {
 	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
-	OcUserID  uint64    `json:"-" gorm:"index"`
+	OcUserID  uint      `json:"-" gorm:"index;constraint:OnDelete:CASCADE;"`
 	Log       string    `json:"log" gorm:"type:text"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
 type OcUserTrafficStatistics struct {
 	ID       uint      `json:"-" gorm:"primaryKey;autoIncrement"`
-	OcUserID uint64    `json:"-" gorm:"index"`
-	Date     time.Time `json:"date" gorm:"date"`
-	Rx       float64   `json:"rx" gorm:"numeric default 0.00"`
-	Tx       float64   `json:"tx" gorm:"numeric default 0.00"`
+	OcUserID uint      `json:"-" gorm:"index;constraint:OnDelete:CASCADE"`
+	Date     time.Time `json:"date" gorm:"type:date"`
+	Rx       int       `json:"rx" gorm:"default:0"` // in bytes
+	Tx       int       `json:"tx" gorm:"default:0"` // in bytes
 }
 
 func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
