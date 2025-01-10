@@ -28,6 +28,7 @@ type OcservUserRepositoryInterface interface {
 	Delete(c context.Context, uid string) error
 	Statistics(c context.Context, uid string, startDate, endDate time.Time) (*[]Statistics, error)
 	Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error)
+	BuildDelete(c context.Context, uid *[]string) error
 }
 
 type Statistics struct {
@@ -223,15 +224,15 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 			tx.Rollback()
 		}
 	}()
-
+	if err := tx.Where("uid = ?", uid).First(&user).Error; err != nil {
+		return err
+	}
 	if err := tx.Table("oc_users").Where("uid = ?", uid).Delete(&user).Error; err != nil {
 		return err
 	}
-
 	if err := o.oc.User.DeleteUser(c, user.Username); err != nil {
 		return err
 	}
-
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
@@ -265,4 +266,8 @@ func (o *OcservUserRepository) Activity(c context.Context, uid string, date time
 		return nil, err
 	}
 	return &activities, nil
+}
+
+func (o *OcservUserRepository) BuildDelete(c context.Context, uid *[]string) error {
+	return nil
 }

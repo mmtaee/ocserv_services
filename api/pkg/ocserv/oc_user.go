@@ -3,6 +3,7 @@ package ocserv
 import (
 	"context"
 	"fmt"
+	"log"
 	"os/exec"
 )
 
@@ -46,5 +47,7 @@ func (o *OcUser) LockUnLockUser(c context.Context, username string, lock bool) e
 
 func (o *OcUser) DeleteUser(c context.Context, username string) error {
 	command := fmt.Sprintf("%s -c %s -d %s", ocpasswdCMD, passwdFile, username)
+	log.Println("*******")
+	log.Println(command)
 	return exec.CommandContext(c, "sh", "-c", command).Run()
 }

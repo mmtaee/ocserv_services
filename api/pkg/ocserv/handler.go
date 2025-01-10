@@ -19,7 +19,7 @@ type Handler struct {
 }
 
 var (
-	ocpasswdCMD  = "sudo /usr/bin/ocpasswd"
+	ocpasswdCMD  = "/usr/bin/ocpasswd"
 	passwdFile   = "/etc/ocserv/ocpasswd"
 	groupDir     = "/etc/ocserv/groups"
 	defaultGroup = "/etc/ocserv/defaults/group.conf"
