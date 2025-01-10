@@ -1,13 +1,14 @@
 package models
 
 import (
+	"errors"
 	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"time"
 )
 
 const (
-	Free int32 = iota
+	Free int32 = iota + 1
 	Monthly
 	Totally
 )
@@ -22,7 +23,7 @@ type OcUser struct {
 	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
 	ExpireAt    *time.Time `json:"expire_at"`
-	TrafficType int32      `json:"traffic_type" gorm:"not null;default(0)"`
+	TrafficType int32      `json:"traffic_type" gorm:"not null;default(1)"`
 	TrafficSize float64    `json:"traffic_size" gorm:"not null;default(10)"`
 	Rx          float64    `json:"rx" gorm:"not null;default(0.00)"`
 	Tx          float64    `json:"tx" gorm:"not null;default(0.00)"`
@@ -46,6 +47,9 @@ type OcUserTrafficStatistics struct {
 }
 
 func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
+	if o.TrafficType > 3 || o.TrafficType < 1 {
+		return errors.New("invalid traffic type. traffic type must be between 1 and 3")
+	}
 	if o.TrafficType == Free {
 		o.TrafficSize = 0
 	}
@@ -54,6 +58,9 @@ func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
 }
 
 func (o *OcUser) BeforeUpdate(tx *gorm.DB) (err error) {
+	if o.TrafficType > 3 || o.TrafficType < 1 {
+		return errors.New("invalid traffic type. traffic type must be between 1 and 3")
+	}
 	if o.TrafficType == Free {
 		o.TrafficSize = 0
 	}
