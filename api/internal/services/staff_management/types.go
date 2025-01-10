@@ -6,8 +6,8 @@ import (
 )
 
 type StaffsResponse struct {
-	Staffs *[]models.User
-	Meta   *utils.ResponsePagination
+	Staffs *[]models.User            `json:"staffs"`
+	Meta   *utils.ResponsePagination `json:"meta"`
 }
 
 type CreateStaffRequest struct {

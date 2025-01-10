@@ -6,8 +6,8 @@ import (
 )
 
 type GroupsResponse struct {
-	Groups *[]ocserv.OcGroupConfig
-	Meta   *utils.ResponsePagination
+	Groups *[]ocserv.OcGroupConfig   `json:"groups"`
+	Meta   *utils.ResponsePagination `json:"meta"`
 }
 
 type CreateGroupRequest struct {

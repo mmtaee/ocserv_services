@@ -7,8 +7,8 @@ import (
 )
 
 type OcservUsersResponse struct {
-	OcUsers *[]models.OcUser
-	Meta    *utils.ResponsePagination
+	OcUsers *[]models.OcUser          `json:"oc_users"`
+	Meta    *utils.ResponsePagination `json:"meta"`
 }
 
 type OcservUserCreateOrUpdateRequest struct {
