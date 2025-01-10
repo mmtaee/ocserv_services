@@ -68,19 +68,13 @@ func (r *UserRepository) Logout(c context.Context) error {
 
 func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd string) error {
 	var user models.User
-	userID, ok := c.Value("userID").(string)
-	if !ok {
-		return errors.New("userID not found in context")
-	}
 	return r.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
-		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, userID).Error; err != nil {
+		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, c.Value("userID")).Error; err != nil {
 			return err
 		}
-
 		if !password.Check(oldPasswd, user.Password, user.Salt) {
 			return errors.New("incorrect old password")
 		}
-
 		pass := password.NewPassword(newPasswd)
 		user.Password = pass.Hash
 		user.Salt = pass.Salt

@@ -124,25 +124,18 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "User UID"
-// @Param        request body  UpdateStaffPermissionRequest true "Staff permission body"
+// @Param        request body  models.UserPermission true "Staff permission body"
 // @Success      200  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Failure		 403 {object} nil
 // @Router       /api/v1/staffs/:uid/permission [patch]
 func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
-	var data UpdateStaffPermissionRequest
+	var data models.UserPermission
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-	permission := models.UserPermission{
-		OcUser:    data.OcUser,
-		OcGroup:   data.OcGroup,
-		Occtl:     data.Occtl,
-		Statistic: data.Statistic,
-		System:    data.System,
-	}
-	err := ctrl.staffRepo.UpdateStaffPermission(c.Request().Context(), c.Param("uid"), &permission)
+	err := ctrl.staffRepo.UpdateStaffPermission(c.Request().Context(), c.Param("uid"), &data)
 	if err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
@@ -169,9 +162,7 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-
 	pass := password.NewPassword(data.Password)
-
 	err := ctrl.staffRepo.UpdateStaffPassword(c.Request().Context(), c.Param("uid"), pass.Hash, pass.Salt)
 	if err != nil {
 		return utils.BadRequest(c, err.(error))

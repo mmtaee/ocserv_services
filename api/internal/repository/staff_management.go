@@ -5,7 +5,6 @@ import (
 	"api/pkg/database"
 	"api/pkg/utils"
 	"context"
-	"errors"
 	"fmt"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
@@ -47,7 +46,7 @@ func (s *StaffRepository) Staffs(c context.Context, page *utils.RequestPaginatio
 	pageResponse.TotalRecords = int(totalRecords)
 	offset := (page.Page - 1) * page.PageSize
 	order := fmt.Sprintf("%s %s", page.Order, page.Sort)
-	err := s.db.WithContext(c).Table("staffs").Where("is_admin = ?", false).
+	err := s.db.WithContext(c).Model(&staffs).Where("is_admin = false").
 		Order(order).Limit(page.PageSize).Offset(offset).Scan(&staffs).Error
 	if err != nil {
 		return nil, nil, err
@@ -57,10 +56,9 @@ func (s *StaffRepository) Staffs(c context.Context, page *utils.RequestPaginatio
 
 func (s *StaffRepository) Permission(c context.Context, userUID string) (*models.UserPermission, error) {
 	var permission models.UserPermission
-	//err := s.db.Joins("JOIN users ON users.id = permissions.user_id").
-	//	Where("users.uid = ?", uid).
-	//	First(&permission).Error
-	err := s.db.Preload("User").Where("users.uid = ?", userUID).First(&permission).Error
+	err := s.db.Joins("JOIN users ON users.id = user_permissions.user_id").
+		Where("users.uid = ?", userUID).
+		First(&permission).Error
 	if err != nil {
 		return nil, err
 	}
@@ -79,34 +77,9 @@ func (s *StaffRepository) CreateStaff(c context.Context, staff *models.User, per
 
 func (s *StaffRepository) UpdateStaffPermission(c context.Context, userUID string, permission *models.UserPermission) error {
 	return s.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
-		var existingPermission models.UserPermission
-		//if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-		//	Joins("JOIN users ON users.id = permissions.user_id").
-		//	Where("users.uid = ?", userUID).
-		//	First(&existingPermission).Error; err != nil {
-		//	if errors.Is(err, gorm.ErrRecordNotFound) {
-		//		return errors.New("permission not found")
-		//	}
-		//	return err
-		//}
-		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).
-			Preload("User").Where("users.uid = ?", userUID).
-			First(&existingPermission).Error; err != nil {
-			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return errors.New("permission not found")
-			}
-			return err
-		}
-
-		existingPermission.OcUser = permission.OcUser
-		existingPermission.OcGroup = permission.OcGroup
-		existingPermission.Statistic = permission.Statistic
-		existingPermission.Occtl = permission.Occtl
-		existingPermission.System = permission.System
-		if err := tx.Save(&existingPermission).Error; err != nil {
-			return err
-		}
-		return nil
+		return s.db.Model(&models.UserPermission{}).
+			Where("user_id = (?)", s.db.Table("users").Select("id").Where("uid = ?", userUID)).
+			Updates(&permission).Error
 	})
 }
 
@@ -128,5 +101,14 @@ func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID, passwo
 }
 
 func (s *StaffRepository) DeleteStaff(c context.Context, userUID string) error {
-	return s.db.WithContext(c).Where("uid = ?", userUID).Delete(&models.User{}).Error
+	return s.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
+		var user models.User
+		if err := tx.Where("uid = ?", userUID).First(&user).Error; err != nil {
+			return err
+		}
+		if err := tx.Where("user_id = ? ", user.ID).Delete(&models.UserPermission{}).Error; err != nil {
+			return err
+		}
+		return tx.Delete(&user).Error
+	})
 }

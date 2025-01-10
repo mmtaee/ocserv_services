@@ -25,11 +25,11 @@ type CreateStaffRequest struct {
 }
 
 type UpdateStaffPermissionRequest struct {
-	OcUser    bool `json:"oc_user" validator:"required"`
-	OcGroup   bool `json:"oc_group" validator:"required"`
-	Statistic bool `json:"statistic" validator:"required"`
-	Occtl     bool `json:"occtl" validator:"required"`
-	System    bool `json:"system" validator:"required"`
+	OcUser    *bool `json:"oc_user" validator:"required"`
+	OcGroup   *bool `json:"oc_group" validator:"required"`
+	Statistic *bool `json:"statistic" validator:"required"`
+	Occtl     *bool `json:"occtl" validator:"required"`
+	System    *bool `json:"system" validator:"required"`
 }
 
 type UpdateStaffPasswordRequest struct {

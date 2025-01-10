@@ -150,7 +150,8 @@ func (ctrl *Controller) ChangePassword(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err.(error))
 	}
-	err := ctrl.userRepo.ChangePassword(c.Request().Context(), data.OldPassword, data.NewPassword)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.userRepo.ChangePassword(ctx, data.OldPassword, data.NewPassword)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
