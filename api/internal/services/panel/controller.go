@@ -38,7 +38,7 @@ func New() *Controller {
 func (ctrl *Controller) CreatePanelConfig(c echo.Context) error {
 	var data CreateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	panelConfig := models.PanelConfig{
 		Init:                   true,
@@ -68,7 +68,7 @@ func (ctrl *Controller) CreatePanelConfig(c echo.Context) error {
 func (ctrl *Controller) UpdatePanelConfig(c echo.Context) error {
 	var data UpdateSiteConfigRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.panelRepo.UpdateConfig(c.Request().Context(), data.GoogleCaptchaSiteKey, data.GoogleCaptchaSecretKey)
 	if err != nil {

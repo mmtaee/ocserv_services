@@ -41,7 +41,7 @@ func New() *Controller {
 func (ctrl *Controller) Staffs(c echo.Context) error {
 	data := utils.NewPaginationRequest()
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	staffs, meta, err := ctrl.staffRepo.Staffs(c.Request().Context(), &data)
 	if err != nil {
@@ -70,7 +70,7 @@ func (ctrl *Controller) Staffs(c echo.Context) error {
 func (ctrl *Controller) StaffPermission(c echo.Context) error {
 	permission, err := ctrl.staffRepo.Permission(c.Request().Context(), c.Param("uid"))
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, permission)
 }
@@ -92,7 +92,7 @@ func (ctrl *Controller) StaffPermission(c echo.Context) error {
 func (ctrl *Controller) CreateStaff(c echo.Context) error {
 	var data CreateStaffRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 
 	pass := password.NewPassword(data.User.Password)
@@ -110,7 +110,7 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 	}
 	err := ctrl.staffRepo.CreateStaff(c.Request().Context(), &staff, &permission)
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusCreated, staff)
 }
@@ -133,11 +133,11 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
 	var data models.UserPermission
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.staffRepo.UpdateStaffPermission(c.Request().Context(), c.Param("uid"), &data)
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, nil)
 }
@@ -160,12 +160,12 @@ func (ctrl *Controller) UpdateStaffPermission(c echo.Context) error {
 func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 	var data UpdateStaffPasswordRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	pass := password.NewPassword(data.Password)
 	err := ctrl.staffRepo.UpdateStaffPassword(c.Request().Context(), c.Param("uid"), pass.Hash, pass.Salt)
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, nil)
 }
@@ -187,7 +187,7 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 func (ctrl *Controller) DeleteStaff(c echo.Context) error {
 	err := ctrl.staffRepo.DeleteStaff(c.Request().Context(), c.Param("uid"))
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusNoContent, nil)
 }

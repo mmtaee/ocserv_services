@@ -40,7 +40,7 @@ func New() *Controller {
 func (ctrl *Controller) Users(c echo.Context) error {
 	data := utils.NewPaginationRequest()
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	users, meta, err := ctrl.ocservUserRepo.Users(c.Request().Context(), data)
 	if err != nil {
@@ -133,7 +133,7 @@ func (ctrl *Controller) Create(c echo.Context) error {
 func (ctrl *Controller) Update(c echo.Context) error {
 	var data OcservUserCreateOrUpdateRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	user := models.OcUser{
 		Group:       *data.Group,
@@ -157,7 +157,7 @@ func (ctrl *Controller) Update(c echo.Context) error {
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusCreated, nil)
+	return c.JSON(http.StatusOK, nil)
 }
 
 // LockOrUnlock  Ocserv User Lock or Unlock
@@ -177,7 +177,7 @@ func (ctrl *Controller) Update(c echo.Context) error {
 func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 	var data OcservUserLockRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.ocservUserRepo.LockOrUnLock(c.Request().Context(), c.Param("uid"), data.Lock)
 	if err != nil {

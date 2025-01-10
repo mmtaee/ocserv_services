@@ -77,7 +77,7 @@ func (ctrl *Controller) GroupNames(c echo.Context) error {
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	var data ocserv.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), &data)
 	if err != nil {
@@ -102,11 +102,11 @@ func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 func (ctrl *Controller) CreateGroup(c echo.Context) error {
 	var data CreateGroupRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), data.Name, data.Config)
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, nil)
 }
@@ -128,11 +128,11 @@ func (ctrl *Controller) CreateGroup(c echo.Context) error {
 func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 	var data ocserv.OcGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), c.Param("name"), &data)
 	if err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	return c.JSON(http.StatusOK, nil)
 }

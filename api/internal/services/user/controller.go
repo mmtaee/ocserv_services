@@ -63,7 +63,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	}
 
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	user, err := ctrl.userRepo.Admin.CreateSuperUser(c.Request().Context(), data.Username, data.Password)
 	go func() {
@@ -148,7 +148,7 @@ func (ctrl *Controller) Logout(c echo.Context) error {
 func (ctrl *Controller) ChangePassword(c echo.Context) error {
 	var data ChangePasswordRequest
 	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err.(error))
+		return utils.BadRequest(c, err)
 	}
 	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
 	err := ctrl.userRepo.ChangePassword(ctx, data.OldPassword, data.NewPassword)
