@@ -39,9 +39,10 @@ func NewStatisticsRepository() *StatisticsRepository {
 func (s *StatisticsRepository) Year(c context.Context, year int) (*YearStatistics, error) {
 	var result YearStatistics
 	err := s.db.WithContext(c).Model(&models.OcUserTrafficStatistics{}).
-		Select("?, SUM(rx) AS sum_rx, SUM(tx) AS sum_tx", year).
-		Where("strftime('%Y', date) = ?", fmt.Sprintf("%d", year)).
-		Scan(&result).Error
+		Select("TO_CHAR(date, 'YYYY') AS year, SUM(rx) AS sum_rx, SUM(tx) AS sum_tx").
+		Where("TO_CHAR(date, 'YYYY') = ?", fmt.Sprintf("%d", year)).
+		Group("TO_CHAR(date, 'YYYY'), TO_CHAR(date, 'MM')").
+		Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
@@ -51,10 +52,12 @@ func (s *StatisticsRepository) Year(c context.Context, year int) (*YearStatistic
 func (s *StatisticsRepository) Month(c context.Context, year, month int) (*MonthStatistics, error) {
 	var result MonthStatistics
 	err := s.db.WithContext(c).Model(&models.OcUserTrafficStatistics{}).
-		Select("?, ? AS month, SUM(rx) AS sum_rx, SUM(tx) AS sum_tx", year, month).
-		Where("strftime('%Y', date) = ? AND strftime('%m', date) = ?",
+		Select("TO_CHAR(date, 'YYYY') AS year, TO_CHAR(date, 'MM') AS month, SUM(rx) AS sum_rx, SUM(tx) AS sum_tx").
+		Where("TO_CHAR(date, 'YYYY') = ? AND TO_CHAR(date, 'MM') = ?",
 			fmt.Sprintf("%d", year), fmt.Sprintf("%02d", month),
-		).Scan(&result).Error
+		).
+		Group("TO_CHAR(date, 'YYYY'), TO_CHAR(date, 'MM')").
+		Find(&result).Error
 	if err != nil {
 		return nil, err
 	}
