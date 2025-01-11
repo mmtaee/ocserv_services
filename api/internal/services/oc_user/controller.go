@@ -175,11 +175,19 @@ func (ctrl *Controller) Update(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/lock [post]
 func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
-	var data OcservUserLockRequest
+	var (
+		data OcservUserLockRequest
+		lock bool
+	)
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservUserRepo.LockOrUnLock(c.Request().Context(), c.Param("uid"), data.Lock)
+	if data.Lock != nil {
+		lock = *data.Lock
+	} else {
+		lock = false
+	}
+	err := ctrl.ocservUserRepo.LockOrUnLock(c.Request().Context(), c.Param("uid"), lock)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}

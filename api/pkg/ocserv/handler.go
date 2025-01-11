@@ -179,7 +179,6 @@ func OcctlExec(c context.Context, command string) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	log.Println("Command Output:\n", string(output))
 	return output, nil
 }
 

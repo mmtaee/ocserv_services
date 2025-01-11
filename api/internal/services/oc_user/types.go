@@ -20,5 +20,5 @@ type OcservUserCreateOrUpdateRequest struct {
 }
 
 type OcservUserLockRequest struct {
-	Lock bool `json:"lock" validate:"required" default:"false"`
+	Lock *bool `json:"lock" validate:"required"`
 }
