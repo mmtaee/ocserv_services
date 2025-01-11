@@ -17,7 +17,7 @@ type OcctlRepositoryInterface interface {
 	UnBanIP(c context.Context, ip string) error
 	ShowStatus(c context.Context) string
 	ShowIRoutes(c context.Context) *[]ocserv.IRoute
-	ShowUser(c context.Context, username string) (*ocserv.OcctlUser, error)
+	ShowUser(c context.Context, username string) (*[]ocserv.OcctlUser, error)
 }
 
 func NewOcctlRepository() *OcctlRepository {
@@ -50,6 +50,6 @@ func (o *OcctlRepository) ShowStatus(c context.Context) string {
 func (o *OcctlRepository) ShowIRoutes(c context.Context) *[]ocserv.IRoute {
 	return o.oc.Occtl.ShowIRoutes(c)
 }
-func (o *OcctlRepository) ShowUser(c context.Context, username string) (*ocserv.OcctlUser, error) {
+func (o *OcctlRepository) ShowUser(c context.Context, username string) (*[]ocserv.OcctlUser, error) {
 	return o.oc.Occtl.ShowUser(c, username)
 }

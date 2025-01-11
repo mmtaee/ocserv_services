@@ -68,17 +68,13 @@ func (ctrl *Controller) OnlineUsers(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Param		 request body  DisconnectRequest true "Username for disconnect from server"
+// @Param 		 username path string true "Ocserv User Username"
 // @Success      202  {object} nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
-// @Router       /api/v1/occtl/disconnect [post]
+// @Router       /api/v1/occtl/disconnect/:username [post]
 func (ctrl *Controller) Disconnect(c echo.Context) error {
-	var data DisconnectRequest
-	if err := ctrl.validator.Validate(c, &data); err != nil {
-		return utils.BadRequest(c, err)
-	}
-	err := ctrl.os.Disconnect(c.Request().Context(), c.Param("user"))
+	err := ctrl.os.Disconnect(c.Request().Context(), c.Param("username"))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -177,7 +173,7 @@ func (ctrl *Controller) ShowIRoutes(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 username path string true "Ocserv User Username"
-// @Success      200  {object} ocserv.OcctlUser
+// @Success      200  {object} []ocserv.OcctlUser
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/occtl/users/:username [get]

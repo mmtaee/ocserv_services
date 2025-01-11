@@ -12,10 +12,10 @@ func Routes(e *echo.Group) {
 
 	group.POST("/reload", controller.Reload)
 	group.GET("/online", controller.OnlineUsers)
-	group.POST("/disconnect", controller.Disconnect)
+	group.POST("/disconnect/:username", controller.Disconnect)
 	group.GET("/ip_bans", controller.ShowIPBans)
 	group.POST("/unban", controller.UnBanIP)
 	group.GET("/status", controller.ShowStatus)
-	group.GET("/iroutes", controller.ShowIRoutes)
-	group.GET("users/:username", controller.ShowUser)
+	//group.GET("/iroutes", controller.ShowIRoutes)
+	group.GET("/users/:username", controller.ShowUser)
 }

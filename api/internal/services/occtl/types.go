@@ -1,9 +1,5 @@
 package occtl
 
-type DisconnectRequest struct {
-	Username string `json:"username"`
-}
-
 type UnBanIPRequest struct {
 	IP string `json:"ip"`
 }

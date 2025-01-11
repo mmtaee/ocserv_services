@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log"
 )
 
 type Occtl struct {
@@ -18,7 +19,7 @@ type OcctlInterface interface {
 	UnBanIP(c context.Context, ip string) error
 	ShowStatus(c context.Context) string
 	ShowIRoutes(c context.Context) *[]IRoute
-	ShowUser(c context.Context, username string) (*OcctlUser, error)
+	ShowUser(c context.Context, username string) (*[]OcctlUser, error)
 }
 
 func NewOcctl() *Occtl {
@@ -35,7 +36,7 @@ func (o *Occtl) Reload(c context.Context) error {
 
 func (o *Occtl) OnlineUsers(c context.Context) (*[]OcctlUser, error) {
 	var users []OcctlUser
-	result, err := OcctlExec(c, "-j show users --output=json-pretty")
+	result, err := OcctlExec(c, "-j show users")
 	if err != nil {
 		return nil, err
 	}
@@ -66,6 +67,7 @@ func (o *Occtl) ShowIPBans(c context.Context, points bool) *[]IPBan {
 	var ipBans []IPBan
 	err = json.Unmarshal(result, &ipBans)
 	if err != nil {
+		log.Println("ShowIPBans: failed to unmarshal: ", err)
 		return nil
 	}
 	return &ipBans
@@ -95,19 +97,21 @@ func (o *Occtl) ShowIRoutes(c context.Context) *[]IRoute {
 	var routes []IRoute
 	err = json.Unmarshal(result, &routes)
 	if err != nil {
+		log.Println("ShowIRoutes: failed to unmarshal: ", err)
 		return nil
 	}
 	return &routes
 }
 
-func (o *Occtl) ShowUser(c context.Context, username string) (*OcctlUser, error) {
-	var user *OcctlUser
+func (o *Occtl) ShowUser(c context.Context, username string) (*[]OcctlUser, error) {
+	var user *[]OcctlUser
 	result, err := OcctlExec(c, fmt.Sprintf("-j show user %s", username))
 	if err != nil {
 		return nil, err
 	}
 	err = json.Unmarshal(result, &user)
 	if err != nil {
+		log.Println("ShowUser: failed to unmarshal: ", err)
 		return nil, err
 	}
 	return user, err
