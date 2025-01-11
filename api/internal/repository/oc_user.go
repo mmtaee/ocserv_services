@@ -243,11 +243,17 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 	*[]Statistics, error,
 ) {
 	var results []Statistics
-	err := o.db.WithContext(c).Table("oc_user_traffic_statistics").Preload("OcUser").
-		Where("oc_user.uid = ? AND date BETWEEN ? AND ?", uid, startDate, endDate).
-		Select("date, SUM(rx) as sum_rx, SUM(tx) as sum_tx").
-		Group("date").
-		Order("date").
+	err := o.db.WithContext(c).
+		Table("oc_user_traffic_statistics").
+		Joins("JOIN oc_users ON oc_users.id = oc_user_traffic_statistics.oc_user_id").
+		Where("oc_users.uid = ? AND date BETWEEN ? AND ?", uid, startDate, endDate).
+		Select(
+			"oc_user_traffic_statistics.date, " +
+				"SUM(oc_user_traffic_statistics.rx) as sum_rx, " +
+				"SUM(oc_user_traffic_statistics.tx) as sum_tx",
+		).
+		Group("oc_user_traffic_statistics.date").
+		Order("oc_user_traffic_statistics.date").
 		Scan(&results).Error
 	if err != nil {
 		return nil, err
