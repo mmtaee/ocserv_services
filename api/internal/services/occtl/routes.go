@@ -7,7 +7,9 @@ import (
 
 func Routes(e *echo.Group) {
 	controller := New()
+
 	group := e.Group("/occtl", middlewares.IsAuthenticatedMiddleware())
+
 	group.POST("/reload", controller.Reload)
 	group.GET("/online", controller.OnlineUsers)
 	group.POST("/disconnect", controller.Disconnect)

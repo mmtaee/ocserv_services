@@ -4,6 +4,7 @@ import (
 	"api/internal/models"
 	ocGroup "api/internal/services/oc_group"
 	ocUser "api/internal/services/oc_user"
+	"api/internal/services/occtl"
 	"api/internal/services/panel"
 	staffManagement "api/internal/services/staff_management"
 	"api/internal/services/statistics"
@@ -52,4 +53,5 @@ func Register(e *echo.Echo) {
 	ocGroup.Routes(group)
 	ocUser.Routes(group)
 	statistics.Routes(group)
+	occtl.Routes(group)
 }
