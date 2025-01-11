@@ -14,10 +14,10 @@ type OcctlInterface interface {
 	Reload(c context.Context) error
 	OnlineUsers(c context.Context) (*[]OcctlUser, error)
 	Disconnect(c context.Context, username string) error
-	ShowIPBans(c context.Context, points bool) []IPBan
+	ShowIPBans(c context.Context, points bool) *[]IPBan
 	UnBanIP(c context.Context, ip string) error
 	ShowStatus(c context.Context) string
-	ShowIRoutes(c context.Context) []IRoute
+	ShowIRoutes(c context.Context) *[]IRoute
 	ShowUser(c context.Context, username string) (*OcctlUser, error)
 }
 
@@ -54,7 +54,7 @@ func (o *Occtl) Disconnect(c context.Context, username string) error {
 	return nil
 }
 
-func (o *Occtl) ShowIPBans(c context.Context, points bool) []IPBan {
+func (o *Occtl) ShowIPBans(c context.Context, points bool) *[]IPBan {
 	command := "-j show ip bans"
 	if points {
 		command += " points"
@@ -68,7 +68,7 @@ func (o *Occtl) ShowIPBans(c context.Context, points bool) []IPBan {
 	if err != nil {
 		return nil
 	}
-	return ipBans
+	return &ipBans
 }
 
 func (o *Occtl) UnBanIP(c context.Context, ip string) error {
@@ -87,7 +87,7 @@ func (o *Occtl) ShowStatus(c context.Context) string {
 	return string(result)
 }
 
-func (o *Occtl) ShowIRoutes(c context.Context) []IRoute {
+func (o *Occtl) ShowIRoutes(c context.Context) *[]IRoute {
 	result, err := OcctlExec(c, "-j show iroutes")
 	if err != nil {
 		return nil
@@ -97,7 +97,7 @@ func (o *Occtl) ShowIRoutes(c context.Context) []IRoute {
 	if err != nil {
 		return nil
 	}
-	return routes
+	return &routes
 }
 
 func (o *Occtl) ShowUser(c context.Context, username string) (*OcctlUser, error) {

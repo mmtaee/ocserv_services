@@ -11,6 +11,14 @@ import (
 	"time"
 )
 
+type Unauthorized struct {
+	Error string `json:"error"`
+}
+
+func unauthorized(c echo.Context) error {
+	return c.JSON(http.StatusUnauthorized, Unauthorized{Error: "invalid authentication credentials"})
+}
+
 func IsAuthenticatedMiddleware() echo.MiddlewareFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
@@ -24,9 +32,7 @@ func IsAuthenticatedMiddleware() echo.MiddlewareFunc {
 				Where("token = ? AND expire_at > ?", tokenString, time.Now()).
 				First(&token).Error
 			if errors.Is(err, gorm.ErrRecordNotFound) {
-				return c.JSON(http.StatusUnauthorized, map[string]string{
-					"error": "invalid authentication credentials",
-				})
+				return unauthorized(c)
 			} else if err != nil {
 				return c.JSON(http.StatusInternalServerError, nil)
 			}
