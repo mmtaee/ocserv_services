@@ -254,7 +254,7 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 		).
 		Group("oc_user_traffic_statistics.date").
 		Order("oc_user_traffic_statistics.date").
-		Scan(&results).Error
+		Find(&results).Error
 	if err != nil {
 		return nil, err
 	}
@@ -263,10 +263,12 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 
 func (o *OcservUserRepository) Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error) {
 	var activities []models.OcUserActivity
-	startOfDay := date.String() + " 00:00:00"
-	endOfDay := date.String() + " 23:59:59"
-	err := o.db.WithContext(c).Table("oc_user_activities").Preload("OcUser").
-		Where("oc_user.uid = ? AND created_at BETWEEN ? AND ?", uid, startOfDay, endOfDay).
+	startOfDay := date.Format("2006-01-02") + " 00:00:00"
+	endOfDay := date.Format("2006-01-02") + " 23:59:59"
+	err := o.db.WithContext(c).Table("oc_user_activities").
+		Joins("JOIN oc_users ON oc_users.id = oc_user_activities.oc_user_id").
+		Where("oc_users.uid = ? AND oc_user_activities.created_at BETWEEN ? AND ?", uid, startOfDay, endOfDay).
+		Order("oc_user_activities.created_at").
 		Find(&activities).Error
 	if err != nil {
 		return nil, err

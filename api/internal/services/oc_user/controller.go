@@ -298,7 +298,15 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/activities [get]
 func (ctrl *Controller) Activities(c echo.Context) error {
-	date, err := time.Parse("2006-01-02", c.QueryParam("date"))
+	var (
+		date time.Time
+		err  error
+	)
+	if dateParam := c.QueryParam("date"); dateParam != "" {
+		date, err = time.Parse("2006-01-02", dateParam)
+	} else {
+		date = time.Now()
+	}
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
