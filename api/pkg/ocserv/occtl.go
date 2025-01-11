@@ -3,6 +3,7 @@ package ocserv
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 )
 
@@ -48,7 +49,7 @@ func (o *Occtl) OnlineUsers(c context.Context) (*[]OcctlUser, error) {
 func (o *Occtl) Disconnect(c context.Context, username string) error {
 	_, err := OcctlExec(c, fmt.Sprintf("disconnect user %s", username))
 	if err != nil {
-		return err
+		return errors.New("failed to disconnect user " + username)
 	}
 	return nil
 }
