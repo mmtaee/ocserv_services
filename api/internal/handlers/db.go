@@ -2,8 +2,9 @@ package handlers
 
 import (
 	"api/internal/models"
+	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
-	"log"
+	"github.com/mmtaee/go-oc-utils/logger"
 )
 
 var tables = []interface{}{
@@ -20,9 +21,9 @@ func Migrate() {
 	engine := database.Connection()
 	err := engine.AutoMigrate(tables...)
 	if err != nil {
-		log.Fatalf("error sync tables: %v", err)
+		logger.Log(logger.CRITICAL, fmt.Sprintf("error sync tables: %v", err))
 	}
-	log.Println("migrating tables successfully")
+	logger.Log(logger.INFO, "migrating tables successfully")
 }
 
 func Drop() {
@@ -31,5 +32,5 @@ func Drop() {
 	if err != nil {
 		return
 	}
-	log.Println("database drop table successfully")
+	logger.Log(logger.INFO, "database drop table successfully")
 }

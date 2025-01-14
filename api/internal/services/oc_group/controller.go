@@ -6,7 +6,6 @@ import (
 	"api/pkg/utils"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/handler/ocgroup"
-	_ "github.com/mmtaee/go-oc-utils/handler/ocgroup"
 	"net/http"
 )
 

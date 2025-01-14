@@ -7,8 +7,9 @@ import (
 	"api/pkg/utils"
 	"context"
 	"errors"
+	"fmt"
 	"github.com/labstack/echo/v4"
-	"log"
+	"github.com/mmtaee/go-oc-utils/logger"
 	"net/http"
 	"os"
 	"strings"
@@ -69,7 +70,7 @@ func (ctrl *Controller) CreateSuperUser(c echo.Context) error {
 	go func() {
 		err = os.Remove(file)
 		if err != nil {
-			log.Println(err)
+			logger.Log(logger.ERROR, fmt.Sprintf("failed to remove file %s", file))
 		}
 	}()
 	if err != nil {

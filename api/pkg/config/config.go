@@ -3,7 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/joho/godotenv"
-	"log"
+	"github.com/mmtaee/go-oc-utils/logger"
 	"os"
 	"strings"
 	"sync"
@@ -63,13 +63,16 @@ func Set(debug bool) {
 	if debug {
 		err := godotenv.Load()
 		if err != nil {
-			log.Fatalf("Error loading .env file: %v", err)
+			logger.Log(logger.CRITICAL, fmt.Sprintf("Error loading .env file: %v", err))
 		}
 	}
 	secretKey := os.Getenv("SECRET_KEY")
 	if secretKey == "" {
 		secretKey = "SECRET_KEY122456"
-		log.Println("SECRET_KEY environment variable not set. set default secret key to: " + secretKey)
+		logger.Log(
+			logger.WARNING,
+			fmt.Sprintf("SECRET_KEY environment variable not set. set default secret key to: %s", secretKey),
+		)
 	}
 
 	InitSecretFile := os.Getenv("SECRET_KEY_FILE_NAME")
@@ -129,7 +132,7 @@ func Set(debug bool) {
 	if vhost := os.Getenv("RABBIT_MQ_VHOST"); vhost != "" {
 		config.RabbitMQ.Vhost = vhost
 	}
-	log.Println("Configuration applied successfully")
+	logger.Log(logger.INFO, "Configuration applied successfully")
 }
 
 func GetDB() *DB {

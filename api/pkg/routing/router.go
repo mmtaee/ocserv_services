@@ -10,6 +10,7 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	LabstackLog "github.com/labstack/gommon/log"
 	"github.com/mmtaee/go-oc-utils/database"
+	"github.com/mmtaee/go-oc-utils/logger"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"log"
 	"net/http"
@@ -29,12 +30,12 @@ func Serve() {
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
 	<-quit
-
-	log.Println("Shutting down server...")
+	fmt.Println("")
+	logger.Log(logger.WARNING, "Server is shutting down...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := engine.Shutdown(ctx); err != nil {
-		log.Fatalf("Error shutting down server: %v", err)
+		logger.Log(logger.CRITICAL, fmt.Sprintf("Error shutting down server: %v", err))
 	}
 	defer database.Close()
 }
@@ -83,7 +84,7 @@ func serve() {
 		},
 	}))
 	if err := engine.Start(server); !errors.Is(err, http.ErrServerClosed) {
-		log.Fatal(err)
+		logger.Log(logger.CRITICAL, err)
 	}
 }
 
