@@ -28,10 +28,7 @@ api/.env
 .vscode
 .code
 
-
 init_secret
-
-docs/
 build/
 volumes/
 .volumes/

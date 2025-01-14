@@ -2,21 +2,22 @@ package ocGroup
 
 import (
 	"api/internal/repository"
-	"api/pkg/ocserv"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
+	"github.com/mmtaee/go-oc-utils/handler/ocgroup"
+	_ "github.com/mmtaee/go-oc-utils/handler/ocgroup"
 	"net/http"
 )
 
 type Controller struct {
-	validator       validator.CustomValidatorInterface
+	validator       utils.CustomValidatorInterface
 	ocservGroupRepo repository.OcservGroupRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		validator:       validator.NewCustomValidator(),
+		validator:       utils.NewCustomValidator(),
 		ocservGroupRepo: repository.NewOcservGroupRepository(),
 	}
 }
@@ -29,12 +30,16 @@ func New() *Controller {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Success      200  {object}  []ocserv.OcGroupConfigInfo
+// @Success      200 {array}  ocgroup.OcservGroupConfigInfo
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups [get]
 func (ctrl *Controller) Groups(c echo.Context) error {
-	groups, err := ctrl.ocservGroupRepo.Groups(c.Request().Context())
+	var (
+		groups *[]ocgroup.OcservGroupConfigInfo
+		err    error
+	)
+	groups, err = ctrl.ocservGroupRepo.Groups(c.Request().Context())
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -49,7 +54,7 @@ func (ctrl *Controller) Groups(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Success      200  {object}  []string
+// @Success      200  {array} string
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/names [get]
@@ -69,13 +74,13 @@ func (ctrl *Controller) GroupNames(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Param        request body  ocserv.OcGroupConfig true "oc group default config"
+// @Param        request body  ocgroup.OcservGroupConfig true "oc group default config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/defaults [post]
 func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
-	var data ocserv.OcGroupConfig
+	var data ocgroup.OcservGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -120,13 +125,13 @@ func (ctrl *Controller) CreateGroup(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 name path string true "Group Name"
-// @Param        request body  ocserv.OcGroupConfig true "oc group config"
+// @Param        request body  ocgroup.OcservGroupConfig true "oc group config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/:name [post]
 func (ctrl *Controller) UpdateGroup(c echo.Context) error {
-	var data ocserv.OcGroupConfig
+	var data ocgroup.OcservGroupConfig
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -146,7 +151,6 @@ func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 name path string true "Group Name"
-// @Param        request body  ocserv.OcGroupConfig true "oc group config"
 // @Success      200  {object}  nil
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized

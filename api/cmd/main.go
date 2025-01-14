@@ -4,10 +4,9 @@ import (
 	_ "api/docs"
 	"api/internal/handlers"
 	"api/pkg/config"
-	"api/pkg/database"
 	"api/pkg/routing"
 	"flag"
-	"log"
+	"github.com/mmtaee/go-oc-utils/database"
 )
 
 // @title Ocserv User management Example Api
@@ -24,11 +23,16 @@ func main() {
 	flag.BoolVar(&migrate, "migrate", false, "migrate models to database")
 	flag.BoolVar(&drop, "drop", false, "drop models table from database")
 	flag.Parse()
-	if debug {
-		log.SetFlags(0)
-	}
 	config.Set(debug)
-	database.Connect()
+	dbCfg := config.GetDB()
+	dbConfig := &database.DBConfig{
+		Host:     dbCfg.Host,
+		Port:     dbCfg.Port,
+		User:     dbCfg.User,
+		Password: dbCfg.Password,
+		Name:     dbCfg.Name,
+	}
+	database.Connect(dbConfig, debug)
 	if migrate {
 		handlers.Migrate()
 	} else if drop && debug {

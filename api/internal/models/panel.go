@@ -1,8 +1,8 @@
 package models
 
 import (
-	"api/pkg/database"
 	"errors"
+	"github.com/mmtaee/go-oc-utils/database"
 	"gorm.io/gorm"
 )
 

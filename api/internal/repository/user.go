@@ -2,11 +2,10 @@ package repository
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
-	"api/pkg/password"
-	TokenGenerator "api/pkg/token"
+	"api/pkg/utils"
 	"context"
 	"errors"
+	"github.com/mmtaee/go-oc-utils/database"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 	"time"
@@ -43,7 +42,7 @@ func (r *UserRepository) Login(c context.Context, username, passwd string, remem
 		return "", err
 	}
 
-	if !password.Check(passwd, user.Password, user.Salt) {
+	if !utils.Check(passwd, user.Password, user.Salt) {
 		return "", errors.New("invalid username and password")
 	}
 	if rememberMe {
@@ -72,10 +71,10 @@ func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd 
 		if err := tx.Clauses(clause.Locking{Strength: "UPDATE"}).First(&user, c.Value("userID")).Error; err != nil {
 			return err
 		}
-		if !password.Check(oldPasswd, user.Password, user.Salt) {
+		if !utils.Check(oldPasswd, user.Password, user.Salt) {
 			return errors.New("incorrect old password")
 		}
-		pass := password.NewPassword(newPasswd)
+		pass := utils.NewPassword(newPasswd)
 		user.Password = pass.Hash
 		user.Salt = pass.Salt
 		if err := tx.Save(&user).Error; err != nil {
@@ -88,7 +87,7 @@ func (r *UserRepository) ChangePassword(c context.Context, oldPasswd, newPasswd 
 func (r *UserRepository) CreateToken(c context.Context, id uint, expireAt time.Time) (string, error) {
 	token := models.UserToken{
 		UserID:   id,
-		Token:    TokenGenerator.Create(id, expireAt),
+		Token:    utils.Create(id, expireAt),
 		ExpireAt: &expireAt,
 	}
 	err := r.db.WithContext(c).Create(&token).Error

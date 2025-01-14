@@ -2,9 +2,9 @@ package middlewares
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
 	"errors"
 	"github.com/labstack/echo/v4"
+	"github.com/mmtaee/go-oc-utils/database"
 	"gorm.io/gorm"
 	"net/http"
 	"strings"

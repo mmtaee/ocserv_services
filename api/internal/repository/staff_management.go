@@ -2,10 +2,10 @@ package repository
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
 	"api/pkg/utils"
 	"context"
 	"fmt"
+	"github.com/mmtaee/go-oc-utils/database"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )

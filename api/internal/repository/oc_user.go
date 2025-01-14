@@ -2,11 +2,12 @@ package repository
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
-	"api/pkg/ocserv"
 	"api/pkg/utils"
 	"context"
 	"fmt"
+	"github.com/mmtaee/go-oc-utils/database"
+	"github.com/mmtaee/go-oc-utils/handler/occtl"
+	"github.com/mmtaee/go-oc-utils/handler/ocuser"
 	"gorm.io/gorm"
 	"slices"
 	"sync"
@@ -14,8 +15,9 @@ import (
 )
 
 type OcservUserRepository struct {
-	db *gorm.DB
-	oc *ocserv.Handler
+	db     *gorm.DB
+	ocUser ocuser.OcservUserInterface
+	occtl  occtl.OcInterface
 }
 
 type OcservUserRepositoryInterface interface {
@@ -28,7 +30,6 @@ type OcservUserRepositoryInterface interface {
 	Delete(c context.Context, uid string) error
 	Statistics(c context.Context, uid string, startDate, endDate time.Time) (*[]Statistics, error)
 	Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error)
-	BuildDelete(c context.Context, uid *[]string) error
 }
 
 type Statistics struct {
@@ -39,8 +40,9 @@ type Statistics struct {
 
 func NewOcservUserRepository() *OcservUserRepository {
 	return &OcservUserRepository{
-		db: database.Connection(),
-		oc: ocserv.NewHandler(),
+		db:     database.Connection(),
+		ocUser: ocuser.NewOcservUser(),
+		occtl:  occtl.NewOcctl(),
 	}
 }
 
@@ -65,7 +67,7 @@ func (o *OcservUserRepository) Users(c context.Context, page utils.RequestPagina
 
 	ch := make(chan error, 1)
 	go func() {
-		onlineUsers, err := o.oc.Occtl.OnlineUsers(c)
+		onlineUsers, err := o.occtl.OnlineUsers(c)
 		if err != nil {
 			ch <- err
 			return
@@ -108,7 +110,7 @@ func (o *OcservUserRepository) User(c context.Context, uid string) (*models.OcUs
 	if err != nil {
 		return nil, err
 	}
-	_, err = o.oc.Occtl.ShowUser(c, user.Username)
+	_, err = o.occtl.ShowUser(c, user.Username)
 	if err != nil {
 		return &user, err
 	}
@@ -128,7 +130,7 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 	if err := tx.Table("oc_users").Create(user).Error; err != nil {
 		return err
 	}
-	if err := o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group); err != nil {
+	if err := o.ocUser.Create(c, user.Username, user.Password, user.Group); err != nil {
 		return err
 	}
 	if err := tx.Commit().Error; err != nil {
@@ -164,7 +166,7 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		return err
 	}
 
-	if err := o.oc.User.CreateOrUpdateUser(c, user.Username, user.Password, user.Group); err != nil {
+	if err := o.ocUser.Update(c, user.Username, user.Password, user.Group); err != nil {
 		return err
 	}
 
@@ -197,8 +199,14 @@ func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock 
 		return err
 	}
 
-	if err := o.oc.User.LockUnLockUser(c, user.Username, user.IsLocked); err != nil {
-		return err
+	if user.IsLocked {
+		if err := o.ocUser.Lock(c, user.Username); err != nil {
+			return err
+		}
+	} else {
+		if err := o.ocUser.UnLock(c, user.Username); err != nil {
+			return err
+		}
 	}
 	if err := tx.Commit().Error; err != nil {
 		return err
@@ -212,7 +220,7 @@ func (o *OcservUserRepository) Disconnect(c context.Context, uid string) error {
 	if err != nil {
 		return err
 	}
-	return o.oc.Occtl.Disconnect(c, user.Username)
+	return o.occtl.Disconnect(c, user.Username)
 }
 func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 	var user models.OcUser
@@ -230,7 +238,7 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 	if err := tx.Table("oc_users").Where("uid = ?", uid).Delete(&user).Error; err != nil {
 		return err
 	}
-	if err := o.oc.User.DeleteUser(c, user.Username); err != nil {
+	if err := o.ocUser.Delete(c, user.Username); err != nil {
 		return err
 	}
 	if err := tx.Commit().Error; err != nil {
@@ -274,8 +282,4 @@ func (o *OcservUserRepository) Activity(c context.Context, uid string, date time
 		return nil, err
 	}
 	return &activities, nil
-}
-
-func (o *OcservUserRepository) BuildDelete(c context.Context, uid *[]string) error {
-	return nil
 }

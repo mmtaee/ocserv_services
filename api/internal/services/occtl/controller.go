@@ -2,20 +2,20 @@ package occtl
 
 import (
 	"api/internal/repository"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Controller struct {
-	validator validator.CustomValidatorInterface
+	validator utils.CustomValidatorInterface
 	os        repository.OcctlRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		validator: validator.NewCustomValidator(),
+		validator: utils.NewCustomValidator(),
 		os:        repository.NewOcctlRepository(),
 	}
 }
@@ -48,7 +48,7 @@ func (ctrl *Controller) Reload(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Success      200  {object} []ocserv.OcctlUser
+// @Success      200  {array} occtl.OcUser
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/occtl/online [get]
@@ -90,16 +90,36 @@ func (ctrl *Controller) Disconnect(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 points query bool false "Show IP bans with Points"
-// @Success      200  {object} []ocserv.IPBan
+// @Success      200  {array} occtl.IPBan
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/occtl/ip_bans [get]
 func (ctrl *Controller) ShowIPBans(c echo.Context) error {
-	var points bool
-	if c.QueryParam("points") != "" {
-		points = true
+	bans, err := ctrl.os.ShowIPBans(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
 	}
-	bans := ctrl.os.ShowIPBans(c.Request().Context(), points)
+	return c.JSON(http.StatusOK, bans)
+}
+
+// ShowIPBansPoint    IP Bans Point
+//
+// @Summary      List Of IP Bans include points
+// @Description  List Of IP Bans include points
+// @Tags         Occtl
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Param 		 points query bool false "Show IP bans with Points"
+// @Success      200  {array} occtl.IPBanPoints
+// @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Router       /api/v1/occtl/ip_bans/point [get]
+func (ctrl *Controller) ShowIPBansPoint(c echo.Context) error {
+	bans, err := ctrl.os.ShowIPBansPoint(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
 	return c.JSON(http.StatusOK, bans)
 }
 
@@ -155,12 +175,15 @@ func (ctrl *Controller) ShowStatus(c echo.Context) error {
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
-// @Success      200  {object} []ocserv.IRoute
+// @Success      200  {array} occtl.IRoute
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/occtl/iroutes [get]
 func (ctrl *Controller) ShowIRoutes(c echo.Context) error {
-	routes := ctrl.os.ShowIRoutes(c.Request().Context())
+	routes, err := ctrl.os.ShowIRoutes(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
 	return c.JSON(http.StatusOK, routes)
 }
 
@@ -173,7 +196,7 @@ func (ctrl *Controller) ShowIRoutes(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 username path string true "Ocserv User Username"
-// @Success      200  {object} []ocserv.OcctlUser
+// @Success      200  {array} occtl.OcUser
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/occtl/users/:username [get]

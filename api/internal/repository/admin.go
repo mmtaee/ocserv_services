@@ -2,9 +2,9 @@ package repository
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
-	"api/pkg/password"
+	"api/pkg/utils"
 	"context"
+	"github.com/mmtaee/go-oc-utils/database"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +23,7 @@ func NewAdminRepository() *AdminRepository {
 }
 
 func (a *AdminRepository) CreateSuperUser(c context.Context, username, passwd string) (*models.User, error) {
-	pass := password.NewPassword(passwd)
+	pass := utils.NewPassword(passwd)
 	user := models.User{
 		Username: username,
 		Password: pass.Hash,

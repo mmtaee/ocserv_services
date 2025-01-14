@@ -14,6 +14,7 @@ func Routes(e *echo.Group) {
 	group.GET("/online", controller.OnlineUsers)
 	group.POST("/disconnect/:username", controller.Disconnect)
 	group.GET("/ip_bans", controller.ShowIPBans)
+	group.GET("/ip_bans/point", controller.ShowIPBansPoint)
 	group.POST("/unban", controller.UnBanIP)
 	group.GET("/status", controller.ShowStatus)
 	//group.GET("/iroutes", controller.ShowIRoutes)

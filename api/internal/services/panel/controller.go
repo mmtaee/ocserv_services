@@ -3,20 +3,20 @@ package panel
 import (
 	"api/internal/models"
 	"api/internal/repository"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Controller struct {
-	validator validator.CustomValidatorInterface
+	validator utils.CustomValidatorInterface
 	panelRepo repository.PanelConfigRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		validator: validator.NewCustomValidator(),
+		validator: utils.NewCustomValidator(),
 		panelRepo: repository.NewPanelConfigRepository(),
 	}
 }

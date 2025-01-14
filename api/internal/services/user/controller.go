@@ -2,9 +2,9 @@ package user
 
 import (
 	"api/internal/repository"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/config"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"context"
 	"errors"
 	"github.com/labstack/echo/v4"
@@ -16,13 +16,13 @@ import (
 )
 
 type Controller struct {
-	validator validator.CustomValidatorInterface
+	validator utils.CustomValidatorInterface
 	userRepo  *repository.UserRepository
 }
 
 func New() *Controller {
 	return &Controller{
-		validator: validator.NewCustomValidator(),
+		validator: utils.NewCustomValidator(),
 		userRepo:  repository.NewUserRepository(),
 	}
 }

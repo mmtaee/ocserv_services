@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"api/internal/models"
-	"api/pkg/database"
+	"github.com/mmtaee/go-oc-utils/database"
 	"log"
 )
 

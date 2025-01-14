@@ -35,6 +35,7 @@ sudo docker run -d \
   rabbitmq:management
 
 swag init -g cmd/main.go
+swag init -g cmd/main.go --parseDependency
 
 env $(cat .env | xargs) go run cmd/main.go
 

@@ -1,4 +1,4 @@
-package password
+package utils
 
 import (
 	"api/pkg/config"

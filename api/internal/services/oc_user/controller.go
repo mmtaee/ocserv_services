@@ -3,21 +3,21 @@ package ocUser
 import (
 	"api/internal/models"
 	"api/internal/repository"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
 	"time"
 )
 
 type Controller struct {
-	validator      validator.CustomValidatorInterface
+	validator      utils.CustomValidatorInterface
 	ocservUserRepo repository.OcservUserRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		validator:      validator.NewCustomValidator(),
+		validator:      utils.NewCustomValidator(),
 		ocservUserRepo: repository.NewOcservUserRepository(),
 	}
 }

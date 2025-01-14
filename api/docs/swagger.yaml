@@ -1,0 +1,1817 @@
+basePath: /services
+definitions:
+  api_internal_models.OcUser:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      expire_at:
+        type: string
+      group:
+        type: string
+      is_locked:
+        type: boolean
+      is_online:
+        type: boolean
+      password:
+        type: string
+      rx:
+        description: in bytes
+        type: integer
+      traffic_size:
+        description: in GiB  >> x * 1024 ** 3
+        type: integer
+      traffic_type:
+        type: integer
+      tx:
+        description: in bytes
+        type: integer
+      uid:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  api_internal_models.OcUserActivity:
+    properties:
+      created_at:
+        type: string
+      log:
+        type: string
+    type: object
+  api_internal_models.User:
+    properties:
+      is_admin:
+        type: boolean
+      last_login:
+        type: string
+      uid:
+        type: string
+      username:
+        type: string
+    type: object
+  api_internal_models.UserPermission:
+    properties:
+      oc_group:
+        type: boolean
+      oc_user:
+        type: boolean
+      occtl:
+        type: boolean
+      statistic:
+        type: boolean
+      system:
+        type: boolean
+    type: object
+  api_internal_repository.MonthStatistics:
+    properties:
+      month:
+        type: integer
+      sum_rx:
+        type: number
+      sum_tx:
+        type: number
+      year:
+        type: integer
+    type: object
+  api_internal_repository.Statistics:
+    properties:
+      date:
+        type: string
+      sum_rx:
+        type: number
+      sum_tx:
+        type: number
+    type: object
+  api_internal_repository.YearStatistics:
+    properties:
+      sum_rx:
+        type: number
+      sum_tx:
+        type: number
+      year:
+        type: integer
+    type: object
+  api_internal_routes_middlewares.Unauthorized:
+    properties:
+      error:
+        type: string
+    type: object
+  api_pkg_utils.ErrorResponse:
+    properties:
+      error:
+        type: string
+    required:
+    - error
+    type: object
+  api_pkg_utils.ResponsePagination:
+    properties:
+      page:
+        type: integer
+      page_size:
+        type: integer
+      total_records:
+        type: integer
+    type: object
+  internal_services_oc_group.CreateGroupRequest:
+    properties:
+      config:
+        $ref: '#/definitions/ocgroup.OcservGroupConfig'
+      name:
+        type: string
+    required:
+    - config
+    - name
+    type: object
+  internal_services_oc_user.OcservUserCreateOrUpdateRequest:
+    properties:
+      expire_at:
+        type: string
+      group:
+        type: string
+      password:
+        maxLength: 16
+        minLength: 1
+        type: string
+      traffic_size:
+        type: integer
+      traffic_type:
+        type: integer
+      username:
+        maxLength: 16
+        minLength: 3
+        type: string
+    required:
+    - expire_at
+    - group
+    - password
+    - traffic_type
+    - username
+    type: object
+  internal_services_oc_user.OcservUserLockRequest:
+    properties:
+      lock:
+        type: boolean
+    required:
+    - lock
+    type: object
+  internal_services_oc_user.OcservUsersResponse:
+    properties:
+      meta:
+        $ref: '#/definitions/api_pkg_utils.ResponsePagination'
+      oc_users:
+        items:
+          $ref: '#/definitions/api_internal_models.OcUser'
+        type: array
+    type: object
+  internal_services_occtl.ShowStatusResponse:
+    properties:
+      status:
+        type: string
+    type: object
+  internal_services_occtl.UnBanIPRequest:
+    properties:
+      ip:
+        type: string
+    type: object
+  internal_services_panel.CreateSiteConfigRequest:
+    properties:
+      google_captcha_secret_key:
+        type: string
+      google_captcha_site_key:
+        type: string
+    type: object
+  internal_services_panel.GetFullPanelConfigResponse:
+    properties:
+      google_captcha_secret_key:
+        type: string
+      google_captcha_site_key:
+        type: string
+    type: object
+  internal_services_panel.GetPanelConfigResponse:
+    properties:
+      google_captcha_site_key:
+        type: string
+      init:
+        type: boolean
+    type: object
+  internal_services_panel.UpdateSiteConfigRequest:
+    properties:
+      google_captcha_secret_key:
+        type: string
+      google_captcha_site_key:
+        type: string
+    type: object
+  internal_services_staff_management.CreateStaffRequest:
+    properties:
+      permission:
+        properties:
+          oc_group:
+            type: boolean
+          oc_user:
+            type: boolean
+          occtl:
+            type: boolean
+          statistic:
+            type: boolean
+          system:
+            type: boolean
+        type: object
+      user:
+        properties:
+          password:
+            example: doe123456
+            maxLength: 16
+            minLength: 2
+            type: string
+          username:
+            example: john_doe
+            maxLength: 16
+            minLength: 2
+            type: string
+        required:
+        - password
+        - username
+        type: object
+    type: object
+  internal_services_staff_management.StaffsResponse:
+    properties:
+      meta:
+        $ref: '#/definitions/api_pkg_utils.ResponsePagination'
+      staffs:
+        items:
+          $ref: '#/definitions/api_internal_models.User'
+        type: array
+    type: object
+  internal_services_staff_management.UpdateStaffPasswordRequest:
+    properties:
+      password:
+        example: doe123456
+        maxLength: 16
+        minLength: 2
+        type: string
+    required:
+    - password
+    type: object
+  internal_services_statistics.GetStatisticsResponse:
+    properties:
+      month:
+        $ref: '#/definitions/api_internal_repository.MonthStatistics'
+      year:
+        $ref: '#/definitions/api_internal_repository.YearStatistics'
+    type: object
+  internal_services_user.ChangePasswordRequest:
+    properties:
+      new_password:
+        maxLength: 16
+        minLength: 2
+        type: string
+      old_password:
+        maxLength: 16
+        minLength: 2
+        type: string
+    required:
+    - new_password
+    - old_password
+    type: object
+  internal_services_user.CreateAdminUserRequest:
+    properties:
+      password:
+        example: doe123456
+        maxLength: 16
+        minLength: 2
+        type: string
+      username:
+        example: john_doe
+        maxLength: 16
+        minLength: 2
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_services_user.CreateAdminUserResponse:
+    properties:
+      token:
+        type: string
+    type: object
+  internal_services_user.LoginRequest:
+    properties:
+      password:
+        maxLength: 16
+        minLength: 2
+        type: string
+      remember_me:
+        type: boolean
+      username:
+        maxLength: 16
+        minLength: 2
+        type: string
+    required:
+    - password
+    - username
+    type: object
+  internal_services_user.LoginResponse:
+    properties:
+      token:
+        type: string
+    required:
+    - token
+    type: object
+  occtl.IPBan:
+    properties:
+      _Since:
+        type: string
+      IP:
+        type: string
+      Since:
+        type: string
+    type: object
+  occtl.IPBanPoints:
+    properties:
+      _Since:
+        type: string
+      IP:
+        type: string
+      Score:
+        type: integer
+      Since:
+        type: string
+    type: object
+  occtl.IRoute:
+    properties:
+      Device:
+        type: string
+      ID:
+        type: string
+      IP:
+        type: string
+      Username:
+        type: string
+      iRoutes:
+        type: string
+      vhost:
+        type: string
+    type: object
+  occtl.OcUser:
+    properties:
+      _Connected at:
+        type: string
+      _RX:
+        type: string
+      _TX:
+        type: string
+      Average RX:
+        type: string
+      Average TX:
+        type: string
+      Connected at:
+        type: string
+      DNS:
+        items:
+          type: string
+        type: array
+      DPD:
+        type: string
+      Device:
+        type: string
+      Full session:
+        type: string
+      Groupname:
+        type: string
+      Hostname:
+        type: string
+      IPv4:
+        type: string
+      KeepAlive:
+        type: string
+      Local Device IP:
+        type: string
+      Location:
+        type: string
+      MTU:
+        type: string
+      NBNS:
+        items:
+          type: string
+        type: array
+      P-t-P IPv4:
+        type: string
+      RX:
+        type: string
+      Remote IP:
+        type: string
+      Session:
+        type: string
+      Split-DNS-Domains:
+        items:
+          type: string
+        type: array
+      State:
+        type: string
+      TLS ciphersuite:
+        type: string
+      TX:
+        type: string
+      User-Agent:
+        type: string
+      Username:
+        type: string
+      iRoutes:
+        items:
+          type: string
+        type: array
+      raw_connected_at:
+        type: integer
+      vhost:
+        type: string
+    type: object
+  ocgroup.OcservGroupConfig:
+    properties:
+      dns:
+        items:
+          type: string
+        type: array
+      dpd:
+        type: integer
+      idle-timeout:
+        type: integer
+      ipv4-network:
+        type: string
+      keepalive:
+        type: integer
+      max-same-clients:
+        type: integer
+      mobile-dpd:
+        type: integer
+      mobile-idle-timeout:
+        type: integer
+      mtu:
+        type: integer
+      no-udp:
+        type: boolean
+      restrict-user-to-routes:
+        type: boolean
+      rx-data-per-sec:
+        type: string
+      session-timeout:
+        type: integer
+      stats-report-time:
+        type: integer
+      tunnel-all-dns:
+        type: boolean
+      tx-data-per-sec:
+        type: string
+    type: object
+  ocgroup.OcservGroupConfigInfo:
+    properties:
+      config:
+        $ref: '#/definitions/ocgroup.OcservGroupConfig'
+      name:
+        type: string
+    type: object
+info:
+  contact: {}
+  description: This is a sample Ocserv User management Api server.
+  title: Ocserv User management Example Api
+  version: "1.0"
+paths:
+  /api/v1/occtl/disconnect/:username:
+    post:
+      consumes:
+      - application/json
+      description: Disconnect User From Server and Close Session
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Disconnect User From Server
+      tags:
+      - Occtl
+  /api/v1/occtl/ip_bans:
+    get:
+      consumes:
+      - application/json
+      description: List Of IP Bans
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Show IP bans with Points
+        in: query
+        name: points
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/occtl.IPBan'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List Of IP Bans
+      tags:
+      - Occtl
+  /api/v1/occtl/ip_bans/point:
+    get:
+      consumes:
+      - application/json
+      description: List Of IP Bans include points
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Show IP bans with Points
+        in: query
+        name: points
+        type: boolean
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/occtl.IPBanPoints'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List Of IP Bans include points
+      tags:
+      - Occtl
+  /api/v1/occtl/iroutes:
+    get:
+      consumes:
+      - application/json
+      description: Show IP Routes
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/occtl.IRoute'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Show IP Routes
+      tags:
+      - Occtl
+  /api/v1/occtl/online:
+    get:
+      consumes:
+      - application/json
+      description: Show Online User List in Server
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/occtl.OcUser'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Online User List
+      tags:
+      - Occtl
+  /api/v1/occtl/reload:
+    post:
+      consumes:
+      - application/json
+      description: Reload Server Configuration
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Reload Server
+      tags:
+      - Occtl
+  /api/v1/occtl/status:
+    get:
+      consumes:
+      - application/json
+      description: Show Status Of Server State
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_occtl.ShowStatusResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Show Status
+      tags:
+      - Occtl
+  /api/v1/occtl/unban:
+    post:
+      consumes:
+      - application/json
+      description: Remove IP From Baned List
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: IP Address
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_occtl.UnBanIPRequest'
+      produces:
+      - application/json
+      responses:
+        "202":
+          description: Accepted
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Unban IP
+      tags:
+      - Occtl
+  /api/v1/occtl/users/:username:
+    get:
+      consumes:
+      - application/json
+      description: Show User Status
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User Username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/occtl.OcUser'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Show User Status
+      tags:
+      - Occtl
+  /api/v1/ocserv/groups:
+    get:
+      consumes:
+      - application/json
+      description: List Of Groups Sort By Name
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/ocgroup.OcservGroupConfigInfo'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List Of Groups
+      tags:
+      - Ocserv Group
+    post:
+      consumes:
+      - application/json
+      description: Create Ocserv Group by given name
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: oc group config
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_oc_group.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Create Ocserv Group
+      tags:
+      - Ocserv Group
+  /api/v1/ocserv/groups/:name:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Ocserv Group by given name
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Group Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Delete Ocserv Group
+      tags:
+      - Ocserv Group
+    post:
+      consumes:
+      - application/json
+      description: Update Ocserv Group
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Group Name
+        in: path
+        name: name
+        required: true
+        type: string
+      - description: oc group config
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ocgroup.OcservGroupConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Update Ocserv Group
+      tags:
+      - Ocserv Group
+  /api/v1/ocserv/groups/defaults:
+    post:
+      consumes:
+      - application/json
+      description: Update Ocserv Defaults Group initializing step
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: oc group default config
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/ocgroup.OcservGroupConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Update Ocserv Defaults Group
+      tags:
+      - Ocserv Group
+  /api/v1/ocserv/groups/names:
+    get:
+      consumes:
+      - application/json
+      description: List Of Group Names Sort By Name
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              type: string
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List Of Group Names
+      tags:
+      - Ocserv Group
+  /api/v1/ocserv/users:
+    get:
+      consumes:
+      - application/json
+      description: List of Ocserv Users with pagination
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page number, starting from 1
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - description: Field to order by
+        in: query
+        name: pager
+        type: string
+      - description: Sort order, either ASC or DESC
+        enum:
+        - ASC
+        - DESC
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_oc_user.OcservUsersResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List of Ocserv Users
+      tags:
+      - Ocserv Users
+    post:
+      consumes:
+      - application/json
+      description: Create Ocserv User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Create Ocserv User Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_oc_user.OcservUserCreateOrUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Create Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/ocserv/users/:uid:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Ocserv User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Delete Ocserv User
+      tags:
+      - Ocserv Users
+    get:
+      consumes:
+      - application/json
+      description: Retrieve Ocserv User by given uid
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_internal_models.OcUser'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Retrieve Ocserv User
+      tags:
+      - Ocserv Users
+    put:
+      consumes:
+      - application/json
+      description: Update Ocserv User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Update Ocserv User Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_oc_user.OcservUserCreateOrUpdateRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Update Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/ocserv/users/:uid/activities:
+    get:
+      consumes:
+      - application/json
+      description: Activities for Ocserv User by given user UID and Date
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Start date in format YYYY-MM-DD
+        in: query
+        name: start
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api_internal_models.OcUserActivity'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Activities for Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/ocserv/users/:uid/disconnect:
+    post:
+      consumes:
+      - application/json
+      description: Disconnect Ocserv User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Disconnect Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/ocserv/users/:uid/lock:
+    post:
+      consumes:
+      - application/json
+      description: Lock or Unlock Ocserv User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Update Ocserv User Body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_oc_user.OcservUserLockRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Lock or Unlock Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/ocserv/users/:uid/statistics:
+    get:
+      consumes:
+      - application/json
+      description: Statistics for Ocserv User by given user UID
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Ocserv User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Start date in format YYYY-MM-DD, null=time.Now()
+        in: query
+        name: start
+        type: string
+      - description: End date in format YYYY-MM-DD, null=time.Now().AddDate(0, 1,
+          0) 1 month
+        in: query
+        name: end
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api_internal_repository.Statistics'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Statistics for Ocserv User
+      tags:
+      - Ocserv Users
+  /api/v1/panel/config:
+    get:
+      consumes:
+      - application/json
+      description: Get Panel Config
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_panel.GetFullPanelConfigResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Get Panel Config
+      tags:
+      - Panel
+    post:
+      consumes:
+      - application/json
+      description: Create Panel Config initializing step
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: check secret key from file 'init_secret'
+        in: query
+        name: init_secret
+        required: true
+        type: string
+      - description: site config data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_panel.CreateSiteConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Create Panel Config
+      tags:
+      - Panel
+    put:
+      consumes:
+      - application/json
+      description: Update Panel Config in app after login step
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: site config data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_panel.UpdateSiteConfigRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Update Panel Config
+      tags:
+      - Panel
+  /api/v1/panel/config/init:
+    get:
+      consumes:
+      - application/json
+      description: Get Panel Config to discover init data
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_panel.GetPanelConfigResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+      summary: Get Panel Config with Init
+      tags:
+      - Panel
+  /api/v1/staffs:
+    get:
+      consumes:
+      - application/json
+      description: List of Staffs
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page number, starting from 1
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - description: Field to order by
+        in: query
+        name: pager
+        type: string
+      - description: Sort order, either ASC or DESC
+        enum:
+        - ASC
+        - DESC
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_staff_management.StaffsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Staffs
+      tags:
+      - Staff Management
+    post:
+      consumes:
+      - application/json
+      description: Create Staff with Permission
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Staff user and permission body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_staff_management.CreateStaffRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/api_internal_models.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Create Staff
+      tags:
+      - Staff Management
+  /api/v1/staffs/:uid:
+    delete:
+      consumes:
+      - application/json
+      description: Delete Staff
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Delete Staff
+      tags:
+      - Staff Management
+    patch:
+      consumes:
+      - application/json
+      description: Update Staff Password
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Staff password update body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_staff_management.UpdateStaffPasswordRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Update Staff Password
+      tags:
+      - Staff Management
+  /api/v1/staffs/:uid/permission:
+    get:
+      consumes:
+      - application/json
+      description: Staff Permission
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_internal_models.UserPermission'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Staff Permission
+      tags:
+      - Staff Management
+    patch:
+      consumes:
+      - application/json
+      description: Update Staff Permission
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: User UID
+        in: path
+        name: uid
+        required: true
+        type: string
+      - description: Staff permission body
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/api_internal_models.UserPermission'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+        "403":
+          description: Forbidden
+      summary: Update Staff Permission
+      tags:
+      - Staff Management
+  /api/v1/statistics:
+    get:
+      consumes:
+      - application/json
+      description: Year and Month Statistics by given year and month as int
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Year
+        in: query
+        name: year
+        required: true
+        type: integer
+      - description: Month number
+        in: query
+        name: month
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_statistics.GetStatisticsResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Year and Month Statistics
+      tags:
+      - Statistics
+  /api/v1/user/admin:
+    post:
+      consumes:
+      - application/json
+      description: Create Superuser in initializing step
+      parameters:
+      - description: check secret key from file 'init_secret'
+        in: query
+        name: secret
+        required: true
+        type: string
+      - description: admin user body data
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_user.CreateAdminUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_user.CreateAdminUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+      summary: Create Superuser
+      tags:
+      - Site User
+  /api/v1/user/change_password:
+    post:
+      consumes:
+      - application/json
+      description: ChangePassword Admin or Staff User change password with send old
+        and new password
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_user.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_user.ChangePasswordRequest'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: ChangePassword Admin or Staff User change password
+      tags:
+      - Site User
+  /api/v1/user/login:
+    post:
+      consumes:
+      - application/json
+      description: Login Admin or Staff User to get Token for request
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: query params
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/internal_services_user.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_user.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Login Admin or Staff User
+      tags:
+      - Site User
+  /api/v1/user/logout:
+    delete:
+      consumes:
+      - application/json
+      description: Logout Admin or Staff User
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Logout Admin or Staff User
+      tags:
+      - Site User
+swagger: "2.0"

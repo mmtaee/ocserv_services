@@ -3,21 +3,20 @@ package staffManagement
 import (
 	"api/internal/models"
 	"api/internal/repository"
-	"api/pkg/password"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
-	"api/pkg/validator"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
 
 type Controller struct {
-	validator validator.CustomValidatorInterface
+	validator utils.CustomValidatorInterface
 	staffRepo repository.StaffRepositoryInterface
 }
 
 func New() *Controller {
 	return &Controller{
-		validator: validator.NewCustomValidator(),
+		validator: utils.NewCustomValidator(),
 		staffRepo: repository.NewStaffRepository(),
 	}
 }
@@ -95,7 +94,7 @@ func (ctrl *Controller) CreateStaff(c echo.Context) error {
 		return utils.BadRequest(c, err)
 	}
 
-	pass := password.NewPassword(data.User.Password)
+	pass := utils.NewPassword(data.User.Password)
 	staff := models.User{
 		Username: data.User.Username,
 		Password: pass.Hash,
@@ -162,7 +161,7 @@ func (ctrl *Controller) UpdateStaffPassword(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	pass := password.NewPassword(data.Password)
+	pass := utils.NewPassword(data.Password)
 	err := ctrl.staffRepo.UpdateStaffPassword(c.Request().Context(), c.Param("uid"), pass.Hash, pass.Salt)
 	if err != nil {
 		return utils.BadRequest(c, err)

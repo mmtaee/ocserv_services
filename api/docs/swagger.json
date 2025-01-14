@@ -1,0 +1,2725 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a sample Ocserv User management Api server.",
+        "title": "Ocserv User management Example Api",
+        "contact": {},
+        "version": "1.0"
+    },
+    "basePath": "/services",
+    "paths": {
+        "/api/v1/occtl/disconnect/:username": {
+            "post": {
+                "description": "Disconnect User From Server and Close Session",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Disconnect User From Server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/ip_bans": {
+            "get": {
+                "description": "List Of IP Bans",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "List Of IP Bans",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Show IP bans with Points",
+                        "name": "points",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/occtl.IPBan"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/ip_bans/point": {
+            "get": {
+                "description": "List Of IP Bans include points",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "List Of IP Bans include points",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "description": "Show IP bans with Points",
+                        "name": "points",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/occtl.IPBanPoints"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/iroutes": {
+            "get": {
+                "description": "Show IP Routes",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Show IP Routes",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/occtl.IRoute"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/online": {
+            "get": {
+                "description": "Show Online User List in Server",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Online User List",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/occtl.OcUser"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/reload": {
+            "post": {
+                "description": "Reload Server Configuration",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Reload Server",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/status": {
+            "get": {
+                "description": "Show Status Of Server State",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Show Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_occtl.ShowStatusResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/unban": {
+            "post": {
+                "description": "Remove IP From Baned List",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Unban IP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "IP Address",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_occtl.UnBanIPRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "202": {
+                        "description": "Accepted"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/occtl/users/:username": {
+            "get": {
+                "description": "Show User Status",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Occtl"
+                ],
+                "summary": "Show User Status",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User Username",
+                        "name": "username",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/occtl.OcUser"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/groups": {
+            "get": {
+                "description": "List Of Groups Sort By Name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "List Of Groups",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/ocgroup.OcservGroupConfigInfo"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Ocserv Group by given name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Create Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "oc group config",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_group.CreateGroupRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/groups/:name": {
+            "post": {
+                "description": "Update Ocserv Group",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Update Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "oc group config",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Ocserv Group by given name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Delete Ocserv Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/groups/defaults": {
+            "post": {
+                "description": "Update Ocserv Defaults Group initializing step",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Update Ocserv Defaults Group",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "oc group default config",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/groups/names": {
+            "get": {
+                "description": "List Of Group Names Sort By Name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "List Of Group Names",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users": {
+            "get": {
+                "description": "List of Ocserv Users with pagination",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "List of Ocserv Users",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Page number, starting from 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to order by",
+                        "name": "pager",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ],
+                        "type": "string",
+                        "description": "Sort order, either ASC or DESC",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_user.OcservUsersResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Ocserv User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Create Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Create Ocserv User Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_user.OcservUserCreateOrUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/:uid": {
+            "get": {
+                "description": "Retrieve Ocserv User by given uid",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Retrieve Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_models.OcUser"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Ocserv User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Update Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Ocserv User Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_user.OcservUserCreateOrUpdateRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "Delete Ocserv User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Delete Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/:uid/activities": {
+            "get": {
+                "description": "Activities for Ocserv User by given user UID and Date",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Activities for Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date in format YYYY-MM-DD",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api_internal_models.OcUserActivity"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/:uid/disconnect": {
+            "post": {
+                "description": "Disconnect Ocserv User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Disconnect Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/:uid/lock": {
+            "post": {
+                "description": "Lock or Unlock Ocserv User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Lock or Unlock Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Update Ocserv User Body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_user.OcservUserLockRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/ocserv/users/:uid/statistics": {
+            "get": {
+                "description": "Statistics for Ocserv User by given user UID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Users"
+                ],
+                "summary": "Statistics for Ocserv User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Ocserv User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Start date in format YYYY-MM-DD, null=time.Now()",
+                        "name": "start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "End date in format YYYY-MM-DD, null=time.Now().AddDate(0, 1, 0) 1 month",
+                        "name": "end",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api_internal_repository.Statistics"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/panel/config": {
+            "get": {
+                "description": "Get Panel Config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Panel"
+                ],
+                "summary": "Get Panel Config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_panel.GetFullPanelConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "Update Panel Config in app after login step",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Panel"
+                ],
+                "summary": "Update Panel Config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "site config data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_panel.UpdateSiteConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Panel Config initializing step",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Panel"
+                ],
+                "summary": "Create Panel Config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "check secret key from file 'init_secret'",
+                        "name": "init_secret",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "site config data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_panel.CreateSiteConfigRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/panel/config/init": {
+            "get": {
+                "description": "Get Panel Config to discover init data",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Panel"
+                ],
+                "summary": "Get Panel Config with Init",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_panel.GetPanelConfigResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/staffs": {
+            "get": {
+                "description": "List of Staffs",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Staffs",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Page number, starting from 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to order by",
+                        "name": "pager",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ],
+                        "type": "string",
+                        "description": "Sort order, either ASC or DESC",
+                        "name": "sort",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_staff_management.StaffsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "post": {
+                "description": "Create Staff with Permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Create Staff",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "Staff user and permission body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_staff_management.CreateStaffRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_models.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/v1/staffs/:uid": {
+            "delete": {
+                "description": "Delete Staff",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Delete Staff",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update Staff Password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Update Staff Password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Staff password update body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_staff_management.UpdateStaffPasswordRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/v1/staffs/:uid/permission": {
+            "get": {
+                "description": "Staff Permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Staff Permission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_models.UserPermission"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            },
+            "patch": {
+                "description": "Update Staff Permission",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Staff Management"
+                ],
+                "summary": "Update Staff Permission",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "User UID",
+                        "name": "uid",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Staff permission body",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_models.UserPermission"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    }
+                }
+            }
+        },
+        "/api/v1/statistics": {
+            "get": {
+                "description": "Year and Month Statistics by given year and month as int",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Statistics"
+                ],
+                "summary": "Year and Month Statistics",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Year",
+                        "name": "year",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Month number",
+                        "name": "month",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_statistics.GetStatisticsResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/admin": {
+            "post": {
+                "description": "Create Superuser in initializing step",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site User"
+                ],
+                "summary": "Create Superuser",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "check secret key from file 'init_secret'",
+                        "name": "secret",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "admin user body data",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.CreateAdminUserRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.CreateAdminUserResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/change_password": {
+            "post": {
+                "description": "ChangePassword Admin or Staff User change password with send old and new password",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site User"
+                ],
+                "summary": "ChangePassword Admin or Staff User change password",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.ChangePasswordRequest"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/login": {
+            "post": {
+                "description": "Login Admin or Staff User to get Token for request",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site User"
+                ],
+                "summary": "Login Admin or Staff User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "query params",
+                        "name": "request",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.LoginRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_user.LoginResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/user/logout": {
+            "delete": {
+                "description": "Logout Admin or Staff User",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Site User"
+                ],
+                "summary": "Logout Admin or Staff User",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "No Content"
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "api_internal_models.OcUser": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expire_at": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "is_locked": {
+                    "type": "boolean"
+                },
+                "is_online": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "rx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                },
+                "traffic_size": {
+                    "description": "in GiB  \u003e\u003e x * 1024 ** 3",
+                    "type": "integer"
+                },
+                "traffic_type": {
+                    "type": "integer"
+                },
+                "tx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_internal_models.OcUserActivity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "log": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_internal_models.User": {
+            "type": "object",
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "last_login": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_internal_models.UserPermission": {
+            "type": "object",
+            "properties": {
+                "oc_group": {
+                    "type": "boolean"
+                },
+                "oc_user": {
+                    "type": "boolean"
+                },
+                "occtl": {
+                    "type": "boolean"
+                },
+                "statistic": {
+                    "type": "boolean"
+                },
+                "system": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "api_internal_repository.MonthStatistics": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "type": "integer"
+                },
+                "sum_rx": {
+                    "type": "number"
+                },
+                "sum_tx": {
+                    "type": "number"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api_internal_repository.Statistics": {
+            "type": "object",
+            "properties": {
+                "date": {
+                    "type": "string"
+                },
+                "sum_rx": {
+                    "type": "number"
+                },
+                "sum_tx": {
+                    "type": "number"
+                }
+            }
+        },
+        "api_internal_repository.YearStatistics": {
+            "type": "object",
+            "properties": {
+                "sum_rx": {
+                    "type": "number"
+                },
+                "sum_tx": {
+                    "type": "number"
+                },
+                "year": {
+                    "type": "integer"
+                }
+            }
+        },
+        "api_internal_routes_middlewares.Unauthorized": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_pkg_utils.ErrorResponse": {
+            "type": "object",
+            "required": [
+                "error"
+            ],
+            "properties": {
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_pkg_utils.ResponsePagination": {
+            "type": "object",
+            "properties": {
+                "page": {
+                    "type": "integer"
+                },
+                "page_size": {
+                    "type": "integer"
+                },
+                "total_records": {
+                    "type": "integer"
+                }
+            }
+        },
+        "internal_services_oc_group.CreateGroupRequest": {
+            "type": "object",
+            "required": [
+                "config",
+                "name"
+            ],
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_oc_user.OcservUserCreateOrUpdateRequest": {
+            "type": "object",
+            "required": [
+                "expire_at",
+                "group",
+                "password",
+                "traffic_type",
+                "username"
+            ],
+            "properties": {
+                "expire_at": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 1
+                },
+                "traffic_size": {
+                    "type": "integer"
+                },
+                "traffic_type": {
+                    "type": "integer"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 3
+                }
+            }
+        },
+        "internal_services_oc_user.OcservUserLockRequest": {
+            "type": "object",
+            "required": [
+                "lock"
+            ],
+            "properties": {
+                "lock": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_services_oc_user.OcservUsersResponse": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/api_pkg_utils.ResponsePagination"
+                },
+                "oc_users": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_internal_models.OcUser"
+                    }
+                }
+            }
+        },
+        "internal_services_occtl.ShowStatusResponse": {
+            "type": "object",
+            "properties": {
+                "status": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_occtl.UnBanIPRequest": {
+            "type": "object",
+            "properties": {
+                "ip": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_panel.CreateSiteConfigRequest": {
+            "type": "object",
+            "properties": {
+                "google_captcha_secret_key": {
+                    "type": "string"
+                },
+                "google_captcha_site_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_panel.GetFullPanelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "google_captcha_secret_key": {
+                    "type": "string"
+                },
+                "google_captcha_site_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_panel.GetPanelConfigResponse": {
+            "type": "object",
+            "properties": {
+                "google_captcha_site_key": {
+                    "type": "string"
+                },
+                "init": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "internal_services_panel.UpdateSiteConfigRequest": {
+            "type": "object",
+            "properties": {
+                "google_captcha_secret_key": {
+                    "type": "string"
+                },
+                "google_captcha_site_key": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_staff_management.CreateStaffRequest": {
+            "type": "object",
+            "properties": {
+                "permission": {
+                    "type": "object",
+                    "properties": {
+                        "oc_group": {
+                            "type": "boolean"
+                        },
+                        "oc_user": {
+                            "type": "boolean"
+                        },
+                        "occtl": {
+                            "type": "boolean"
+                        },
+                        "statistic": {
+                            "type": "boolean"
+                        },
+                        "system": {
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "user": {
+                    "type": "object",
+                    "required": [
+                        "password",
+                        "username"
+                    ],
+                    "properties": {
+                        "password": {
+                            "type": "string",
+                            "maxLength": 16,
+                            "minLength": 2,
+                            "example": "doe123456"
+                        },
+                        "username": {
+                            "type": "string",
+                            "maxLength": 16,
+                            "minLength": 2,
+                            "example": "john_doe"
+                        }
+                    }
+                }
+            }
+        },
+        "internal_services_staff_management.StaffsResponse": {
+            "type": "object",
+            "properties": {
+                "meta": {
+                    "$ref": "#/definitions/api_pkg_utils.ResponsePagination"
+                },
+                "staffs": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/api_internal_models.User"
+                    }
+                }
+            }
+        },
+        "internal_services_staff_management.UpdateStaffPasswordRequest": {
+            "type": "object",
+            "required": [
+                "password"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2,
+                    "example": "doe123456"
+                }
+            }
+        },
+        "internal_services_statistics.GetStatisticsResponse": {
+            "type": "object",
+            "properties": {
+                "month": {
+                    "$ref": "#/definitions/api_internal_repository.MonthStatistics"
+                },
+                "year": {
+                    "$ref": "#/definitions/api_internal_repository.YearStatistics"
+                }
+            }
+        },
+        "internal_services_user.ChangePasswordRequest": {
+            "type": "object",
+            "required": [
+                "new_password",
+                "old_password"
+            ],
+            "properties": {
+                "new_password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2
+                },
+                "old_password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2
+                }
+            }
+        },
+        "internal_services_user.CreateAdminUserRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2,
+                    "example": "doe123456"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2,
+                    "example": "john_doe"
+                }
+            }
+        },
+        "internal_services_user.CreateAdminUserResponse": {
+            "type": "object",
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "internal_services_user.LoginRequest": {
+            "type": "object",
+            "required": [
+                "password",
+                "username"
+            ],
+            "properties": {
+                "password": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2
+                },
+                "remember_me": {
+                    "type": "boolean"
+                },
+                "username": {
+                    "type": "string",
+                    "maxLength": 16,
+                    "minLength": 2
+                }
+            }
+        },
+        "internal_services_user.LoginResponse": {
+            "type": "object",
+            "required": [
+                "token"
+            ],
+            "properties": {
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "occtl.IPBan": {
+            "type": "object",
+            "properties": {
+                "IP": {
+                    "type": "string"
+                },
+                "Since": {
+                    "type": "string"
+                },
+                "_Since": {
+                    "type": "string"
+                }
+            }
+        },
+        "occtl.IPBanPoints": {
+            "type": "object",
+            "properties": {
+                "IP": {
+                    "type": "string"
+                },
+                "Score": {
+                    "type": "integer"
+                },
+                "Since": {
+                    "type": "string"
+                },
+                "_Since": {
+                    "type": "string"
+                }
+            }
+        },
+        "occtl.IRoute": {
+            "type": "object",
+            "properties": {
+                "Device": {
+                    "type": "string"
+                },
+                "ID": {
+                    "type": "string"
+                },
+                "IP": {
+                    "type": "string"
+                },
+                "Username": {
+                    "type": "string"
+                },
+                "iRoutes": {
+                    "type": "string"
+                },
+                "vhost": {
+                    "type": "string"
+                }
+            }
+        },
+        "occtl.OcUser": {
+            "type": "object",
+            "properties": {
+                "Average RX": {
+                    "type": "string"
+                },
+                "Average TX": {
+                    "type": "string"
+                },
+                "Connected at": {
+                    "type": "string"
+                },
+                "DNS": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "DPD": {
+                    "type": "string"
+                },
+                "Device": {
+                    "type": "string"
+                },
+                "Full session": {
+                    "type": "string"
+                },
+                "Groupname": {
+                    "type": "string"
+                },
+                "Hostname": {
+                    "type": "string"
+                },
+                "IPv4": {
+                    "type": "string"
+                },
+                "KeepAlive": {
+                    "type": "string"
+                },
+                "Local Device IP": {
+                    "type": "string"
+                },
+                "Location": {
+                    "type": "string"
+                },
+                "MTU": {
+                    "type": "string"
+                },
+                "NBNS": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "P-t-P IPv4": {
+                    "type": "string"
+                },
+                "RX": {
+                    "type": "string"
+                },
+                "Remote IP": {
+                    "type": "string"
+                },
+                "Session": {
+                    "type": "string"
+                },
+                "Split-DNS-Domains": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "State": {
+                    "type": "string"
+                },
+                "TLS ciphersuite": {
+                    "type": "string"
+                },
+                "TX": {
+                    "type": "string"
+                },
+                "User-Agent": {
+                    "type": "string"
+                },
+                "Username": {
+                    "type": "string"
+                },
+                "_Connected at": {
+                    "type": "string"
+                },
+                "_RX": {
+                    "type": "string"
+                },
+                "_TX": {
+                    "type": "string"
+                },
+                "iRoutes": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "raw_connected_at": {
+                    "type": "integer"
+                },
+                "vhost": {
+                    "type": "string"
+                }
+            }
+        },
+        "ocgroup.OcservGroupConfig": {
+            "type": "object",
+            "properties": {
+                "dns": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "dpd": {
+                    "type": "integer"
+                },
+                "idle-timeout": {
+                    "type": "integer"
+                },
+                "ipv4-network": {
+                    "type": "string"
+                },
+                "keepalive": {
+                    "type": "integer"
+                },
+                "max-same-clients": {
+                    "type": "integer"
+                },
+                "mobile-dpd": {
+                    "type": "integer"
+                },
+                "mobile-idle-timeout": {
+                    "type": "integer"
+                },
+                "mtu": {
+                    "type": "integer"
+                },
+                "no-udp": {
+                    "type": "boolean"
+                },
+                "restrict-user-to-routes": {
+                    "type": "boolean"
+                },
+                "rx-data-per-sec": {
+                    "type": "string"
+                },
+                "session-timeout": {
+                    "type": "integer"
+                },
+                "stats-report-time": {
+                    "type": "integer"
+                },
+                "tunnel-all-dns": {
+                    "type": "boolean"
+                },
+                "tx-data-per-sec": {
+                    "type": "string"
+                }
+            }
+        },
+        "ocgroup.OcservGroupConfigInfo": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        }
+    }
+}

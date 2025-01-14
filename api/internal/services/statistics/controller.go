@@ -2,6 +2,7 @@ package statistics
 
 import (
 	"api/internal/repository"
+	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
 	"errors"
 	"github.com/labstack/echo/v4"

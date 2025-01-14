@@ -132,14 +132,8 @@ func Set(debug bool) {
 	log.Println("Configuration applied successfully")
 }
 
-func GetDSN() string {
-	if config.APP.Debug {
-		return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-			config.DB.Host, config.DB.Port, config.DB.User, config.DB.Password, config.DB.Name)
-	}
-	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
-		config.DB.Host, config.DB.Port, config.DB.User, config.DB.Password, config.DB.Name,
-	)
+func GetDB() *DB {
+	return &config.DB
 }
 
 func GetRSN() string {

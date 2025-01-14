@@ -1,34 +1,41 @@
 package repository
 
 import (
-	"api/pkg/database"
-	"api/pkg/ocserv"
 	"context"
-	"gorm.io/gorm"
+	"encoding/json"
+	"github.com/mmtaee/go-oc-utils/handler/occtl"
+	"github.com/mmtaee/go-oc-utils/handler/ocgroup"
 )
 
 type OcservGroupRepository struct {
-	db *gorm.DB
-	oc *ocserv.Handler
+	ocGroup ocgroup.OcservGroupInterface
+	occtl   occtl.OcInterface
 }
 
 type OcservGroupRepositoryInterface interface {
-	Groups(c context.Context) (*[]ocserv.OcGroupConfigInfo, error)
+	Groups(c context.Context) (*[]ocgroup.OcservGroupConfigInfo, error)
 	GroupNames(c context.Context) (*[]string, error)
-	UpdateDefaultGroup(context.Context, *ocserv.OcGroupConfig) error
-	CreateOrUpdateGroup(context.Context, string, *ocserv.OcGroupConfig) error
+	UpdateDefaultGroup(context.Context, *ocgroup.OcservGroupConfig) error
+	CreateOrUpdateGroup(context.Context, string, *ocgroup.OcservGroupConfig) error
 	DeleteGroup(context.Context, string) error
 }
 
 func NewOcservGroupRepository() *OcservGroupRepository {
 	return &OcservGroupRepository{
-		db: database.Connection(),
-		oc: ocserv.NewHandler(),
+		ocGroup: ocgroup.NewOcservGroup(),
+		occtl:   occtl.NewOcctl(),
 	}
 }
 
-func (o *OcservGroupRepository) Groups(c context.Context) (*[]ocserv.OcGroupConfigInfo, error) {
-	groups, err := o.oc.Group.Groups(c)
+func toMap(data interface{}) map[string]interface{} {
+	b, _ := json.Marshal(&data)
+	var dataStruct map[string]interface{}
+	_ = json.Unmarshal(b, &dataStruct)
+	return dataStruct
+}
+
+func (o *OcservGroupRepository) Groups(c context.Context) (*[]ocgroup.OcservGroupConfigInfo, error) {
+	groups, err := o.ocGroup.List(c)
 	if err != nil {
 		return nil, err
 	}
@@ -36,31 +43,34 @@ func (o *OcservGroupRepository) Groups(c context.Context) (*[]ocserv.OcGroupConf
 }
 
 func (o *OcservGroupRepository) GroupNames(c context.Context) (*[]string, error) {
-	groups, err := o.oc.Group.GroupNames(c)
+	groups, err := o.ocGroup.NameList(c)
 	if err != nil {
 		return nil, err
 	}
 	return groups, nil
 }
 
-func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *ocserv.OcGroupConfig) error {
-	configMap := o.oc.ToMap(config)
-	err := o.oc.Group.UpdateDefaultGroup(c, &configMap)
+func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *ocgroup.OcservGroupConfig) error {
+	configMap := toMap(config)
+	err := o.ocGroup.UpdateDefault(c, &configMap)
 	if err != nil {
 		return err
 	}
-	return o.oc.Occtl.Reload(c)
+	return o.occtl.Reload(c)
 }
 
-func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name string, config *ocserv.OcGroupConfig) error {
-	configMap := o.oc.ToMap(config)
-	err := o.oc.Group.CreateOrUpdateGroup(c, name, &configMap)
+func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name string, config *ocgroup.OcservGroupConfig) error {
+	configMap := toMap(config)
+	err := o.ocGroup.Create(c, name, &configMap)
 	if err != nil {
 		return err
 	}
-	return o.oc.Occtl.Reload(c)
+	return o.occtl.Reload(c)
 }
 
 func (o *OcservGroupRepository) DeleteGroup(c context.Context, name string) error {
-	return o.oc.Group.DeleteGroup(c, name)
+	if err := o.ocGroup.Delete(c, name); err != nil {
+		return err
+	}
+	return o.occtl.Reload(c)
 }
