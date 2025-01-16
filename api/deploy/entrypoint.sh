@@ -63,6 +63,9 @@ config-per-group=/etc/ocserv/groups/
 log-level=2
 EOT
 
+touch /var/log/ocserv/ocserv.log
+chmod 644 /var/log/ocserv/ocserv.log
+
 mkdir -p /etc/ocserv/defaults /etc/ocserv/groups
 >/etc/ocserv/defaults/group.conf
 
