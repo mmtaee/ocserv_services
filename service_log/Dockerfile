@@ -4,9 +4,11 @@ LABEL authors="masoud"
 ENV GIN_MODE=release
 ENV CGO_ENABLED=0
 ENV GOOS=linux
-ENV LOG_FILE=/var/log/ocserv/ocserv.log
+ENV LOG_FILE_PATH=/var/log/ocserv/ocserv.log
 
 WORKDIR /app
+
+
 
 COPY ./go.mod ./go.sum ./
 
@@ -26,4 +28,4 @@ RUN chmod +x /service_log
 
 VOLUME ["/var/log/ocserv"]
 
-CMD ["sh", "-c", "/service_log -log-file ${LOG_FILE}"]
+CMD ["sh", "-c", "/service_log -file"]
