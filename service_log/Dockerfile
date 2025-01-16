@@ -26,4 +26,4 @@ RUN chmod +x /service_log
 
 VOLUME ["/var/log/ocserv"]
 
-CMD ["/service_log", "-f", "${LOG_FILE}"]
+CMD ["sh", "-c", "/service_log -log-file ${LOG_FILE}"]
