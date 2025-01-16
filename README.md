@@ -48,9 +48,9 @@ go run cmd/main.go -debug -migrate
 ```bash
 POSTGRES_HOST=127.0.0.1 go run cmd/main.go -debug -drop
 
-go build  -o build/ocserv_api cmd/main.go  
-
 sudo docker build -t ocserv:api .
+
+go build  -o build/ocserv_api cmd/main.go  
 
 sudo docker run -it --rm -v "./build:/app" \
     -v "./.volumes/ocserv:/etc/ocserv" \
@@ -62,7 +62,7 @@ sudo docker run -it --rm -v "./build:/app" \
 
 sudo docker run -it --rm -v "./build:/app" \
     -v "./.volumes/ocserv:/etc/ocserv" \
-    -v "./.volumes/logs:/var/log/ocserv" \
+    -v "/tmp/ocserv:/var/log/ocserv" \
     --env-file=.env -p "8080:8080" -p "20443:443" \
     --link ocserv-postgres:ocserv-postgres \
     --name ocserv_api --privileged ocserv:api
@@ -76,5 +76,11 @@ echo -e "1234\n1234\n" | ocpasswd -c /etc/ocserv/ocpasswd test
 ```
 
 ```text
+worker[test]: 172.17.0.1 worker-auth.c:1731: failed authentication for 'test'
+
+main[test]:172.17.0.1:55064 user logged in
+
 main[test]:192.168.100.21:41448 user disconnected (reason: user disconnected, rx: 483392, tx: 2330)
+
+main[test]:172.17.0.1:56906 user disconnected (reason: server disconnected, rx: 378308, tx: 944)
 ```

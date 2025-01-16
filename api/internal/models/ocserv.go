@@ -1,16 +1,24 @@
 package models
 
 import (
-	"errors"
+	"fmt"
 	"github.com/oklog/ulid/v2"
 	"gorm.io/gorm"
 	"time"
 )
 
 const (
-	Free int = iota + 1
-	Monthly
-	Totally
+	Free            = "Free"
+	MonthlyTransmit = "MonthlyTransmit"
+	MonthlyReceive  = "MonthlyReceive"
+	TotallyTransmit = "TotallyTransmit"
+	TotallyReceive  = "TotallyReceive"
+)
+
+const (
+	Connected    = "Connected"
+	Disconnected = "Disconnected"
+	Failed       = "Failed"
 )
 
 type OcUser struct {
@@ -23,10 +31,10 @@ type OcUser struct {
 	CreatedAt   time.Time  `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt   time.Time  `json:"updated_at" gorm:"autoUpdateTime"`
 	ExpireAt    *time.Time `json:"expire_at"`
-	TrafficType int        `json:"traffic_type" gorm:"not null;default:1"`
+	TrafficType string     `json:"traffic_type" gorm:"type:varchar(32);not null;default:1" enums:"Free,MonthlyTransmit,MonthlyReceive,TotallyTransmit,TotallyReceive"`
 	TrafficSize int        `json:"traffic_size" gorm:"not null;default:10"` // in GiB  >> x * 1024 ** 3
-	Rx          int        `json:"rx" gorm:"not null;default:0"`            // in bytes
-	Tx          int        `json:"tx" gorm:"not null;default:0"`            // in bytes
+	Rx          int        `json:"rx" gorm:"not null;default:0"`            // Receive in bytes
+	Tx          int        `json:"tx" gorm:"not null;default:0"`            // Transmit in bytes
 	Description string     `json:"description" gorm:"type:text"`
 	IsOnline    bool       `json:"is_online" gorm:"-:migration;->"`
 }
@@ -34,35 +42,55 @@ type OcUser struct {
 type OcUserActivity struct {
 	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
 	OcUserID  uint      `json:"-" gorm:"index;constraint:OnDelete:CASCADE;"`
+	Type      string    `json:"type" gorm:"type:varchar(32);not null;default:1" enums:"Connected,Disconnected,Failed"`
 	Log       string    `json:"log" gorm:"type:text"`
 	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
 type OcUserTrafficStatistics struct {
-	ID       uint      `json:"-" gorm:"primaryKey;autoIncrement"`
-	OcUserID uint      `json:"-" gorm:"index;constraint:OnDelete:CASCADE"`
-	Date     time.Time `json:"date" gorm:"type:date"`
-	Rx       int       `json:"rx" gorm:"default:0"` // in bytes
-	Tx       int       `json:"tx" gorm:"default:0"` // in bytes
+	ID        uint      `json:"-" gorm:"primaryKey;autoIncrement"`
+	OcUserID  uint      `json:"-" gorm:"index;constraint:OnDelete:CASCADE"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
+	Rx        int       `json:"rx" gorm:"default:0"` // in bytes
+	Tx        int       `json:"tx" gorm:"default:0"` // in bytes
 }
 
-func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
-	if o.TrafficType > 3 || o.TrafficType < 1 {
-		return errors.New("invalid traffic type. traffic type must be between 1 and 3")
+func ValidateTrafficType(trafficType string) bool {
+	switch trafficType {
+	case Free, MonthlyTransmit, MonthlyReceive, TotallyTransmit, TotallyReceive:
+		return true
+	default:
+		return false
+	}
+}
+
+func (o *OcUser) BeforeSave(tx *gorm.DB) (err error) {
+	if !ValidateTrafficType(o.TrafficType) {
+		return fmt.Errorf("invalid TrafficType: %s", o.TrafficType)
 	}
 	if o.TrafficType == Free {
 		o.TrafficSize = 0
 	}
+	return nil
+}
+
+func (o *OcUser) BeforeCreate(tx *gorm.DB) (err error) {
 	o.UID = ulid.Make().String()
 	return
 }
 
-func (o *OcUser) BeforeUpdate(tx *gorm.DB) (err error) {
-	if o.TrafficType > 3 || o.TrafficType < 1 {
-		return errors.New("invalid traffic type. traffic type must be between 1 and 3")
+func ValidateActivityType(t string) bool {
+	switch t {
+	case Connected, Disconnected, Failed:
+		return true
+	default:
+		return false
 	}
-	if o.TrafficType == Free {
-		o.TrafficSize = 0
+}
+
+func (a *OcUserActivity) BeforeSave(tx *gorm.DB) (err error) {
+	if !ValidateActivityType(a.Type) {
+		return fmt.Errorf("invalid Type: %s", a.Type)
 	}
-	return
+	return nil
 }
