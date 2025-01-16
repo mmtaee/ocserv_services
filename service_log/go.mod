@@ -4,7 +4,6 @@ go 1.23.1
 
 require (
 	github.com/hpcloud/tail v1.0.0
-	github.com/joho/godotenv v1.5.1
 	github.com/mmtaee/go-oc-utils v0.0.6
 	gorm.io/gorm v1.25.12
 )
