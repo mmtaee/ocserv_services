@@ -2039,7 +2039,7 @@
                     "type": "string"
                 },
                 "rx": {
-                    "description": "in bytes",
+                    "description": "Receive in bytes",
                     "type": "integer"
                 },
                 "traffic_size": {
@@ -2047,10 +2047,17 @@
                     "type": "integer"
                 },
                 "traffic_type": {
-                    "type": "integer"
+                    "type": "string",
+                    "enum": [
+                        "Free",
+                        "MonthlyTransmit",
+                        "MonthlyReceive",
+                        "TotallyTransmit",
+                        "TotallyReceive"
+                    ]
                 },
                 "tx": {
-                    "description": "in bytes",
+                    "description": "Transmit in bytes",
                     "type": "integer"
                 },
                 "uid": {
@@ -2072,6 +2079,14 @@
                 },
                 "log": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Connected",
+                        "Disconnected",
+                        "Failed"
+                    ]
                 }
             }
         },
@@ -2230,7 +2245,14 @@
                     "type": "integer"
                 },
                 "traffic_type": {
-                    "type": "integer"
+                    "type": "string",
+                    "enum": [
+                        "Free",
+                        "MonthlyTransmit",
+                        "MonthlyReceive",
+                        "TotallyTransmit",
+                        "TotallyReceive"
+                    ]
                 },
                 "username": {
                     "type": "string",

@@ -17,15 +17,21 @@ definitions:
       password:
         type: string
       rx:
-        description: in bytes
+        description: Receive in bytes
         type: integer
       traffic_size:
         description: in GiB  >> x * 1024 ** 3
         type: integer
       traffic_type:
-        type: integer
+        enum:
+        - Free
+        - MonthlyTransmit
+        - MonthlyReceive
+        - TotallyTransmit
+        - TotallyReceive
+        type: string
       tx:
-        description: in bytes
+        description: Transmit in bytes
         type: integer
       uid:
         type: string
@@ -39,6 +45,12 @@ definitions:
       created_at:
         type: string
       log:
+        type: string
+      type:
+        enum:
+        - Connected
+        - Disconnected
+        - Failed
         type: string
     type: object
   api_internal_models.User:
@@ -138,7 +150,13 @@ definitions:
       traffic_size:
         type: integer
       traffic_type:
-        type: integer
+        enum:
+        - Free
+        - MonthlyTransmit
+        - MonthlyReceive
+        - TotallyTransmit
+        - TotallyReceive
+        type: string
       username:
         maxLength: 16
         minLength: 3

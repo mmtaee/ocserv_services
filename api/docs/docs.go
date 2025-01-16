@@ -2046,7 +2046,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "rx": {
-                    "description": "in bytes",
+                    "description": "Receive in bytes",
                     "type": "integer"
                 },
                 "traffic_size": {
@@ -2054,10 +2054,17 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "traffic_type": {
-                    "type": "integer"
+                    "type": "string",
+                    "enum": [
+                        "Free",
+                        "MonthlyTransmit",
+                        "MonthlyReceive",
+                        "TotallyTransmit",
+                        "TotallyReceive"
+                    ]
                 },
                 "tx": {
-                    "description": "in bytes",
+                    "description": "Transmit in bytes",
                     "type": "integer"
                 },
                 "uid": {
@@ -2079,6 +2086,14 @@ const docTemplate = `{
                 },
                 "log": {
                     "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Connected",
+                        "Disconnected",
+                        "Failed"
+                    ]
                 }
             }
         },
@@ -2237,7 +2252,14 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "traffic_type": {
-                    "type": "integer"
+                    "type": "string",
+                    "enum": [
+                        "Free",
+                        "MonthlyTransmit",
+                        "MonthlyReceive",
+                        "TotallyTransmit",
+                        "TotallyReceive"
+                    ]
                 },
                 "username": {
                     "type": "string",
