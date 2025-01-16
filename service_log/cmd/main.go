@@ -1,50 +1,38 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
-	"github.com/hpcloud/tail"
-	"service_log/internal/activity"
-
-	// TODO: after complete develop remove this
-	"github.com/joho/godotenv"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
-	"io"
 	"os"
 	"os/signal"
-	"service_log/internal/stats"
-	"strings"
+	"service_log/internal/providers/logfile"
+	"service_log/internal/providers/systemd"
 	"syscall"
 	"time"
 )
 
 func main() {
 	var (
-		logFilePath string
-		debug       bool
+		logFile bool
+		journal bool
 	)
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
 
-	flag.StringVar(&logFilePath, "log-file", "", "Log file path")
-	flag.BoolVar(&debug, "debug", false, "Debug mode")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+
+	flag.BoolVar(&logFile, "file", false, "Process log from file path")
+	flag.BoolVar(&journal, "journal", false, "Process log from journalctl command")
 	flag.Parse()
 
-	if logFilePath == "" {
+	if !logFile && journal {
 		flag.PrintDefaults()
 		os.Exit(1)
-	}
-
-	if _, err := os.Stat(logFilePath); err != nil {
-		logger.CriticalF("Failed to open log file: %v", err)
-	}
-
-	if debug {
-		err := godotenv.Load()
-		if err != nil {
-			logger.Log(logger.CRITICAL, fmt.Sprintf("Error loading .env file: %v", err))
-		}
 	}
 
 	cfg := &database.DBConfig{
@@ -54,46 +42,25 @@ func main() {
 		User:     os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 	}
-	database.Connect(cfg, debug)
+	database.Connect(cfg, false)
 	defer database.Close()
 
-	streams, err := tail.TailFile(logFilePath, tail.Config{
-		Follow:    true,
-		MustExist: true,
-		Poll:      true,
-		Location: &tail.SeekInfo{
-			Offset: 0,
-			Whence: io.SeekEnd,
-		},
-		Logger: tail.DiscardingLogger,
-	})
-	if err != nil {
-		logger.CriticalF("tail err: %v", err)
-	}
-
-	go func() {
-		for line := range streams.Lines {
-			if line.Err != nil {
-				logger.Logf(logger.ERROR, "Error reading line: %v", line.Err)
-				continue
-			}
-
-			actionMap := map[string]func(string){
-				"disconnected":          func(text string) { go stats.Calculator(text, line.Time); go activity.SetDisconnect(text) },
-				"failed authentication": func(text string) { go activity.SetFailed(text) },
-				"user logged in":        func(text string) { go activity.SetConnect(text) },
-			}
-
-			for keyword, action := range actionMap {
-				if strings.Contains(line.Text, keyword) {
-					go action(line.Text)
-				}
-			}
+	if logFile {
+		logFilePath := os.Getenv("LOG_FILE_PATH")
+		if logFilePath == "" {
+			logFilePath = "/var/log/ocserv/ocserv.log"
 		}
-	}()
+		if _, err := os.Stat(logFilePath); err != nil {
+			logger.CriticalF("Failed to open log file: %v", err)
+		}
+		logfile.Process(ctx, logFilePath)
+	} else {
+		systemd.Process(ctx)
+	}
 
 	<-sigCh
 	fmt.Println()
 	logger.Log(logger.WARNING, "Shutting down service ...")
-	time.Sleep(3 * time.Second)
+	cancel()
+	time.Sleep(1 * time.Second)
 }

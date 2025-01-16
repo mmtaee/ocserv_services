@@ -68,15 +68,13 @@ func disconnect(c context.Context, username string) error {
 	return oc.Disconnect(c, username)
 }
 
-func Calculator(log string, t time.Time) {
+func Calculator(log string) {
 	var (
 		username string
 		rx       int
 		tx       int
 		allow    bool
 	)
-
-	t = t.Truncate(time.Second)
 
 	re := regexp.MustCompile(`main\[(.*?)\].*rx:\s*(\d+),\s*tx:\s*(\d+)`)
 	match := re.FindStringSubmatch(log)
