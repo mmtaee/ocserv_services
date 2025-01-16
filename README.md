@@ -46,19 +46,12 @@ go run cmd/main.go -debug -migrate
 
 # develop & Deploy
 ```bash
+# API service
 POSTGRES_HOST=127.0.0.1 go run cmd/main.go -debug -drop
 
 sudo docker build -t ocserv:api .
 
 go build  -o build/ocserv_api cmd/main.go  
-
-sudo docker run -it --rm -v "./build:/app" \
-    -v "./.volumes/ocserv:/etc/ocserv" \
-    -v "./.volumes/logs:/var/log/ocserv" \
-    --env-file=.env -p "8080:8080" -p "20443:443" \
-    --link ocserv-postgres:ocserv-postgres \
-    --link rabbitmq-ocserv:rabbitmq-ocserv \
-    --name ocserv_api --privileged ocserv:api
 
 sudo docker run -it --rm -v "./build:/app" \
     -v "./.volumes/ocserv:/etc/ocserv" \
@@ -73,6 +66,16 @@ sudo docker exec -it ocserv_api bash
 
 echo -e "1234\n1234\n" | ocpasswd -c /etc/ocserv/ocpasswd test
      
+#Log Service
+sudo docker build -t ocserv:log_service .
+
+sudo docker run -it --rm \
+    -v "/tmp/ocserv:/var/log/ocserv" \
+    -e "LOG_FILE=/var/log/ocserv/ocserv.log"\
+    --env-file=.env\
+    --link ocserv-postgres:ocserv-postgres \
+    --name ocserv_log_service ocserv:log_service   
+
 ```
 
 ```text
