@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
 	"net/http"
 	"os"
@@ -33,6 +34,16 @@ func main() {
 	signalChan := make(chan os.Signal, 1)
 	signal.Notify(signalChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
+	cfg := &database.DBConfig{
+		Host:     os.Getenv("POSTGRES_HOST"),
+		Port:     os.Getenv("POSTGRES_PORT"),
+		Name:     os.Getenv("POSTGRES_NAME"),
+		User:     os.Getenv("POSTGRES_USER"),
+		Password: os.Getenv("POSTGRES_PASSWORD"),
+	}
+	database.Connect(cfg, false)
+	defer database.Close()
+
 	sse := events.NewSSEServer()
 	defer sse.CloseAllClients()
 
@@ -58,11 +69,11 @@ func main() {
 		}
 	}()
 
-	host := os.Getenv("HOST")
+	host := os.Getenv("BROADCAST_HOST")
 	if host == "" {
 		host = "0.0.0.0"
 	}
-	port := os.Getenv("PORT")
+	port := os.Getenv("BROADCAST_PORT")
 	if port == "" {
 		port = "8080"
 	}

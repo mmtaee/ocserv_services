@@ -1,10 +1,14 @@
 package events
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
 	"log"
 	"net/http"
+	"sse_log/internal/models"
 	"sync"
 	"time"
 )
@@ -51,15 +55,36 @@ func (sse *SSEServer) Broadcast(msg string) {
 	}
 }
 
+func checkToken(c context.Context, token string) error {
+	db := database.Connection()
+	return db.WithContext(c).Where("token = ?", token).First(&models.UserToken{}).Error
+}
+
 func (sse *SSEServer) ServerEventsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
+
+	ctx := r.Context()
 	queries := r.URL.Query()
+
+	err400Response := map[string]string{
+		"error": "Invalid or missing 'token' query parameter",
+		"code":  "Bad Request",
+	}
+
 	if len(queries["token"]) != 1 {
-		http.Error(w, "Invalid or missing 'token' query parameter", http.StatusBadRequest)
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(err400Response)
+		return
+	}
+	if err := checkToken(ctx, queries["token"][0]); err != nil {
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusBadRequest)
+		_ = json.NewEncoder(w).Encode(err400Response)
 		return
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
 	w.Header().Set("Connection", "keep-alive")
@@ -87,7 +112,7 @@ func (sse *SSEServer) ServerEventsHandler(w http.ResponseWriter, r *http.Request
 			}
 			flusher.Flush()
 			time.Sleep(1 * time.Second)
-		case <-r.Context().Done():
+		case <-ctx.Done():
 			return
 		}
 	}
