@@ -69,11 +69,11 @@ func main() {
 		}
 	}()
 
-	host := os.Getenv("BROADCAST_HOST")
+	host := os.Getenv("HOST")
 	if host == "" {
 		host = "0.0.0.0"
 	}
-	port := os.Getenv("BROADCAST_PORT")
+	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
 	}
