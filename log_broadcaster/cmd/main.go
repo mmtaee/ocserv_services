@@ -40,10 +40,9 @@ func main() {
 	defer cancel()
 
 	if logFile {
-		logFilePath := os.Getenv("LOG_FILE_PATH")
+		logFilePath := os.Getenv("LOG_FILE")
 		if logFilePath == "" {
 			logFilePath = "/var/log/ocserv/ocserv.log"
-			logFilePath = "/tmp/ocserv/ocserv.log"
 		}
 		if _, err := os.Stat(logFilePath); err != nil {
 			logger.CriticalF("Failed to open log file: %v", err)
@@ -65,7 +64,7 @@ func main() {
 	}
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8082"
+		port = "8080"
 	}
 
 	server := &http.Server{
