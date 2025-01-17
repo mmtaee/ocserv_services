@@ -56,7 +56,8 @@ go build  -o build/ocserv_api cmd/main.go
 sudo docker run -it --rm -v "./build:/app" \
     -v "./.volumes/ocserv:/etc/ocserv" \
     -v "/tmp/ocserv:/var/log/ocserv" \
-    --env-file=.env -p "8080:8080" -p "20443:443" \
+    --env-file=.env \
+    -p "8080:8080" -p "20443:443" \
     --link ocserv-postgres:ocserv-postgres \
     --name ocserv_api --privileged ocserv:api
  
@@ -83,6 +84,8 @@ sudo docker run -it --rm \
     -p "8081:8080"\
     -v "/tmp/ocserv:/var/log/ocserv" \
     -e "LOG_FILE=/var/log/ocserv/ocserv.log"\
+    --env-file=.env\
+    --link ocserv-postgres:ocserv-postgres \
     --name ocserv_log_broadcaster ocserv:log_broadcaster
 ```
 

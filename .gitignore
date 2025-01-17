@@ -22,9 +22,7 @@ go.work
 go.work.sum
 
 # env file
-api/.env
 .env
-
 .idea/
 .vscode
 .code
