@@ -14,16 +14,16 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o service_log cmd/main.go
+RUN go build -o log_processor cmd/main.go
 
 FROM alpine:latest
 
 RUN mkdir -p /app /var/ocserv
 
-COPY --from=builder /app/service_log /service_log
+COPY --from=builder /app/log_processor /log_processor
 
-RUN chmod +x /service_log
+RUN chmod +x /log_processor
 
 VOLUME ["/var/log/ocserv"]
 
-CMD ["sh", "-c", "/service_log -file"]
+CMD ["sh", "-c", "/log_processor -file"]
