@@ -1,4 +1,4 @@
-package systemd
+package providers
 
 import (
 	"bufio"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Process(c context.Context) {
+func Journal(c context.Context) {
 	cmd := exec.Command("journalctl", "-fu", "ocserv")
 
 	stdout, err := cmd.StdoutPipe()

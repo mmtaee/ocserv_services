@@ -1,4 +1,4 @@
-package logfile
+package providers
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func Process(c context.Context, logFilePath string) {
+func LogFile(c context.Context, logFilePath string) {
 	streams, err := tail.TailFile(logFilePath, tail.Config{
 		Follow:    true,
 		MustExist: true,

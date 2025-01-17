@@ -8,8 +8,7 @@ import (
 	"github.com/mmtaee/go-oc-utils/logger"
 	"os"
 	"os/signal"
-	"service_log/internal/providers/logfile"
-	"service_log/internal/providers/systemd"
+	"service_log/internal/providers"
 	"syscall"
 	"time"
 )
@@ -23,8 +22,8 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	sigCh := make(chan os.Signal, 1)
-	signal.Notify(sigCh, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 
 	flag.BoolVar(&logFile, "file", false, "Process log from file path")
 	flag.BoolVar(&journal, "journal", false, "Process log from journalctl command")
@@ -53,12 +52,12 @@ func main() {
 		if _, err := os.Stat(logFilePath); err != nil {
 			logger.CriticalF("Failed to open log file: %v", err)
 		}
-		logfile.Process(ctx, logFilePath)
+		providers.LogFile(ctx, logFilePath)
 	} else {
-		systemd.Process(ctx)
+		providers.Journal(ctx)
 	}
 
-	<-sigCh
+	<-signalChan
 	fmt.Println()
 	logger.Log(logger.WARNING, "Shutting down service ...")
 	cancel()
