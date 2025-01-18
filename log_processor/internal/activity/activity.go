@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"github.com/mmtaee/go-oc-utils/models"
 	"regexp"
-	"service_log/internal/models"
 	"time"
 )
 

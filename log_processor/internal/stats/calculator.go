@@ -6,8 +6,8 @@ import (
 	"github.com/mmtaee/go-oc-utils/handler/occtl"
 	"github.com/mmtaee/go-oc-utils/handler/ocuser"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"github.com/mmtaee/go-oc-utils/models"
 	"regexp"
-	"service_log/internal/models"
 	"strconv"
 	"time"
 )
