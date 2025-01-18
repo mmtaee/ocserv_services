@@ -5,6 +5,7 @@ ENV GIN_MODE=release
 ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV LOG_FILE_PATH=/var/log/ocserv/ocserv.log
+ENV SECRET_KEY_FILE_NAME=/tmp/init_secret
 
 WORKDIR /app
 
@@ -19,8 +20,6 @@ COPY . .
 RUN go build -o ocserv_api cmd/main.go
 
 FROM ubuntu:24.04
-
-ENV SECRET_KEY_FILE_NAME=/tmp/init_secret
 
 RUN apt update &&\
     apt install -y --no-install-recommends ocserv gnutls-bin \
