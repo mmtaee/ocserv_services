@@ -11,8 +11,6 @@ WORKDIR /app
 
 COPY ./go.mod ./go.sum ./
 
-RUN go get github.com/gabriel-vasile/mimetype@v1.4.3
-
 RUN go mod download
 
 COPY . .
