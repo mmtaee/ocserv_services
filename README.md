@@ -87,6 +87,16 @@ sudo docker run -it --rm \
     --env-file=.env\
     --link ocserv-postgres:ocserv-postgres \
     --name ocserv_log_broadcaster ocserv:log_broadcaster
+    
+# User expiry
+sudo docker build -t ocserv:user_expiry .
+
+sudo docker run -it --rm \
+    --env-file=.env\
+    --privileged\
+    --link ocserv-postgres:ocserv-postgres \
+    --name ocserv_user_expiry ocserv:user_expiry
+
 ```
 
 ```text
