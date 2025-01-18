@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/hpcloud/tail v1.0.0
-	github.com/mmtaee/go-oc-utils v0.0.7
+	github.com/mmtaee/go-oc-utils v0.0.8
 )
 
 require (

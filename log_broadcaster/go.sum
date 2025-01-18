@@ -17,8 +17,8 @@ github.com/jinzhu/inflection v1.0.0 h1:K317FqzuhWc8YvSVlFMCCUb36O/S9MCKRDI7QkRKD
 github.com/jinzhu/inflection v1.0.0/go.mod h1:h+uFLlag+Qp1Va5pdKtLDYj+kHp5pxUVkryuEj+Srlc=
 github.com/jinzhu/now v1.1.5 h1:/o9tlHleP7gOFmsnYNz3RGnqzefHA47wQpKrrdTIwXQ=
 github.com/jinzhu/now v1.1.5/go.mod h1:d3SSVoowX0Lcu0IBviAWJpolVfI5UJVZZ7cO71lE/z8=
-github.com/mmtaee/go-oc-utils v0.0.7 h1:Dh/CsTQvgcvpdBGXTutV7v79gMhAq63F+5aJQ/76W4A=
-github.com/mmtaee/go-oc-utils v0.0.7/go.mod h1:T/fjD+lBRf5dJrcLGF/K4XOrLQGy5VXzMSGSRTkvCDI=
+github.com/mmtaee/go-oc-utils v0.0.8 h1:WqtsLiE+CU9qtDlh+HWuqHDsLPNUeME95sreSnEzJmU=
+github.com/mmtaee/go-oc-utils v0.0.8/go.mod h1:T/fjD+lBRf5dJrcLGF/K4XOrLQGy5VXzMSGSRTkvCDI=
 github.com/oklog/ulid/v2 v2.1.0 h1:+9lhoxAP56we25tyYETBBY1YLA2SaoLvUFgrP2miPJU=
 github.com/oklog/ulid/v2 v2.1.0/go.mod h1:rcEKHmBBKfef9DhnvX7y1HZBYxjXb0cP5ExxNsTT1QQ=
 github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=
