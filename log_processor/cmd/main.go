@@ -62,4 +62,5 @@ func main() {
 	logger.Log(logger.WARNING, "Shutting down service ...")
 	cancel()
 	time.Sleep(1 * time.Second)
+	logger.Info("Shutdown complete")
 }
