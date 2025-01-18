@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"api/internal/models"
 	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/database"
+	"github.com/mmtaee/go-oc-utils/models"
 	"gorm.io/gorm"
 	"net/http"
 	"strings"

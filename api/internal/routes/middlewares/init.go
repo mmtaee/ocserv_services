@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"api/internal/models"
 	"api/pkg/config"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/database"
+	"github.com/mmtaee/go-oc-utils/models"
 	"net/http"
 	"slices"
 )

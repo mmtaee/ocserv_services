@@ -1,11 +1,11 @@
 package panel
 
 import (
-	"api/internal/models"
 	"api/internal/repository"
 	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
 	"github.com/labstack/echo/v4"
+	"github.com/mmtaee/go-oc-utils/models"
 	"net/http"
 )
 

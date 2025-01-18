@@ -1,8 +1,8 @@
 package staffManagement
 
 import (
-	"api/internal/models"
 	"api/pkg/utils"
+	"github.com/mmtaee/go-oc-utils/models"
 )
 
 type StaffsResponse struct {

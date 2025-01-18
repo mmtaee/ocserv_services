@@ -1,10 +1,10 @@
 package handlers
 
 import (
-	"api/internal/models"
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"github.com/mmtaee/go-oc-utils/models"
 )
 
 var tables = []interface{}{

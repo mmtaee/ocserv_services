@@ -1,13 +1,13 @@
 package repository
 
 import (
-	"api/internal/models"
 	"api/pkg/utils"
 	"context"
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/handler/occtl"
 	"github.com/mmtaee/go-oc-utils/handler/ocuser"
+	"github.com/mmtaee/go-oc-utils/models"
 	"gorm.io/gorm"
 	"slices"
 	"sync"

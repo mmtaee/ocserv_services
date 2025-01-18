@@ -1,9 +1,9 @@
 package repository
 
 import (
-	"api/internal/models"
 	"context"
 	"github.com/mmtaee/go-oc-utils/database"
+	"github.com/mmtaee/go-oc-utils/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
