@@ -10,9 +10,8 @@ import (
 )
 
 type Config struct {
-	APP      APP
-	DB       DB
-	RabbitMQ RabbitMQ
+	APP APP
+	DB  DB
 }
 
 type APP struct {
@@ -31,15 +30,6 @@ type DB struct {
 	Name     string
 	User     string
 	Password string
-}
-
-type RabbitMQ struct {
-	Host     string
-	Port     string
-	User     string
-	Password string
-	Protocol string
-	Vhost    string
 }
 
 var (
@@ -113,38 +103,16 @@ func Set(debug bool) {
 	config.DB = DB{
 		Host:     os.Getenv("POSTGRES_HOST"),
 		Port:     os.Getenv("POSTGRES_PORT"),
-		Name:     os.Getenv("POSTGRES_NAME"),
+		Name:     os.Getenv("POSTGRES_DB"),
 		User:     os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 	}
 
-	config.RabbitMQ = RabbitMQ{
-		Host:     os.Getenv("RABBIT_MQ_HOST"),
-		Port:     os.Getenv("RABBIT_MQ_PORT"),
-		User:     os.Getenv("RABBIT_MQ_USER"),
-		Password: os.Getenv("RABBIT_MQ_PASSWORD"),
-	}
-	if os.Getenv("RABBIT_MQ_SECURE") == "true" {
-		config.RabbitMQ.Protocol = "amqps"
-	} else {
-		config.RabbitMQ.Protocol = "amqp"
-	}
-	if vhost := os.Getenv("RABBIT_MQ_VHOST"); vhost != "" {
-		config.RabbitMQ.Vhost = vhost
-	}
 	logger.Log(logger.INFO, "Configuration applied successfully")
 }
 
 func GetDB() *DB {
 	return &config.DB
-}
-
-func GetRSN() string {
-	return fmt.Sprintf(
-		"%s://%s:%s@%s:%s/%s",
-		config.RabbitMQ.Protocol, config.RabbitMQ.User, config.RabbitMQ.Password,
-		config.RabbitMQ.Host, config.RabbitMQ.Port, config.RabbitMQ.Vhost,
-	)
 }
 
 func GetApp() *APP {
