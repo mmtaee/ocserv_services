@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"github.com/mmtaee/go-oc-utils/models"
 	"log"
 	"net/http"
-	"sse_log/internal/models"
 	"sync"
 	"time"
 )
