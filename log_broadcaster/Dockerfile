@@ -16,7 +16,7 @@ COPY . .
 
 RUN go build -o log_broadcaster cmd/main.go
 
-FROM alpine:latest
+FROM debian:bullseye-slim
 
 RUN mkdir -p /app /var/ocserv
 
