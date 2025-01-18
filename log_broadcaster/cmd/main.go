@@ -37,7 +37,7 @@ func main() {
 	cfg := &database.DBConfig{
 		Host:     os.Getenv("POSTGRES_HOST"),
 		Port:     os.Getenv("POSTGRES_PORT"),
-		Name:     os.Getenv("POSTGRES_NAME"),
+		Name:     os.Getenv("POSTGRES_DB"),
 		User:     os.Getenv("POSTGRES_USER"),
 		Password: os.Getenv("POSTGRES_PASSWORD"),
 	}
