@@ -38,6 +38,7 @@ func Serve() {
 		logger.Log(logger.CRITICAL, fmt.Sprintf("Error shutting down server: %v", err))
 	}
 	defer database.Close()
+	logger.Info("Shutdown complete")
 }
 
 func serve() {
