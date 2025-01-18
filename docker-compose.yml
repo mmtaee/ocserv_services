@@ -1,0 +1,96 @@
+networks:
+  ocserv:
+
+volumes:
+  ocserv:
+  ocserv-log:
+  shared-ssl:
+  postgres:
+
+x-postgres: &postgres
+  POSTGRES_DB: ocserv
+  POSTGRES_NAME: ocserv
+  POSTGRES_USER: ocserv-user
+  POSTGRES_PASSWORD: ocserv-passwd
+  POSTGRES_HOST: postgres
+  POSTGRES_PORT: 5432
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: postgres_ocserv
+    restart: unless-stopped
+    environment: *postgres
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "sh -c 'pg_isready -U ocserv-user -d ocserv'" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - ocserv
+
+  ocserv:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    container_name: ocserv-api
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - ocserv:/etc/ocserv
+      - ocserv-log:/var/log/ocserv
+      - shared-ssl:/etc/ocserv/certs
+    networks:
+      - ocserv
+    ports:
+      - "8080:8080"
+      - "443:433/udp"
+      - "443:443/tcp"
+    environment:
+      <<: *postgres
+      host: 0.0.0.0
+      ALLOW_ORIGINS:
+      SECRET_KEY: SECRET_KEY
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ocserv-log-processor:
+    build:
+      context: ./log_processor
+      dockerfile: Dockerfile
+    container_name: ocserv-log-processor
+    restart: unless-stopped
+    volumes:
+      - ocserv-log:/var/log/ocserv
+    networks:
+      - ocserv
+    environment:
+      <<: *postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ocserv:
+        condition: service_started
+
+  ocserv-log-broadcaster:
+    build:
+      context: ./log_broadcaster
+      dockerfile: Dockerfile
+    container_name: ocserv-log-broadcaster
+    restart: unless-stopped
+    volumes:
+      - ocserv-log:/var/log/ocserv
+    networks:
+      - ocserv
+    ports:
+      - "8081:8080"
+    environment:
+      <<: *postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ocserv:
+        condition: service_started
