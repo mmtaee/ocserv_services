@@ -94,3 +94,14 @@ services:
         condition: service_healthy
       ocserv:
         condition: service_started
+
+  ocserv-user-expiry:
+    build:
+      context: ./user_expiry
+      dockerfile: Dockerfile
+    container_name: ocserv-user-expiry
+    environment:
+      <<: *postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
