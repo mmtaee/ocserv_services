@@ -17,6 +17,7 @@ import (
 	"os"
 	"os/signal"
 	"sort"
+	"strconv"
 	"strings"
 	"syscall"
 	"time"
@@ -66,7 +67,12 @@ func serve() {
 
 	routes.Register(engine)
 
-	if appConf.Debug {
+	var debug bool
+	if debugStr := os.Getenv("DEBUG"); debugStr != "" {
+		debug, _ = strconv.ParseBool(debugStr)
+	}
+
+	if appConf.Debug || debug {
 		engine.Debug = true
 		engine.Logger.SetLevel(LabstackLog.DEBUG)
 		verboseLog(server)

@@ -7,8 +7,6 @@ import (
 	"api/pkg/routing"
 	"flag"
 	"github.com/mmtaee/go-oc-utils/database"
-	"os"
-	"strconv"
 )
 
 // @title Ocserv User management Example Api
@@ -25,10 +23,6 @@ func main() {
 	flag.BoolVar(&migrate, "migrate", false, "migrate models to database")
 	flag.BoolVar(&drop, "drop", false, "drop models table from database")
 	flag.Parse()
-
-	if debugStr := os.Getenv("DEBUG"); debugStr != "" {
-		debug, _ = strconv.ParseBool(debugStr)
-	}
 
 	config.Set(debug)
 	dbCfg := config.GetDB()
