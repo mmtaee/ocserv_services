@@ -53,6 +53,7 @@ services:
       host: 0.0.0.0
       ALLOW_ORIGINS:
       SECRET_KEY: SECRET_KEY
+      DEBUG: ${DEBUG:-false}
     depends_on:
       postgres:
         condition: service_healthy
