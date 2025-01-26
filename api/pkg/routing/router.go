@@ -9,40 +9,29 @@ import (
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	LabstackLog "github.com/labstack/gommon/log"
-	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
 	echoSwagger "github.com/swaggo/echo-swagger"
 	"log"
 	"net/http"
 	"os"
-	"os/signal"
 	"sort"
 	"strconv"
 	"strings"
-	"syscall"
 	"time"
 )
 
 var engine *echo.Echo
 
-func Serve() {
-	go serve()
-
-	quit := make(chan os.Signal, 1)
-	signal.Notify(quit, os.Interrupt, syscall.SIGTERM)
-	<-quit
-	fmt.Println("")
+func Shutdown() {
 	logger.Log(logger.WARNING, "Server is shutting down...")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := engine.Shutdown(ctx); err != nil {
 		logger.Log(logger.CRITICAL, fmt.Sprintf("Error shutting down server: %v", err))
 	}
-	defer database.Close()
-	logger.Info("Shutdown complete")
 }
 
-func serve() {
+func Serve() {
 	appConf := config.GetApp()
 	server := fmt.Sprintf("%s:%s", appConf.Host, appConf.Port)
 
