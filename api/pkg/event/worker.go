@@ -18,6 +18,7 @@ type WorkerEvent struct {
 
 var Worker *WorkerEvent
 
+// Set configs and create Worker
 func Set(db *gorm.DB, bufferSize int) {
 	c, cancel := context.WithCancel(context.Background())
 	Worker = &WorkerEvent{
@@ -28,10 +29,12 @@ func Set(db *gorm.DB, bufferSize int) {
 	}
 }
 
+// GetWorker return WorkerEvent
 func GetWorker() *WorkerEvent {
 	return Worker
 }
 
+// Start Workers
 func (w *WorkerEvent) Start(workerCount int) {
 	for i := 0; i < workerCount; i++ {
 		w.wg.Add(1)
@@ -40,6 +43,7 @@ func (w *WorkerEvent) Start(workerCount int) {
 	w.wg.Wait()
 }
 
+// Stop Workers
 func (w *WorkerEvent) Stop() {
 	logger.Log(logger.WARNING, "Stopping event workers")
 	w.cancel()
@@ -48,6 +52,7 @@ func (w *WorkerEvent) Stop() {
 	logger.Info("Event workers stopped")
 }
 
+// runWorker method run workers by workerID
 func (w *WorkerEvent) runWorker(workerID int) {
 	defer w.wg.Done()
 	logger.InfoF("Event worker %d started", workerID+1)
@@ -66,6 +71,7 @@ func (w *WorkerEvent) runWorker(workerID int) {
 	}
 }
 
+// AddEvent method to start creating Event in channel
 func (w *WorkerEvent) AddEvent(event *SchemaEvent) {
 	select {
 	case w.eventChan <- event:

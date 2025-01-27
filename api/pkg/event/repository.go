@@ -20,6 +20,7 @@ func NewEventRepository(db *gorm.DB) *RepositoryEvent {
 	}
 }
 
+// Apply method for save Event on database
 func (er *RepositoryEvent) Apply(c context.Context, schema *SchemaEvent) error {
 	if err := schema.Validate(); err != nil {
 		return err
@@ -28,6 +29,7 @@ func (er *RepositoryEvent) Apply(c context.Context, schema *SchemaEvent) error {
 	return er.db.WithContext(c).Create(&event).Error
 }
 
+// Read method to fetch Events and Convert to []SchemaEvent
 func (er *RepositoryEvent) Read(c context.Context, modelName string, oldStateType, newStateType interface{}) (*[]SchemaEvent, error) {
 	var events []Event
 	var eventResults []SchemaEvent
