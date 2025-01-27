@@ -2,6 +2,7 @@ package routes
 
 import (
 	"api/internal/routes/middlewares"
+	"api/internal/services/events"
 	ocGroup "api/internal/services/oc_group"
 	ocUser "api/internal/services/oc_user"
 	"api/internal/services/occtl"
@@ -21,4 +22,5 @@ func Register(e *echo.Echo) {
 	ocUser.Routes(group)
 	statistics.Routes(group)
 	occtl.Routes(group)
+	events.Routes(group)
 }

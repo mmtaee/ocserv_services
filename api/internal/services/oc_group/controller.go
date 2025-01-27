@@ -102,7 +102,7 @@ func (ctrl *Controller) DefaultGroup(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/:name [get]
 func (ctrl *Controller) Group(c echo.Context) error {
-	conf, err := ctrl.ocservGroupRepo.DefaultGroup(c.Request().Context())
+	conf, err := ctrl.ocservGroupRepo.Group(c.Request().Context(), c.Param("name"))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}

@@ -3,8 +3,8 @@ package event
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"reflect"
 	"time"
 )
 
@@ -71,14 +71,27 @@ func (e *SchemaEvent) Serialize() *Event {
 
 // Deserialize method for convert Event to SchemaEvent
 func (e *Event) Deserialize(oldStateType, newStateType interface{}) (*SchemaEvent, error) {
-	err := json.Unmarshal([]byte(e.OldState), oldStateType)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize OldState: %w", err)
+	if e.OldState != "" {
+		if reflect.TypeOf(oldStateType).Kind() == reflect.String {
+			oldStateType = e.OldState
+		} else {
+			err := json.Unmarshal([]byte(e.OldState), oldStateType)
+			logger.Logf(logger.ERROR, "Failed to deserialize old state: %v", err)
+		}
+	} else {
+		oldStateType = nil
 	}
-
-	err = json.Unmarshal([]byte(e.NewState), newStateType)
-	if err != nil {
-		return nil, fmt.Errorf("failed to deserialize NewState: %w", err)
+	if e.NewState != "" {
+		if reflect.TypeOf(newStateType).Kind() == reflect.String {
+			newStateType = e.NewState
+		} else {
+			err := json.Unmarshal([]byte(e.NewState), newStateType)
+			if err != nil {
+				logger.Logf(logger.ERROR, "Failed to deserialize new state: %v", err)
+			}
+		}
+	} else {
+		newStateType = nil
 	}
 
 	return &SchemaEvent{
@@ -94,7 +107,7 @@ func (e *Event) Deserialize(oldStateType, newStateType interface{}) (*SchemaEven
 
 // Validate SchemaEvent
 func (e *SchemaEvent) Validate() error {
-	if e.ModelName == "" || e.EventType == "" {
+	if e.ModelName == "" || e.UserUID == "" {
 		return errors.New("missing required fields in Event")
 	}
 	return nil

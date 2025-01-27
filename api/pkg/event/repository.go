@@ -11,7 +11,17 @@ type RepositoryEvent struct {
 
 type RepositoryEventInterface interface {
 	Apply(c context.Context, schema *SchemaEvent) error
-	Read(c context.Context, eventModel string, oldStateType interface{}, newStateType interface{}) (*[]SchemaEvent, error)
+	Read(
+		c context.Context,
+		eventType string,
+		conditions []string,
+		args []interface{},
+		order string,
+		offset int,
+		limit int,
+		oldStateType interface{},
+		newStateType interface{},
+	) (*[]SchemaEvent, error)
 }
 
 func NewEventRepository(db *gorm.DB) *RepositoryEvent {
@@ -30,13 +40,31 @@ func (er *RepositoryEvent) Apply(c context.Context, schema *SchemaEvent) error {
 }
 
 // Read method to fetch Events and Convert to []SchemaEvent
-func (er *RepositoryEvent) Read(c context.Context, modelName string, oldStateType, newStateType interface{}) (*[]SchemaEvent, error) {
+func (er *RepositoryEvent) Read(
+	c context.Context,
+	eventType string,
+	conditions []string,
+	args []interface{},
+	order string,
+	offset int,
+	limit int,
+	oldStateType interface{},
+	newStateType interface{},
+) (*[]SchemaEvent, error) {
 	var events []Event
 	var eventResults []SchemaEvent
-	if err := er.db.WithContext(c).Where("model_name = ?", modelName).Find(&events).Error; err != nil {
+	query := er.db.WithContext(c).
+		Where("event_type = ?", eventType).
+		Offset(offset).
+		Limit(limit).
+		Order(order)
+	if conditions != nil {
+		query = query.Where(conditions, args...)
+	}
+	err := query.Find(&events).Error
+	if err != nil {
 		return nil, err
 	}
-
 	for _, event := range events {
 		result, err := event.Deserialize(oldStateType, newStateType)
 		if err != nil {

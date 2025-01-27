@@ -19,6 +19,7 @@ type OcservGroupRepositoryInterface interface {
 	Groups(c context.Context) (*[]ocgroup.OcservGroupConfigInfo, error)
 	GroupNames(c context.Context) (*[]string, error)
 	DefaultGroup(c context.Context) (*ocgroup.OcservGroupConfig, error)
+	Group(c context.Context, name string) (*ocgroup.OcservGroupConfig, error)
 	UpdateDefaultGroup(c context.Context, config *ocgroup.OcservGroupConfig) error
 	CreateOrUpdateGroup(c context.Context, name string, config *ocgroup.OcservGroupConfig, create bool) error
 	DeleteGroup(c context.Context, name string) error
@@ -57,6 +58,14 @@ func (o *OcservGroupRepository) GroupNames(c context.Context) (*[]string, error)
 
 func (o *OcservGroupRepository) DefaultGroup(c context.Context) (*ocgroup.OcservGroupConfig, error) {
 	conf, err := o.ocGroup.DefaultGroup(c)
+	if err != nil {
+		return nil, err
+	}
+	return conf, nil
+}
+
+func (o *OcservGroupRepository) Group(c context.Context, name string) (*ocgroup.OcservGroupConfig, error) {
+	conf, err := o.ocGroup.Group(c, name)
 	if err != nil {
 		return nil, err
 	}
