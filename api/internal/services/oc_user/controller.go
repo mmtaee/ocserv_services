@@ -83,7 +83,7 @@ func (ctrl *Controller) User(c echo.Context) error {
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param        request body  OcservUserCreateOrUpdateRequest true "Create Ocserv User Body"
-// @Success      201  {object} nil
+// @Success      201  {object} models.OcUser
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users [post]
@@ -111,11 +111,11 @@ func (ctrl *Controller) Create(c echo.Context) error {
 		user.TrafficSize = 0
 	}
 	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
-	err := ctrl.ocservUserRepo.Create(ctx, &user)
+	newUser, err := ctrl.ocservUserRepo.Create(ctx, &user)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusCreated, nil)
+	return c.JSON(http.StatusCreated, newUser)
 }
 
 // Update  Ocserv User Update
@@ -128,7 +128,7 @@ func (ctrl *Controller) Create(c echo.Context) error {
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param        request body  OcservUserCreateOrUpdateRequest true "Update Ocserv User Body"
-// @Success      200  {object} nil
+// @Success      200  {object} models.OcUser
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid [put]
@@ -156,11 +156,11 @@ func (ctrl *Controller) Update(c echo.Context) error {
 		user.TrafficSize = 0
 	}
 	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
-	err := ctrl.ocservUserRepo.Update(ctx, c.Param("uid"), &user)
+	updatedUser, err := ctrl.ocservUserRepo.Update(ctx, c.Param("uid"), &user)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
-	return c.JSON(http.StatusOK, nil)
+	return c.JSON(http.StatusOK, updatedUser)
 }
 
 // LockOrUnlock  Ocserv User Lock or Unlock

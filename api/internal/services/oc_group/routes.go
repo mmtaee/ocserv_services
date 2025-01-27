@@ -15,7 +15,7 @@ func Routes(e *echo.Group) {
 	group.GET("", controller.Groups)
 	group.POST("", controller.CreateGroup)
 	group.GET("/:name", controller.Group)
-	group.POST("/:name", controller.UpdateGroup)
+	group.PATCH("/:name", controller.UpdateGroup)
 	group.DELETE("/:name", controller.DeleteGroup)
 
 	group.GET("/names", controller.GroupNames)

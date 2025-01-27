@@ -548,6 +548,55 @@ const docTemplate = `{
             }
         },
         "/api/v1/ocserv/groups/:name": {
+            "get": {
+                "description": "Get group config by name",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Get group config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Group Name",
+                        "name": "name",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_group.GroupResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Update Ocserv Group",
                 "consumes": [
@@ -651,6 +700,48 @@ const docTemplate = `{
             }
         },
         "/api/v1/ocserv/groups/defaults": {
+            "get": {
+                "description": "Get default group config",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Ocserv Group"
+                ],
+                "summary": "Get default group config",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/internal_services_oc_group.DefaultGroupResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            },
             "post": {
                 "description": "Update Ocserv Defaults Group initializing step",
                 "consumes": [
@@ -845,7 +936,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "201": {
-                        "description": "Created"
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/models.OcUser"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -895,7 +989,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api_internal_models.OcUser"
+                            "$ref": "#/definitions/models.OcUser"
                         }
                     },
                     "400": {
@@ -951,7 +1045,10 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "OK"
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.OcUser"
+                        }
                     },
                     "400": {
                         "description": "Bad Request",
@@ -1056,7 +1153,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api_internal_models.OcUserActivity"
+                                "$ref": "#/definitions/models.OcUserActivity"
                             }
                         }
                     },
@@ -1525,7 +1622,7 @@ const docTemplate = `{
                     "201": {
                         "description": "Created",
                         "schema": {
-                            "$ref": "#/definitions/api_internal_models.User"
+                            "$ref": "#/definitions/models.User"
                         }
                     },
                     "400": {
@@ -1688,7 +1785,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/api_internal_models.UserPermission"
+                            "$ref": "#/definitions/models.UserPermission"
                         }
                     },
                     "400": {
@@ -1741,7 +1838,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/api_internal_models.UserPermission"
+                            "$ref": "#/definitions/models.UserPermission"
                         }
                     }
                 ],
@@ -2021,119 +2118,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "api_internal_models.OcUser": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "description": {
-                    "type": "string"
-                },
-                "expire_at": {
-                    "type": "string"
-                },
-                "group": {
-                    "type": "string"
-                },
-                "is_locked": {
-                    "type": "boolean"
-                },
-                "is_online": {
-                    "type": "boolean"
-                },
-                "password": {
-                    "type": "string"
-                },
-                "rx": {
-                    "description": "Receive in bytes",
-                    "type": "integer"
-                },
-                "traffic_size": {
-                    "description": "in GiB  \u003e\u003e x * 1024 ** 3",
-                    "type": "integer"
-                },
-                "traffic_type": {
-                    "type": "string",
-                    "enum": [
-                        "Free",
-                        "MonthlyTransmit",
-                        "MonthlyReceive",
-                        "TotallyTransmit",
-                        "TotallyReceive"
-                    ]
-                },
-                "tx": {
-                    "description": "Transmit in bytes",
-                    "type": "integer"
-                },
-                "uid": {
-                    "type": "string"
-                },
-                "updated_at": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "api_internal_models.OcUserActivity": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "log": {
-                    "type": "string"
-                },
-                "type": {
-                    "type": "string",
-                    "enum": [
-                        "Connected",
-                        "Disconnected",
-                        "Failed"
-                    ]
-                }
-            }
-        },
-        "api_internal_models.User": {
-            "type": "object",
-            "properties": {
-                "is_admin": {
-                    "type": "boolean"
-                },
-                "last_login": {
-                    "type": "string"
-                },
-                "uid": {
-                    "type": "string"
-                },
-                "username": {
-                    "type": "string"
-                }
-            }
-        },
-        "api_internal_models.UserPermission": {
-            "type": "object",
-            "properties": {
-                "oc_group": {
-                    "type": "boolean"
-                },
-                "oc_user": {
-                    "type": "boolean"
-                },
-                "occtl": {
-                    "type": "boolean"
-                },
-                "statistic": {
-                    "type": "boolean"
-                },
-                "system": {
-                    "type": "boolean"
-                }
-            }
-        },
         "api_internal_repository.MonthStatistics": {
             "type": "object",
             "properties": {
@@ -2154,7 +2138,7 @@ const docTemplate = `{
         "api_internal_repository.Statistics": {
             "type": "object",
             "properties": {
-                "date": {
+                "created_at": {
                     "type": "string"
                 },
                 "sum_rx": {
@@ -2227,6 +2211,22 @@ const docTemplate = `{
                 }
             }
         },
+        "internal_services_oc_group.DefaultGroupResponse": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                }
+            }
+        },
+        "internal_services_oc_group.GroupResponse": {
+            "type": "object",
+            "properties": {
+                "config": {
+                    "$ref": "#/definitions/ocgroup.OcservGroupConfig"
+                }
+            }
+        },
         "internal_services_oc_user.OcservUserCreateOrUpdateRequest": {
             "type": "object",
             "required": [
@@ -2288,7 +2288,7 @@ const docTemplate = `{
                 "oc_users": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/api_internal_models.OcUser"
+                        "$ref": "#/definitions/models.OcUser"
                     }
                 }
             }
@@ -2408,7 +2408,7 @@ const docTemplate = `{
                 "staffs": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/api_internal_models.User"
+                        "$ref": "#/definitions/models.User"
                     }
                 }
             }
@@ -2516,6 +2516,119 @@ const docTemplate = `{
             "properties": {
                 "token": {
                     "type": "string"
+                }
+            }
+        },
+        "models.OcUser": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "expire_at": {
+                    "type": "string"
+                },
+                "group": {
+                    "type": "string"
+                },
+                "is_locked": {
+                    "type": "boolean"
+                },
+                "is_online": {
+                    "type": "boolean"
+                },
+                "password": {
+                    "type": "string"
+                },
+                "rx": {
+                    "description": "Receive in bytes",
+                    "type": "integer"
+                },
+                "traffic_size": {
+                    "description": "in GiB  \u003e\u003e x * 1024 ** 3",
+                    "type": "integer"
+                },
+                "traffic_type": {
+                    "type": "string",
+                    "enum": [
+                        "Free",
+                        "MonthlyTransmit",
+                        "MonthlyReceive",
+                        "TotallyTransmit",
+                        "TotallyReceive"
+                    ]
+                },
+                "tx": {
+                    "description": "Transmit in bytes",
+                    "type": "integer"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.OcUserActivity": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "log": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "Connected",
+                        "Disconnected",
+                        "Failed"
+                    ]
+                }
+            }
+        },
+        "models.User": {
+            "type": "object",
+            "properties": {
+                "is_admin": {
+                    "type": "boolean"
+                },
+                "last_login": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "string"
+                },
+                "username": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.UserPermission": {
+            "type": "object",
+            "properties": {
+                "oc_group": {
+                    "type": "boolean"
+                },
+                "oc_user": {
+                    "type": "boolean"
+                },
+                "occtl": {
+                    "type": "boolean"
+                },
+                "statistic": {
+                    "type": "boolean"
+                },
+                "system": {
+                    "type": "boolean"
                 }
             }
         },

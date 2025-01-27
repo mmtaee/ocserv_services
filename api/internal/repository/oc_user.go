@@ -25,8 +25,8 @@ type OcservUserRepository struct {
 type OcservUserRepositoryInterface interface {
 	Users(c context.Context, page utils.RequestPagination) (*[]models.OcUser, *utils.ResponsePagination, error)
 	User(c context.Context, username string) (*models.OcUser, error)
-	Create(c context.Context, user *models.OcUser) error
-	Update(c context.Context, uid string, user *models.OcUser) error
+	Create(c context.Context, user *models.OcUser) (*models.OcUser, error)
+	Update(c context.Context, uid string, user *models.OcUser) (*models.OcUser, error)
 	LockOrUnLock(c context.Context, uid string, lock bool) error
 	Disconnect(c context.Context, uid string) error
 	Delete(c context.Context, uid string) error
@@ -121,7 +121,7 @@ func (o *OcservUserRepository) User(c context.Context, uid string) (*models.OcUs
 	return &user, nil
 }
 
-func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) error {
+func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) (*models.OcUser, error) {
 	tx := o.db.WithContext(c).Begin()
 	defer func() {
 		if r := recover(); r != nil {
@@ -131,13 +131,13 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 		}
 	}()
 	if err := tx.Table("oc_users").Create(user).Error; err != nil {
-		return err
+		return nil, err
 	}
 	if err := o.ocUser.Create(c, user.Username, user.Password, user.Group); err != nil {
-		return err
+		return nil, err
 	}
 	if err := tx.Commit().Error; err != nil {
-		return err
+		return nil, err
 	}
 
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
@@ -149,10 +149,10 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 		NewState:  user,
 	})
 
-	return nil
+	return user, nil
 }
 
-func (o *OcservUserRepository) Update(c context.Context, uid string, user *models.OcUser) error {
+func (o *OcservUserRepository) Update(c context.Context, uid string, user *models.OcUser) (*models.OcUser, error) {
 	var existing models.OcUser
 
 	tx := o.db.WithContext(c).Begin()
@@ -165,7 +165,7 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 	}()
 
 	if err := tx.Table("oc_users").Where("uid = ?", uid).First(&existing).Error; err != nil {
-		return err
+		return nil, err
 	}
 
 	oldState := existing
@@ -178,15 +178,15 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 	existing.TrafficSize = user.TrafficSize
 
 	if err := tx.Table("oc_users").Save(&existing).Error; err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := o.ocUser.Update(c, user.Username, user.Password, user.Group); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := tx.Commit().Error; err != nil {
-		return err
+		return nil, err
 	}
 
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
@@ -198,7 +198,7 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		NewState:  existing,
 	})
 
-	return nil
+	return &existing, nil
 }
 
 func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock bool) error {

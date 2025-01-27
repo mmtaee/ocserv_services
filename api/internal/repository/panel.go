@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"api/pkg/event"
 	"context"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/models"
@@ -9,7 +10,8 @@ import (
 )
 
 type PanelConfigRepository struct {
-	db *gorm.DB
+	db          *gorm.DB
+	WorkerEvent *event.WorkerEvent
 }
 
 type PanelConfigRepositoryInterface interface {
@@ -20,7 +22,8 @@ type PanelConfigRepositoryInterface interface {
 
 func NewPanelConfigRepository() PanelConfigRepositoryInterface {
 	return &PanelConfigRepository{
-		db: database.Connection(),
+		db:          database.Connection(),
+		WorkerEvent: event.GetWorker(),
 	}
 }
 
@@ -36,7 +39,16 @@ func (p *PanelConfigRepository) UpdateConfig(c context.Context, siteKey, secretK
 		}
 		config.GoogleCaptchaSiteKey = siteKey
 		config.GoogleCaptchaSecretKey = secretKet
-		return tx.WithContext(c).Save(&config).Error
+		err := tx.WithContext(c).Save(&config).Error
+		if err != nil {
+			return err
+		}
+		p.WorkerEvent.AddEvent(&event.SchemaEvent{
+			EventType: "update_panel_config",
+			ModelName: "panel_config",
+			NewState:  config,
+		})
+		return nil
 	})
 }
 

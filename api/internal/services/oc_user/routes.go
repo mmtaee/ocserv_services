@@ -12,7 +12,7 @@ func Routes(e *echo.Group) {
 	group.GET("", controller.Users)
 	group.POST("", controller.Create)
 	group.GET("/:uid", controller.User)
-	group.PUT("/:uid", controller.Update)
+	group.PATCH("/:uid", controller.Update)
 	group.POST("/:uid/lock", controller.LockOrUnlock)
 	group.POST("/:uid/disconnect", controller.Disconnect)
 	group.DELETE("/:uid", controller.Delete)

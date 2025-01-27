@@ -1,82 +1,5 @@
 basePath: /services
 definitions:
-  api_internal_models.OcUser:
-    properties:
-      created_at:
-        type: string
-      description:
-        type: string
-      expire_at:
-        type: string
-      group:
-        type: string
-      is_locked:
-        type: boolean
-      is_online:
-        type: boolean
-      password:
-        type: string
-      rx:
-        description: Receive in bytes
-        type: integer
-      traffic_size:
-        description: in GiB  >> x * 1024 ** 3
-        type: integer
-      traffic_type:
-        enum:
-        - Free
-        - MonthlyTransmit
-        - MonthlyReceive
-        - TotallyTransmit
-        - TotallyReceive
-        type: string
-      tx:
-        description: Transmit in bytes
-        type: integer
-      uid:
-        type: string
-      updated_at:
-        type: string
-      username:
-        type: string
-    type: object
-  api_internal_models.OcUserActivity:
-    properties:
-      created_at:
-        type: string
-      log:
-        type: string
-      type:
-        enum:
-        - Connected
-        - Disconnected
-        - Failed
-        type: string
-    type: object
-  api_internal_models.User:
-    properties:
-      is_admin:
-        type: boolean
-      last_login:
-        type: string
-      uid:
-        type: string
-      username:
-        type: string
-    type: object
-  api_internal_models.UserPermission:
-    properties:
-      oc_group:
-        type: boolean
-      oc_user:
-        type: boolean
-      occtl:
-        type: boolean
-      statistic:
-        type: boolean
-      system:
-        type: boolean
-    type: object
   api_internal_repository.MonthStatistics:
     properties:
       month:
@@ -90,7 +13,7 @@ definitions:
     type: object
   api_internal_repository.Statistics:
     properties:
-      date:
+      created_at:
         type: string
       sum_rx:
         type: number
@@ -137,6 +60,16 @@ definitions:
     - config
     - name
     type: object
+  internal_services_oc_group.DefaultGroupResponse:
+    properties:
+      config:
+        $ref: '#/definitions/ocgroup.OcservGroupConfig'
+    type: object
+  internal_services_oc_group.GroupResponse:
+    properties:
+      config:
+        $ref: '#/definitions/ocgroup.OcservGroupConfig'
+    type: object
   internal_services_oc_user.OcservUserCreateOrUpdateRequest:
     properties:
       expire_at:
@@ -181,7 +114,7 @@ definitions:
         $ref: '#/definitions/api_pkg_utils.ResponsePagination'
       oc_users:
         items:
-          $ref: '#/definitions/api_internal_models.OcUser'
+          $ref: '#/definitions/models.OcUser'
         type: array
     type: object
   internal_services_occtl.ShowStatusResponse:
@@ -260,7 +193,7 @@ definitions:
         $ref: '#/definitions/api_pkg_utils.ResponsePagination'
       staffs:
         items:
-          $ref: '#/definitions/api_internal_models.User'
+          $ref: '#/definitions/models.User'
         type: array
     type: object
   internal_services_staff_management.UpdateStaffPasswordRequest:
@@ -337,6 +270,83 @@ definitions:
         type: string
     required:
     - token
+    type: object
+  models.OcUser:
+    properties:
+      created_at:
+        type: string
+      description:
+        type: string
+      expire_at:
+        type: string
+      group:
+        type: string
+      is_locked:
+        type: boolean
+      is_online:
+        type: boolean
+      password:
+        type: string
+      rx:
+        description: Receive in bytes
+        type: integer
+      traffic_size:
+        description: in GiB  >> x * 1024 ** 3
+        type: integer
+      traffic_type:
+        enum:
+        - Free
+        - MonthlyTransmit
+        - MonthlyReceive
+        - TotallyTransmit
+        - TotallyReceive
+        type: string
+      tx:
+        description: Transmit in bytes
+        type: integer
+      uid:
+        type: string
+      updated_at:
+        type: string
+      username:
+        type: string
+    type: object
+  models.OcUserActivity:
+    properties:
+      created_at:
+        type: string
+      log:
+        type: string
+      type:
+        enum:
+        - Connected
+        - Disconnected
+        - Failed
+        type: string
+    type: object
+  models.User:
+    properties:
+      is_admin:
+        type: boolean
+      last_login:
+        type: string
+      uid:
+        type: string
+      username:
+        type: string
+    type: object
+  models.UserPermission:
+    properties:
+      oc_group:
+        type: boolean
+      oc_user:
+        type: boolean
+      occtl:
+        type: boolean
+      statistic:
+        type: boolean
+      system:
+        type: boolean
     type: object
   occtl.IPBan:
     properties:
@@ -880,6 +890,39 @@ paths:
       summary: Delete Ocserv Group
       tags:
       - Ocserv Group
+    get:
+      consumes:
+      - application/json
+      description: Get group config by name
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Group Name
+        in: path
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_oc_group.GroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Get group config
+      tags:
+      - Ocserv Group
     post:
       consumes:
       - application/json
@@ -918,6 +961,34 @@ paths:
       tags:
       - Ocserv Group
   /api/v1/ocserv/groups/defaults:
+    get:
+      consumes:
+      - application/json
+      description: Get default group config
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/internal_services_oc_group.DefaultGroupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: Get default group config
+      tags:
+      - Ocserv Group
     post:
       consumes:
       - application/json
@@ -1047,6 +1118,8 @@ paths:
       responses:
         "201":
           description: Created
+          schema:
+            $ref: '#/definitions/models.OcUser'
         "400":
           description: Bad Request
           schema:
@@ -1111,7 +1184,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api_internal_models.OcUser'
+            $ref: '#/definitions/models.OcUser'
         "400":
           description: Bad Request
           schema:
@@ -1149,6 +1222,8 @@ paths:
       responses:
         "200":
           description: OK
+          schema:
+            $ref: '#/definitions/models.OcUser'
         "400":
           description: Bad Request
           schema:
@@ -1188,7 +1263,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/api_internal_models.OcUserActivity'
+              $ref: '#/definitions/models.OcUserActivity'
             type: array
         "400":
           description: Bad Request
@@ -1502,7 +1577,7 @@ paths:
         "201":
           description: Created
           schema:
-            $ref: '#/definitions/api_internal_models.User'
+            $ref: '#/definitions/models.User'
         "400":
           description: Bad Request
           schema:
@@ -1611,7 +1686,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/api_internal_models.UserPermission'
+            $ref: '#/definitions/models.UserPermission'
         "400":
           description: Bad Request
           schema:
@@ -1645,7 +1720,7 @@ paths:
         name: request
         required: true
         schema:
-          $ref: '#/definitions/api_internal_models.UserPermission'
+          $ref: '#/definitions/models.UserPermission'
       produces:
       - application/json
       responses:

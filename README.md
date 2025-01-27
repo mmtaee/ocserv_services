@@ -49,6 +49,8 @@ go run cmd/main.go -debug -migrate
 # API service
 POSTGRES_HOST=127.0.0.1 go run cmd/main.go -debug -drop
 
+swag init -g cmd/main.go --parseDependency
+
 sudo docker build -t ocserv:api .
 
 go build  -o build/ocserv_api cmd/main.go  
