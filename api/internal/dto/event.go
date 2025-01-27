@@ -15,10 +15,13 @@ import "github.com/mmtaee/go-oc-utils/models"
 //	- update_panel_config
 
 // *oc group
-// - update_default_group
-// - create_group
-// - update_group
-// - delete_group
+// - update_oc_default_group
+// - create_oc_group
+// - update_oc_group
+// - delete_oc_group
+
+// *oc user
+// - create_oc_user
 
 type CreateStaffEvent struct {
 	User models.User `json:"user"`

@@ -75,7 +75,7 @@ func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *oc
 		return nil
 	}
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
-		EventType: "update_default_group",
+		EventType: "update_oc_default_group",
 		ModelName: "group",
 		ModelUID:  "",
 		OldState:  old,
@@ -95,10 +95,10 @@ func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name stri
 	var oldState *ocgroup.OcservGroupConfig
 
 	if create {
-		eventType = "create_group"
+		eventType = "create_oc_group"
 		oldState = nil
 	} else {
-		eventType = "update_group"
+		eventType = "update_oc_group"
 		oldState, err = o.ocGroup.Group(c, name)
 		if err != nil {
 			logger.Logf(logger.ERROR, "get group err: %s", err.Error())
@@ -121,7 +121,7 @@ func (o *OcservGroupRepository) DeleteGroup(c context.Context, name string) erro
 		return err
 	}
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
-		EventType: "delete_group",
+		EventType: "delete_oc_group",
 		ModelName: "group",
 		ModelUID:  name,
 		OldState:  nil,
