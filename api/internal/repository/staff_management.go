@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"api/internal/dto"
+	"api/pkg/event"
 	"api/pkg/utils"
 	"context"
 	"fmt"
@@ -8,10 +10,12 @@ import (
 	"github.com/mmtaee/go-oc-utils/models"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
+	"strconv"
 )
 
 type StaffRepository struct {
-	db *gorm.DB
+	db          *gorm.DB
+	WorkerEvent *event.WorkerEvent
 }
 
 type StaffRepositoryInterface interface {
@@ -25,7 +29,8 @@ type StaffRepositoryInterface interface {
 
 func NewStaffRepository() *StaffRepository {
 	return &StaffRepository{
-		db: database.Connection(),
+		db:          database.Connection(),
+		WorkerEvent: event.GetWorker(),
 	}
 }
 
@@ -71,16 +76,44 @@ func (s *StaffRepository) CreateStaff(c context.Context, staff *models.User, per
 	if err != nil {
 		return err
 	}
+	s.WorkerEvent.AddEvent(&event.SchemaEvent{
+		ModelName: "user",
+		EventType: "create_staff",
+		ModelUID:  staff.UID,
+		NewState:  dto.CreateStaffEvent{User: *staff},
+	})
+
 	permission.UserID = staff.ID
-	return s.db.WithContext(c).Create(&permission).Error
+	err = s.db.WithContext(c).Create(&permission).Error
+	if err != nil {
+		return err
+	}
+
+	s.WorkerEvent.AddEvent(&event.SchemaEvent{
+		ModelName: "user_permission",
+		ModelUID:  strconv.Itoa(int(permission.ID)),
+		EventType: "create_staff_permission",
+		NewState:  dto.CreatePermissionEvent{Permission: *permission},
+	})
+	return nil
 }
 
 func (s *StaffRepository) UpdateStaffPermission(c context.Context, userUID string, permission *models.UserPermission) error {
-	return s.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
+	err := s.db.WithContext(c).Transaction(func(tx *gorm.DB) error {
 		return s.db.Model(&models.UserPermission{}).
 			Where("user_id = (?)", s.db.Table("users").Select("id").Where("uid = ?", userUID)).
 			Updates(&permission).Error
 	})
+	if err != nil {
+		return err
+	}
+	s.WorkerEvent.AddEvent(&event.SchemaEvent{
+		ModelName: "user_permission",
+		ModelUID:  strconv.Itoa(int(permission.ID)),
+		EventType: "update_staff_permission",
+		NewState:  dto.UpdateStaffPermissionEvent{Permission: *permission},
+	})
+	return nil
 }
 
 func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID, password, salt string) error {
@@ -96,6 +129,11 @@ func (s *StaffRepository) UpdateStaffPassword(c context.Context, userUID, passwo
 		if err := tx.Save(&user).Error; err != nil {
 			return err
 		}
+		s.WorkerEvent.AddEvent(&event.SchemaEvent{
+			ModelName: "user",
+			EventType: "update_staff_password",
+			ModelUID:  user.UID,
+		})
 		return nil
 	})
 }
@@ -109,6 +147,15 @@ func (s *StaffRepository) DeleteStaff(c context.Context, userUID string) error {
 		if err := tx.Where("user_id = ? ", user.ID).Delete(&models.UserPermission{}).Error; err != nil {
 			return err
 		}
-		return tx.Delete(&user).Error
+		err := tx.Delete(&user).Error
+		if err != nil {
+			return err
+		}
+		s.WorkerEvent.AddEvent(&event.SchemaEvent{
+			ModelName: "user",
+			EventType: "delete_staff",
+			ModelUID:  user.UID,
+		})
+		return nil
 	})
 }
