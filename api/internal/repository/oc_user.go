@@ -1,6 +1,7 @@
 package repository
 
 import (
+	"api/pkg/event"
 	"api/pkg/utils"
 	"context"
 	"fmt"
@@ -15,9 +16,10 @@ import (
 )
 
 type OcservUserRepository struct {
-	db     *gorm.DB
-	ocUser ocuser.OcservUserInterface
-	occtl  occtl.OcInterface
+	db          *gorm.DB
+	ocUser      ocuser.OcservUserInterface
+	occtl       occtl.OcInterface
+	WorkerEvent *event.WorkerEvent
 }
 
 type OcservUserRepositoryInterface interface {
@@ -40,9 +42,10 @@ type Statistics struct {
 
 func NewOcservUserRepository() *OcservUserRepository {
 	return &OcservUserRepository{
-		db:     database.Connection(),
-		ocUser: ocuser.NewOcservUser(),
-		occtl:  occtl.NewOcctl(),
+		db:          database.Connection(),
+		ocUser:      ocuser.NewOcservUser(),
+		occtl:       occtl.NewOcctl(),
+		WorkerEvent: event.GetWorker(),
 	}
 }
 
@@ -136,6 +139,15 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
+
+	o.WorkerEvent.AddEvent(&event.SchemaEvent{
+		EventType: "create_oc_user",
+		ModelName: "oc_user",
+		ModelUID:  user.UID,
+		OldState:  nil,
+		NewState:  user,
+	})
+
 	return nil
 }
 
@@ -155,6 +167,8 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		return err
 	}
 
+	oldState := existing
+
 	existing.Group = user.Group
 	existing.Username = user.Username
 	existing.Password = user.Password
@@ -173,6 +187,15 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
+
+	o.WorkerEvent.AddEvent(&event.SchemaEvent{
+		EventType: "update_oc_user",
+		ModelName: "oc_user",
+		ModelUID:  uid,
+		OldState:  oldState,
+		NewState:  existing,
+	})
+
 	return nil
 }
 
@@ -211,6 +234,26 @@ func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock 
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
+
+	var eventType, newState, oldState string
+
+	if lock {
+		eventType = "lock_oc_user"
+		oldState = "unlock"
+		newState = "lock"
+	} else {
+		eventType = "unlock_oc_user"
+		oldState = "lock"
+		newState = "unlock"
+	}
+	o.WorkerEvent.AddEvent(&event.SchemaEvent{
+		EventType: eventType,
+		ModelName: "oc_user",
+		ModelUID:  uid,
+		OldState:  oldState,
+		NewState:  newState,
+	})
+
 	return nil
 }
 
@@ -220,7 +263,18 @@ func (o *OcservUserRepository) Disconnect(c context.Context, uid string) error {
 	if err != nil {
 		return err
 	}
-	return o.occtl.Disconnect(c, user.Username)
+	err = o.occtl.Disconnect(c, user.Username)
+	if err != nil {
+		return err
+	}
+	o.WorkerEvent.AddEvent(&event.SchemaEvent{
+		EventType: "disconnect_oc_user",
+		ModelName: "oc_user",
+		ModelUID:  uid,
+		OldState:  nil,
+		NewState:  nil,
+	})
+	return nil
 }
 func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 	var user models.OcUser
@@ -244,6 +298,13 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 	if err := tx.Commit().Error; err != nil {
 		return err
 	}
+
+	o.WorkerEvent.AddEvent(&event.SchemaEvent{
+		EventType: "delete_oc_user",
+		ModelName: "oc_user",
+		ModelUID:  uid,
+	})
+
 	return nil
 }
 

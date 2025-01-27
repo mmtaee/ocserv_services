@@ -18,3 +18,8 @@
 
 // *oc user
 // - create_oc_user
+// - update_oc_user
+// - lock_oc_user
+// - unlock_oc_user
+// - disconnect_oc_user
+// - delete_oc_user
