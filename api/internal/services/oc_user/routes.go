@@ -1,10 +1,14 @@
 package ocUser
 
-import "github.com/labstack/echo/v4"
+import (
+	"api/internal/routes/middlewares"
+	"github.com/labstack/echo/v4"
+)
 
 func Routes(e *echo.Group) {
 	controller := New()
-	group := e.Group("/ocserv/users")
+	group := e.Group("/ocserv/users", middlewares.IsAuthenticatedMiddleware())
+
 	group.GET("", controller.Users)
 	group.POST("", controller.Create)
 	group.GET("/:uid", controller.User)
