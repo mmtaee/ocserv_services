@@ -7,6 +7,7 @@ import (
 	"github.com/mmtaee/go-oc-utils/models"
 	"gorm.io/gorm"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -36,7 +37,8 @@ func IsAuthenticatedMiddleware() echo.MiddlewareFunc {
 			} else if err != nil {
 				return c.JSON(http.StatusInternalServerError, nil)
 			}
-			c.Set("userID", token.User.ID)
+
+			c.Set("userID", strconv.Itoa(int(token.User.ID)))
 			c.Set("username", token.User.Username)
 			c.Set("isAdmin", token.User.IsAdmin)
 			c.Set("token", token.Token)

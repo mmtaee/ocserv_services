@@ -94,7 +94,7 @@ func (e *Event) Deserialize(oldStateType, newStateType interface{}) (*SchemaEven
 
 // Validate SchemaEvent
 func (e *SchemaEvent) Validate() error {
-	if e.ModelName == "" || e.UserUID == "" {
+	if e.ModelName == "" || e.EventType == "" {
 		return errors.New("missing required fields in Event")
 	}
 	return nil
