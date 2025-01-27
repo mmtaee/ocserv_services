@@ -144,6 +144,7 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) er
 		EventType: "create_oc_user",
 		ModelName: "oc_user",
 		ModelUID:  user.UID,
+		UserUID:   c.Value("userID").(string),
 		OldState:  nil,
 		NewState:  user,
 	})
@@ -192,6 +193,7 @@ func (o *OcservUserRepository) Update(c context.Context, uid string, user *model
 		EventType: "update_oc_user",
 		ModelName: "oc_user",
 		ModelUID:  uid,
+		UserUID:   c.Value("userID").(string),
 		OldState:  oldState,
 		NewState:  existing,
 	})
@@ -250,6 +252,7 @@ func (o *OcservUserRepository) LockOrUnLock(c context.Context, uid string, lock 
 		EventType: eventType,
 		ModelName: "oc_user",
 		ModelUID:  uid,
+		UserUID:   c.Value("userID").(string),
 		OldState:  oldState,
 		NewState:  newState,
 	})
@@ -271,6 +274,7 @@ func (o *OcservUserRepository) Disconnect(c context.Context, uid string) error {
 		EventType: "disconnect_oc_user",
 		ModelName: "oc_user",
 		ModelUID:  uid,
+		UserUID:   c.Value("userID").(string),
 		OldState:  nil,
 		NewState:  nil,
 	})
@@ -303,6 +307,7 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 		EventType: "delete_oc_user",
 		ModelName: "oc_user",
 		ModelUID:  uid,
+		UserUID:   c.Value("userID").(string),
 	})
 
 	return nil

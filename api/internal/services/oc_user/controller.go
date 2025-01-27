@@ -4,6 +4,7 @@ import (
 	"api/internal/repository"
 	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
+	"context"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/models"
 	"net/http"
@@ -109,7 +110,8 @@ func (ctrl *Controller) Create(c echo.Context) error {
 	} else {
 		user.TrafficSize = 0
 	}
-	err := ctrl.ocservUserRepo.Create(c.Request().Context(), &user)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservUserRepo.Create(ctx, &user)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -153,7 +155,8 @@ func (ctrl *Controller) Update(c echo.Context) error {
 	} else {
 		user.TrafficSize = 0
 	}
-	err := ctrl.ocservUserRepo.Update(c.Request().Context(), c.Param("uid"), &user)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservUserRepo.Update(ctx, c.Param("uid"), &user)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -187,7 +190,8 @@ func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 	} else {
 		lock = false
 	}
-	err := ctrl.ocservUserRepo.LockOrUnLock(c.Request().Context(), c.Param("uid"), lock)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservUserRepo.LockOrUnLock(ctx, c.Param("uid"), lock)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -208,7 +212,8 @@ func (ctrl *Controller) LockOrUnlock(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/disconnect [post]
 func (ctrl *Controller) Disconnect(c echo.Context) error {
-	err := ctrl.ocservUserRepo.Disconnect(c.Request().Context(), c.Param("uid"))
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservUserRepo.Disconnect(ctx, c.Param("uid"))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -229,7 +234,8 @@ func (ctrl *Controller) Disconnect(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid [delete]
 func (ctrl *Controller) Delete(c echo.Context) error {
-	err := ctrl.ocservUserRepo.Delete(c.Request().Context(), c.Param("uid"))
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservUserRepo.Delete(ctx, c.Param("uid"))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}

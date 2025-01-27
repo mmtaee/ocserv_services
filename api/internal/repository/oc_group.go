@@ -78,6 +78,7 @@ func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *oc
 		EventType: "update_oc_default_group",
 		ModelName: "oc_group",
 		ModelUID:  "",
+		UserUID:   c.Value("userID").(string),
 		OldState:  old,
 		NewState:  config,
 	})
@@ -109,6 +110,7 @@ func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name stri
 		EventType: eventType,
 		ModelName: "oc_group",
 		ModelUID:  name,
+		UserUID:   c.Value("userID").(string),
 		OldState:  oldState,
 		NewState:  config,
 	})
@@ -124,6 +126,7 @@ func (o *OcservGroupRepository) DeleteGroup(c context.Context, name string) erro
 		EventType: "delete_oc_group",
 		ModelName: "oc_group",
 		ModelUID:  name,
+		UserUID:   c.Value("userID").(string),
 		OldState:  nil,
 		NewState:  nil,
 	})

@@ -4,6 +4,7 @@ import (
 	"api/internal/repository"
 	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
+	"context"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/handler/ocgroup"
 	"net/http"
@@ -128,7 +129,8 @@ func (ctrl *Controller) UpdateDefaultOcservGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(c.Request().Context(), &data)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservGroupRepo.UpdateDefaultGroup(ctx, &data)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -153,7 +155,8 @@ func (ctrl *Controller) CreateGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), data.Name, data.Config, true)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(ctx, data.Name, data.Config, true)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -179,7 +182,8 @@ func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), c.Param("name"), &data, false)
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(ctx, c.Param("name"), &data, false)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -200,7 +204,8 @@ func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/groups/:name [delete]
 func (ctrl *Controller) DeleteGroup(c echo.Context) error {
-	err := ctrl.ocservGroupRepo.DeleteGroup(c.Request().Context(), c.Param("name"))
+	ctx := context.WithValue(c.Request().Context(), "userID", c.Get("userID"))
+	err := ctrl.ocservGroupRepo.DeleteGroup(ctx, c.Param("name"))
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
