@@ -15,6 +15,125 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/api/v1/events/:event_type": {
+            "get": {
+                "description": "List of events",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "List of events",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer TOKEN",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "minimum": 1,
+                        "type": "integer",
+                        "description": "Page number, starting from 1",
+                        "name": "page",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "Field to order by",
+                        "name": "pager",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "ASC",
+                            "DESC"
+                        ],
+                        "type": "string",
+                        "description": "Sort order, either ASC or DESC",
+                        "name": "sort",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "event model name",
+                        "name": "model_name",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "id of user that does this event",
+                        "name": "user_id",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "event date create from",
+                        "name": "date_start",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "event date create to",
+                        "name": "date_end",
+                        "in": "query"
+                    },
+                    {
+                        "enum": [
+                            "create_staff",
+                            "create_staff_permission",
+                            "update_staff_permission",
+                            "update_staff_password",
+                            "delete_staff",
+                            "update_panel_config",
+                            "update_oc_default_group",
+                            "create_oc_group",
+                            "update_oc_group",
+                            "delete_oc_group",
+                            "create_oc_user",
+                            "update_oc_user",
+                            "lock_oc_user",
+                            "unlock_oc_user",
+                            "disconnect_oc_user",
+                            "delete_oc_user"
+                        ],
+                        "type": "string",
+                        "description": "name of event type",
+                        "name": "event_type",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/api_pkg_event.SchemaEvent"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/api_pkg_utils.ErrorResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "schema": {
+                            "$ref": "#/definitions/api_internal_routes_middlewares.Unauthorized"
+                        }
+                    }
+                }
+            }
+        },
         "/api/v1/occtl/disconnect/:username": {
             "post": {
                 "description": "Disconnect User From Server and Close Session",
@@ -2167,6 +2286,28 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "api_pkg_event.SchemaEvent": {
+            "type": "object",
+            "properties": {
+                "event_type": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "model_name": {
+                    "type": "string"
+                },
+                "model_uid": {
+                    "type": "string"
+                },
+                "new_state": {},
+                "old_state": {},
+                "user_uid": {
                     "type": "string"
                 }
             }

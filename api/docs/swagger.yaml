@@ -34,6 +34,21 @@ definitions:
       error:
         type: string
     type: object
+  api_pkg_event.SchemaEvent:
+    properties:
+      event_type:
+        type: string
+      id:
+        type: integer
+      model_name:
+        type: string
+      model_uid:
+        type: string
+      new_state: {}
+      old_state: {}
+      user_uid:
+        type: string
+    type: object
   api_pkg_utils.ErrorResponse:
     properties:
       error:
@@ -506,6 +521,91 @@ info:
   title: Ocserv User management Example Api
   version: "1.0"
 paths:
+  /api/v1/events/:event_type:
+    get:
+      consumes:
+      - application/json
+      description: List of events
+      parameters:
+      - description: Bearer TOKEN
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Page number, starting from 1
+        in: query
+        minimum: 1
+        name: page
+        type: integer
+      - description: Field to order by
+        in: query
+        name: pager
+        type: string
+      - description: Sort order, either ASC or DESC
+        enum:
+        - ASC
+        - DESC
+        in: query
+        name: sort
+        type: string
+      - description: event model name
+        in: query
+        name: model_name
+        type: string
+      - description: id of user that does this event
+        in: query
+        name: user_id
+        type: string
+      - description: event date create from
+        in: query
+        name: date_start
+        type: string
+      - description: event date create to
+        in: query
+        name: date_end
+        type: string
+      - description: name of event type
+        enum:
+        - create_staff
+        - create_staff_permission
+        - update_staff_permission
+        - update_staff_password
+        - delete_staff
+        - update_panel_config
+        - update_oc_default_group
+        - create_oc_group
+        - update_oc_group
+        - delete_oc_group
+        - create_oc_user
+        - update_oc_user
+        - lock_oc_user
+        - unlock_oc_user
+        - disconnect_oc_user
+        - delete_oc_user
+        in: path
+        name: event_type
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/api_pkg_event.SchemaEvent'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/api_pkg_utils.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/api_internal_routes_middlewares.Unauthorized'
+      summary: List of events
+      tags:
+      - Events
   /api/v1/occtl/disconnect/:username:
     post:
       consumes:
