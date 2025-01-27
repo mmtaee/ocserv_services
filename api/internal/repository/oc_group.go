@@ -76,7 +76,7 @@ func (o *OcservGroupRepository) UpdateDefaultGroup(c context.Context, config *oc
 	}
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
 		EventType: "update_oc_default_group",
-		ModelName: "group",
+		ModelName: "oc_group",
 		ModelUID:  "",
 		OldState:  old,
 		NewState:  config,
@@ -107,7 +107,7 @@ func (o *OcservGroupRepository) CreateOrUpdateGroup(c context.Context, name stri
 
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
 		EventType: eventType,
-		ModelName: "group",
+		ModelName: "oc_group",
 		ModelUID:  name,
 		OldState:  oldState,
 		NewState:  config,
@@ -122,7 +122,7 @@ func (o *OcservGroupRepository) DeleteGroup(c context.Context, name string) erro
 	}
 	o.WorkerEvent.AddEvent(&event.SchemaEvent{
 		EventType: "delete_oc_group",
-		ModelName: "group",
+		ModelName: "oc_group",
 		ModelUID:  name,
 		OldState:  nil,
 		NewState:  nil,
