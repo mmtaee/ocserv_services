@@ -65,6 +65,51 @@ func (ctrl *Controller) GroupNames(c echo.Context) error {
 	return c.JSON(http.StatusOK, names)
 }
 
+// DefaultGroup  Get default group config
+//
+// @Summary      Get default group config
+// @Description  Get default group config
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Success      200  {object}  DefaultGroupResponse
+// @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Router       /api/v1/ocserv/groups/defaults [get]
+func (ctrl *Controller) DefaultGroup(c echo.Context) error {
+	conf, err := ctrl.ocservGroupRepo.DefaultGroup(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, DefaultGroupResponse{
+		Config: conf,
+	})
+}
+
+// Group  		 Get group config
+//
+// @Summary      Get group config
+// @Description  Get group config by name
+// @Tags         Ocserv Group
+// @Accept       json
+// @Produce      json
+// @Param        Authorization header string true "Bearer TOKEN"
+// @Param 		 name path string true "Group Name"
+// @Success      200  {object}  GroupResponse
+// @Failure      400 {object} utils.ErrorResponse
+// @Failure      401 {object} middlewares.Unauthorized
+// @Router       /api/v1/ocserv/groups/:name [get]
+func (ctrl *Controller) Group(c echo.Context) error {
+	conf, err := ctrl.ocservGroupRepo.DefaultGroup(c.Request().Context())
+	if err != nil {
+		return utils.BadRequest(c, err)
+	}
+	return c.JSON(http.StatusOK, GroupResponse{
+		Config: conf,
+	})
+}
+
 // UpdateDefaultOcservGroup  Update Ocserv Defaults Group
 //
 // @Summary      Update Ocserv Defaults Group
@@ -108,7 +153,7 @@ func (ctrl *Controller) CreateGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), data.Name, data.Config)
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), data.Name, data.Config, true)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -134,7 +179,7 @@ func (ctrl *Controller) UpdateGroup(c echo.Context) error {
 	if err := ctrl.validator.Validate(c, &data); err != nil {
 		return utils.BadRequest(c, err)
 	}
-	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), c.Param("name"), &data)
+	err := ctrl.ocservGroupRepo.CreateOrUpdateGroup(c.Request().Context(), c.Param("name"), &data, false)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}

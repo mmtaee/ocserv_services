@@ -14,3 +14,11 @@ type CreateGroupRequest struct {
 	Name   string                     `json:"name" validate:"required"`
 	Config *ocgroup.OcservGroupConfig `json:"config" validate:"required"`
 }
+
+type DefaultGroupResponse struct {
+	Config *ocgroup.OcservGroupConfig `json:"config"`
+}
+
+type GroupResponse struct {
+	Config *ocgroup.OcservGroupConfig `json:"config"`
+}
