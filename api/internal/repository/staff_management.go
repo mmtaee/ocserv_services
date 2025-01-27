@@ -1,7 +1,6 @@
 package repository
 
 import (
-	"api/internal/dto"
 	"api/pkg/event"
 	"api/pkg/utils"
 	"context"
@@ -80,7 +79,7 @@ func (s *StaffRepository) CreateStaff(c context.Context, staff *models.User, per
 		ModelName: "user",
 		EventType: "create_staff",
 		ModelUID:  staff.UID,
-		NewState:  dto.CreateStaffEvent{User: *staff},
+		NewState:  staff,
 	})
 
 	permission.UserID = staff.ID
@@ -93,7 +92,7 @@ func (s *StaffRepository) CreateStaff(c context.Context, staff *models.User, per
 		ModelName: "user_permission",
 		ModelUID:  strconv.Itoa(int(permission.ID)),
 		EventType: "create_staff_permission",
-		NewState:  dto.CreatePermissionEvent{Permission: *permission},
+		NewState:  permission,
 	})
 	return nil
 }
@@ -111,7 +110,7 @@ func (s *StaffRepository) UpdateStaffPermission(c context.Context, userUID strin
 		ModelName: "user_permission",
 		ModelUID:  strconv.Itoa(int(permission.ID)),
 		EventType: "update_staff_permission",
-		NewState:  dto.UpdateStaffPermissionEvent{Permission: *permission},
+		NewState:  permission,
 	})
 	return nil
 }
