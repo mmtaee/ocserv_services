@@ -5,16 +5,18 @@ import (
 	"errors"
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/logger"
+	"time"
 )
 
 type Event struct {
-	ID        uint   `json:"id" gorm:"primary_key"`
-	ModelName string `json:"model_name" gorm:"type:varchar(32);not null"`
-	ModelUID  string `json:"model_uid" gorm:"type:varchar(32);not null"`
-	EventType string `json:"event_type" gorm:"type:varchar(32);not null"`
-	UserUID   string `json:"user_uid" gorm:"type:varchar(32);not null"`
-	OldState  string `json:"old_state" gorm:"type:text"`
-	NewState  string `json:"new_state" gorm:"type:text"`
+	ID        uint      `json:"id" gorm:"primary_key"`
+	ModelName string    `json:"model_name" gorm:"type:varchar(32);not null"`
+	ModelUID  string    `json:"model_uid" gorm:"type:varchar(32);not null"`
+	EventType string    `json:"event_type" gorm:"type:varchar(32);not null"`
+	UserUID   string    `json:"user_uid" gorm:"type:varchar(32);not null"`
+	OldState  string    `json:"old_state" gorm:"type:text"`
+	NewState  string    `json:"new_state" gorm:"type:text"`
+	CreatedAt time.Time `json:"created_at" gorm:"autoCreateTime"`
 }
 
 type SchemaEvent struct {
@@ -28,6 +30,9 @@ type SchemaEvent struct {
 }
 
 func toJSON(data interface{}) (string, error) {
+	if data == nil {
+		return "", nil
+	}
 	if str, ok := data.(string); ok {
 		return str, nil
 	}

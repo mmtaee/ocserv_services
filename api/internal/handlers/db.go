@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"api/pkg/event"
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
 	"github.com/mmtaee/go-oc-utils/logger"
@@ -15,6 +16,7 @@ var tables = []interface{}{
 	&models.OcUser{},
 	&models.OcUserActivity{},
 	&models.OcUserTrafficStatistics{},
+	&event.Event{},
 }
 
 func Migrate() {

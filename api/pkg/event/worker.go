@@ -71,6 +71,6 @@ func (w *WorkerEvent) AddEvent(event *SchemaEvent) {
 	case w.eventChan <- event:
 		logger.InfoF("Added event: %d", event.ID)
 	case <-w.ctx.Done():
-		logger.InfoF("Worker %d shutting down...\n", w.ctx.Err().Error())
+		logger.InfoF("Event worker %s shutting down...", w.ctx.Err().Error())
 	}
 }
