@@ -57,6 +57,30 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 10s
+      retries: 3
+      timeout: 10s
+      start_period: 20s
+
+  customer-api:
+    build:
+      context: ./api_customers
+      dockerfile: Dockerfile
+    container_name: ocserv-customer-api
+    restart: unless-stopped
+    networks:
+      - ocserv
+    ports:
+      - "8081:8080"
+    environment:
+      <<: *postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ocserv:
+        condition: service_healthy
 
   ocserv-log-processor:
     build:
@@ -74,7 +98,7 @@ services:
       postgres:
         condition: service_healthy
       ocserv:
-        condition: service_started
+        condition: service_healthy
 
   ocserv-log-broadcaster:
     build:
@@ -87,22 +111,26 @@ services:
     networks:
       - ocserv
     ports:
-      - "8081:8080"
+      - "8082:8080"
     environment:
       <<: *postgres
     depends_on:
       postgres:
         condition: service_healthy
       ocserv:
-        condition: service_started
+        condition: service_healthy
 
   ocserv-user-expiry:
     build:
       context: ./user_expiry
       dockerfile: Dockerfile
     container_name: ocserv-user-expiry
+    networks:
+      - ocserv
     environment:
       <<: *postgres
     depends_on:
       postgres:
+        condition: service_healthy
+      ocserv:
         condition: service_healthy
