@@ -130,6 +130,11 @@ func (o *OcservUserRepository) Create(c context.Context, user *models.OcUser) (*
 			tx.Rollback()
 		}
 	}()
+
+	if user.ExpireAt == nil {
+		nextYear := time.Now().AddDate(1, 0, 0)
+		user.ExpireAt = &nextYear
+	}
 	if err := tx.Table("oc_users").Create(user).Error; err != nil {
 		return nil, err
 	}
