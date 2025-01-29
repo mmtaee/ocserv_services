@@ -51,7 +51,7 @@ func main() {
 	httpRateLimiter := rateLimiter()
 
 	mux := http.NewServeMux()
-	mux.Handle("/client/dashboard/", handlers.LoggingHandler(os.Stdout, httpRateLimiter.RateLimit(http.HandlerFunc(Dashboard))))
+	mux.Handle("/customers/info/", handlers.LoggingHandler(os.Stdout, httpRateLimiter.RateLimit(http.HandlerFunc(Dashboard))))
 	server := &http.Server{Addr: ":8080", Handler: handlers.CompressHandler(mux)}
 	go func() {
 		logger.InfoF("Starting server on %s:%s", host, port)
