@@ -19,7 +19,7 @@ import (
 // @title Ocserv User management Example Api
 // @version 1.0
 // @description This is a sample Ocserv User management Api server.
-// @BasePath /services
+// @BasePath /api
 func main() {
 	var (
 		debug   bool
@@ -80,5 +80,10 @@ func main() {
 		sig := <-quit
 		fmt.Println()
 		logger.InfoF("Signal received: %s. Initiating shutdown...", sig)
+
+		eventWorker.Stop()
+		routing.Shutdown()
+		database.Close()
+		logger.Info("Shutdown complete")
 	}
 }

@@ -22,15 +22,6 @@ import (
 
 var engine *echo.Echo
 
-func Shutdown() {
-	logger.Log(logger.WARNING, "Server is shutting down...")
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-	if err := engine.Shutdown(ctx); err != nil {
-		logger.Log(logger.CRITICAL, fmt.Sprintf("Error shutting down server: %v", err))
-	}
-}
-
 func Serve() {
 	appConf := config.GetApp()
 	server := fmt.Sprintf("%s:%s", appConf.Host, appConf.Port)
@@ -119,4 +110,14 @@ func verboseLog(service string) {
 			)
 		}
 	}
+}
+
+func Shutdown() {
+	logger.Log(logger.WARNING, "Server is shutting down...")
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if err := engine.Shutdown(ctx); err != nil {
+		logger.Log(logger.CRITICAL, fmt.Sprintf("Error shutting down server: %v", err))
+	}
+	logger.Info("server stopped")
 }
