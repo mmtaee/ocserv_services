@@ -62,6 +62,12 @@ func Serve() {
 		engine.HideBanner = true
 	}
 
+	engine.GET("/health", func(c echo.Context) error {
+		return c.JSON(http.StatusOK, map[string]string{
+			"status": "Healthy",
+		})
+	})
+
 	engine.Use(middleware.GzipWithConfig(middleware.GzipConfig{
 		Skipper: func(c echo.Context) bool {
 			if strings.Contains(c.Request().URL.Path, "swagger") {
