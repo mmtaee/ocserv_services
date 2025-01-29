@@ -128,7 +128,7 @@ func Dashboard(w http.ResponseWriter, r *http.Request) {
 	var ocUser models.OcUser
 	err = db.WithContext(r.Context()).
 		Where("username = ? AND password = ?", requestBody.Username, requestBody.Password).
-		Find(&ocUser).Error
+		First(&ocUser).Error
 	if err != nil {
 		http.Error(w, fmt.Sprintf("User with username(%s) not found", requestBody.Username), http.StatusNotFound)
 		return
