@@ -73,12 +73,10 @@ services:
   fluentd:
     image: fluent/fluentd:v1.16
     container_name: fluentd
-    environment:
-      - FLUENTD_CONF=fluent.conf
     volumes:
       - ./fluentd.conf:/fluentd/etc/fluent.conf
     ports:
-      - "24224:24224"
+      - "127.0.0.1:24224:24224"
     healthcheck:
       test: ["CMD", "nc", "-z", "localhost", "24224"]
       interval: 10s
