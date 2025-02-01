@@ -57,80 +57,103 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      fluentd:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 20s         # Check every 20 seconds
       retries: 5            # Retry 5 times before marking the service as unhealthy
       timeout: 20s          # Wait for 20 seconds for a response
       start_period: 60s     # Wait for 60 seconds before starting the health check
+    logging:
+      driver: fluentd
+      options:
+        tag: "docker.ocserv"
 
-  customer-api:
-    build:
-      context: ./api_customers
-      dockerfile: Dockerfile
-    container_name: ocserv-customer-api
-    restart: unless-stopped
-    networks:
-      - ocserv
-    ports:
-      - "8081:8080"
+  fluentd:
+    image: fluent/fluentd:v1.16
+    container_name: fluentd
     environment:
-      <<: *postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ocserv:
-        condition: service_healthy
-
-  ocserv-log-processor:
-    build:
-      context: ./log_processor
-      dockerfile: Dockerfile
-    container_name: ocserv-log-processor
-    restart: unless-stopped
+      - FLUENTD_CONF=fluent.conf
     volumes:
-      - ocserv-log:/var/log/ocserv
-    networks:
-      - ocserv
-    environment:
-      <<: *postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ocserv:
-        condition: service_healthy
-
-  ocserv-log-broadcaster:
-    build:
-      context: ./log_broadcaster
-      dockerfile: Dockerfile
-    container_name: ocserv-log-broadcaster
-    restart: unless-stopped
-    volumes:
-      - ocserv-log:/var/log/ocserv
-    networks:
-      - ocserv
+      - ./fluentd.conf:/fluentd/etc/fluent.conf
     ports:
-      - "8082:8080"
-    environment:
-      <<: *postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ocserv:
-        condition: service_healthy
-
-  ocserv-user-expiry:
-    build:
-      context: ./user_expiry
-      dockerfile: Dockerfile
-    container_name: ocserv-user-expiry
+      - "24224:24224"
+    healthcheck:
+      test: ["CMD", "nc", "-z", "localhost", "24224"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
     networks:
       - ocserv
-    environment:
-      <<: *postgres
-    depends_on:
-      postgres:
-        condition: service_healthy
-      ocserv:
-        condition: service_healthy
+
+#  customer-api:
+#    build:
+#      context: ./api_customers
+#      dockerfile: Dockerfile
+#    container_name: ocserv-customer-api
+#    restart: unless-stopped
+#    networks:
+#      - ocserv
+#    ports:
+#      - "8081:8080"
+#    environment:
+#      <<: *postgres
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      ocserv:
+#        condition: service_healthy
+#
+#  ocserv-log-processor:
+#    build:
+#      context: ./log_processor
+#      dockerfile: Dockerfile
+#    container_name: ocserv-log-processor
+#    restart: unless-stopped
+#    volumes:
+#      - ocserv-log:/var/log/ocserv
+#    networks:
+#      - ocserv
+#    environment:
+#      <<: *postgres
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      ocserv:
+#        condition: service_healthy
+#
+#  ocserv-log-broadcaster:
+#    build:
+#      context: ./log_broadcaster
+#      dockerfile: Dockerfile
+#    container_name: ocserv-log-broadcaster
+#    restart: unless-stopped
+#    volumes:
+#      - ocserv-log:/var/log/ocserv
+#    networks:
+#      - ocserv
+#    ports:
+#      - "8082:8080"
+#    environment:
+#      <<: *postgres
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      ocserv:
+#        condition: service_healthy
+#
+#  ocserv-user-expiry:
+#    build:
+#      context: ./user_expiry
+#      dockerfile: Dockerfile
+#    container_name: ocserv-user-expiry
+#    networks:
+#      - ocserv
+#    environment:
+#      <<: *postgres
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      ocserv:
+#        condition: service_healthy
