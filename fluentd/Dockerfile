@@ -10,4 +10,6 @@ RUN apk add --no-cache --update \
     ruby-irb \
     librdkafka-dev
 
+#COPY ./fluentd.conf  /fluentd/etc/fluent.conf
+
 RUN gem install fluent-plugin-kafka --no-document

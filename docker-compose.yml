@@ -72,11 +72,11 @@ services:
 
   fluentd:
     build:
-      context: .
-      dockerfile: Dockerfile-fluentd
+      context: ./fluentd
+      dockerfile: fluentd/Dockerfile
     container_name: fluentd
     volumes:
-      - ./fluentd.conf:/fluentd/etc/fluent.conf
+      - ./fluentd/fluentd.conf:/fluentd/etc/fluent.conf
     ports:
       - "127.0.0.1:24224:24224"
     healthcheck:
