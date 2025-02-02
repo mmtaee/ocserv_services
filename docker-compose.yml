@@ -97,8 +97,10 @@ services:
       - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
       - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
       - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LOG_LEVEL=ERROR
+      - KAFKA_CFG_LOG_RETENTION_HOURS=3
+      - KAFKA_CFG_LOG_RETENTION_MS=10800000
+      - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
       - zookeeper
     networks:
@@ -118,7 +120,7 @@ services:
 #    environment:
 #      KAFKA_BROKERCONNECT: kafka:9092
 #    ports:
-#      - "9000:9000"
+#      - "127.0.0.1:9000:9000"
 #    depends_on:
 #      - kafka
 #    networks:
