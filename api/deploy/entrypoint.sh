@@ -116,27 +116,6 @@ mknod /dev/net/tun c 10 200
 chmod 600 /dev/net/tun
 mkdir -p /var/log/ocserv/
 
-cat <<\EOT >/etc/logrotate.d/ocserv
-/var/log/ocserv/ocserv.log {
-    daily
-    size 500M
-    rotate 4
-    missingok
-    notifempty
-    compress
-    delaycompress
-    postrotate
-        for pidfile in /run/ocserv.pid*; do
-            if [ -f "$pidfile" ] && kill -0 $(cat "$pidfile") >/dev/null 2>&1; then
-                kill -USR1 $(cat "$pidfile")
-            fi
-        done
-    endscript
-}
-EOT
-
-crontab -l | echo "@daily /usr/sbin/logrotate /etc/logrotate.conf" | crontab -
-
 if [ -f "${SECRET_KEY_FILE_NAME}" ]; then
     echo -e "\e[0;32mSecret Key: $(cat "${SECRET_KEY_FILE_NAME}")\e[0m"
 fi

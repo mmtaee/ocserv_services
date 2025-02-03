@@ -34,7 +34,7 @@ services:
   ocserv:
     build:
       context: ./api
-      dockerfile: Dockerfile
+      dockerfile: ${DOCKERFILE:-Dockerfile}
     container_name: ocserv-api
     restart: unless-stopped
     privileged: true
@@ -58,7 +58,7 @@ services:
       postgres:
         condition: service_healthy
       fluentd:
-        condition: service_healthy
+        condition:  service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
       interval: 20s         # Check every 20 seconds
@@ -89,6 +89,7 @@ services:
     depends_on:
       - kafka
 
+
   kafka:
     image: bitnami/kafka
     container_name: kafka
@@ -114,17 +115,17 @@ services:
     networks:
       - ocserv
 
-#  kafdrop:
-#    image: obsidiandynamics/kafdrop
-#    restart: always
-#    environment:
-#      KAFKA_BROKERCONNECT: kafka:9092
-#    ports:
-#      - "127.0.0.1:9000:9000"
-#    depends_on:
-#      - kafka
-#    networks:
-#      - ocserv
+  kafdrop:
+    image: obsidiandynamics/kafdrop
+    restart: always
+    environment:
+      KAFKA_BROKERCONNECT: kafka:9092
+    ports:
+      - "127.0.0.1:9000:9000"
+    depends_on:
+      - kafka
+    networks:
+      - ocserv
 
 #  customer-api:
 #    build:
@@ -144,6 +145,21 @@ services:
 #      ocserv:
 #        condition: service_healthy
 #
+#  ocserv-user-expiry:
+#    build:
+#      context: ./user_expiry
+#      dockerfile: Dockerfile
+#    container_name: ocserv-user-expiry
+#    networks:
+#      - ocserv
+#    environment:
+#      <<: *postgres
+#    depends_on:
+#      postgres:
+#        condition: service_healthy
+#      ocserv:
+#        condition: service_healthy
+
 #  ocserv-log-processor:
 #    build:
 #      context: ./log_processor
@@ -182,18 +198,5 @@ services:
 #      ocserv:
 #        condition: service_healthy
 #
-#  ocserv-user-expiry:
-#    build:
-#      context: ./user_expiry
-#      dockerfile: Dockerfile
-#    container_name: ocserv-user-expiry
-#    networks:
-#      - ocserv
-#    environment:
-#      <<: *postgres
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      ocserv:
-#        condition: service_healthy
+
 

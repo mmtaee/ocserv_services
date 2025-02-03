@@ -6,14 +6,19 @@ ENV CGO_ENABLED=0
 ENV GOOS=linux
 ENV LOG_FILE_PATH=/var/log/ocserv/ocserv.log
 
-
 WORKDIR /app
 
-COPY ./go.mod ./go.sum ./
+RUN apt-get update && apt-get install -y curl unzip && rm -rf /var/lib/apt/lists/*
 
-RUN go mod download
+RUN curl -L https://github.com/gabriel-vasile/mimetype/archive/refs/tags/v1.4.3.zip -o mimetype-v1.4.3.zip && \
+    unzip mimetype-v1.4.3.zip -d /app && \
+    rm mimetype-v1.4.3.zip
 
 COPY . .
+
+RUN echo "\nreplace github.com/gabriel-vasile/mimetype v1.4.3 =>  /app/mimetype-1.4.3" >> go.mod
+
+RUN go mod download
 
 RUN go build -o ocserv_api cmd/main.go
 
