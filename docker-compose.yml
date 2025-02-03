@@ -59,12 +59,12 @@ services:
         condition: service_healthy
       fluentd:
         condition:  service_healthy
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-      interval: 20s         # Check every 20 seconds
-      retries: 5            # Retry 5 times before marking the service as unhealthy
-      timeout: 20s          # Wait for 20 seconds for a response
-      start_period: 60s     # Wait for 60 seconds before starting the health check
+#    healthcheck:
+#      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+#      interval: 20s         # Check every 20 seconds
+#      retries: 5            # Retry 5 times before marking the service as unhealthy
+#      timeout: 20s          # Wait for 20 seconds for a response
+#      start_period: 60s     # Wait for 60 seconds before starting the health check
     logging:
       driver: fluentd
       options:
@@ -142,8 +142,8 @@ services:
 #    depends_on:
 #      postgres:
 #        condition: service_healthy
-#      ocserv:
-#        condition: service_healthy
+##      ocserv:
+##        condition: service_healthy
 #
 #  ocserv-user-expiry:
 #    build:
