@@ -127,6 +127,6 @@ func Calculator(log string) {
 			logger.Logf(logger.INFO, "User %s locked and disconnected due to traffic limits", ocUser.Username)
 		}
 	} else {
-		logger.Logf(logger.WARNING, "RxTxCalculator: no matc found in line %s", log)
+		logger.Logf(logger.WARNING, "RxTxCalculator: no match found in line %s", log)
 	}
 }

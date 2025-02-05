@@ -127,6 +127,22 @@ services:
     networks:
       - ocserv
 
+  process:
+    build:
+      context: ./process
+      dockerfile: ${DOCKERFILE:-Dockerfile}
+    container_name: ocserv-process
+    restart: unless-stopped
+    networks:
+      - ocserv
+    environment:
+      <<: *postgres
+      DOCKERIZED: true
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 #  customer-api:
 #    build:
 #      context: ./api_customers
