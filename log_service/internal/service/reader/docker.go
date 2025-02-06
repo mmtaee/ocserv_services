@@ -3,6 +3,7 @@ package reader
 import (
 	"bufio"
 	"context"
+	"errors"
 	"github.com/docker/docker/api/types/container"
 	"github.com/docker/docker/client"
 	"github.com/mmtaee/go-oc-utils/logger"
@@ -43,9 +44,12 @@ func (d *DockerReader) Start(ch chan string) {
 			ch <- msg
 		}
 	}
-	//if err = scanner.Err(); err != nil {
-	//	logger.Logf(logger.WARNING, "Error reading logs: %v", err)
-	//}
+	if err = scanner.Err(); err != nil {
+		if errors.Is(err, context.Canceled) {
+			return
+		}
+		logger.Logf(logger.WARNING, "Error reading logs: %v", err)
+	}
 }
 
 func (d *DockerReader) Cancel() error {
