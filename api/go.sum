@@ -56,8 +56,8 @@ github.com/mattn/go-colorable v0.1.13/go.mod h1:7S9/ev0klgBDR4GtXTXX8a3vIGJpMovk
 github.com/mattn/go-isatty v0.0.16/go.mod h1:kYGgaQfpe5nmfYZH+SKPsOc2e4SrIfOl2e/yFXSvRLM=
 github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
 github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
-github.com/mmtaee/go-oc-utils v0.0.11 h1:VvF23SJkISyrYyoKdhbwnQlK/2NTZ3cgsdhCTQXHZ6Q=
-github.com/mmtaee/go-oc-utils v0.0.11/go.mod h1:T/fjD+lBRf5dJrcLGF/K4XOrLQGy5VXzMSGSRTkvCDI=
+github.com/mmtaee/go-oc-utils v0.0.14 h1:ACWHLBk+Yy33OTqOY8B86zP2GN90D51ZtzsYrEVZXBw=
+github.com/mmtaee/go-oc-utils v0.0.14/go.mod h1:T/fjD+lBRf5dJrcLGF/K4XOrLQGy5VXzMSGSRTkvCDI=
 github.com/oklog/ulid/v2 v2.1.0 h1:+9lhoxAP56we25tyYETBBY1YLA2SaoLvUFgrP2miPJU=
 github.com/oklog/ulid/v2 v2.1.0/go.mod h1:rcEKHmBBKfef9DhnvX7y1HZBYxjXb0cP5ExxNsTT1QQ=
 github.com/pborman/getopt v0.0.0-20170112200414-7148bc3a4c30/go.mod h1:85jBQOZwpVEaDAr341tbn15RS4fCAsIst0qp7i8ex1o=

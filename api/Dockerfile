@@ -20,7 +20,8 @@ FROM ubuntu:24.04
 
 ENV SECRET_KEY_FILE_NAME=/tmp/init_secret
 
-RUN apt update && apt install -y --no-install-recommends ocserv gnutls-bin build-essential iptables openssl less &&\
+# dnsutils use for dig command in entrypoint
+RUN apt update && apt install -y --no-install-recommends ocserv gnutls-bin build-essential iptables openssl less dnsutils &&\
     apt-get clean &&\
     rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
