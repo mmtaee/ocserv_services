@@ -57,162 +57,59 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
-      fluentd:
-        condition:  service_healthy
-#    healthcheck:
-#      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
-#      interval: 20s         # Check every 20 seconds
-#      retries: 5            # Retry 5 times before marking the service as unhealthy
-#      timeout: 20s          # Wait for 20 seconds for a response
-#      start_period: 60s     # Wait for 60 seconds before starting the health check
-    logging:
-      driver: fluentd
-      options:
-        tag: "docker.ocserv"
-
-  fluentd:
-    build:
-      context: ./fluentd
-      dockerfile: Dockerfile
-    container_name: fluentd
-    volumes:
-      - ./fluentd/fluentd.conf:/fluentd/etc/fluent.conf
-    ports:
-      - "127.0.0.1:24224:24224"
     healthcheck:
-      test: ["CMD", "nc", "-z", "localhost", "24224"]
-      interval: 10s
-      retries: 5
-      start_period: 20s
-    networks:
-      - ocserv
-    depends_on:
-      - kafka
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 20s         # Check every 20 seconds
+      retries: 5            # Retry 5 times before marking the service as unhealthy
+      timeout: 20s          # Wait for 20 seconds for a response
+      start_period: 20s     # Wait for 20 seconds before starting the health check
 
-
-  kafka:
-    image: bitnami/kafka
-    container_name: kafka
-    environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
-      - KAFKA_CFG_LOG_LEVEL=ERROR
-      - KAFKA_CFG_LOG_RETENTION_HOURS=3
-      - KAFKA_CFG_LOG_RETENTION_MS=10800000
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      - zookeeper
-    networks:
-      - ocserv
-
-  zookeeper:
-    image: bitnami/zookeeper
-    container_name: zookeeper
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    networks:
-      - ocserv
-
-  kafdrop:
-    image: obsidiandynamics/kafdrop
-    restart: always
-    environment:
-      KAFKA_BROKERCONNECT: kafka:9092
-    ports:
-      - "127.0.0.1:9000:9000"
-    depends_on:
-      - kafka
-    networks:
-      - ocserv
-
-  process:
+  customer-api:
     build:
-      context: ./process
-      dockerfile: ${DOCKERFILE:-Dockerfile}
-    container_name: ocserv-process
+      context: ./api_customers
+      dockerfile: Dockerfile
+    container_name: ocserv-customer-api
+    restart: unless-stopped
+    networks:
+      - ocserv
+    ports:
+      - "8081:8080"
+    environment:
+      <<: *postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  log_service:
+    build:
+      context: ./log_service
+      dockerfile: Dockerfile
+    container_name: ocserv-log-process
+    restart: unless-stopped
+    privileged: true
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - ocserv
+    ports:
+      - "8082:8080"
+    environment:
+      <<: *postgres
+      DOCKERIZED: true
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  ocserv-user-expiry:
+    build:
+      context: ./user_expiry
+      dockerfile: Dockerfile
+    container_name: ocserv-user-expiry
     restart: unless-stopped
     networks:
       - ocserv
     environment:
       <<: *postgres
-      DOCKERIZED: true
-
     depends_on:
       postgres:
         condition: service_healthy
-
-#  customer-api:
-#    build:
-#      context: ./api_customers
-#      dockerfile: Dockerfile
-#    container_name: ocserv-customer-api
-#    restart: unless-stopped
-#    networks:
-#      - ocserv
-#    ports:
-#      - "8081:8080"
-#    environment:
-#      <<: *postgres
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-##      ocserv:
-##        condition: service_healthy
-#
-#  ocserv-user-expiry:
-#    build:
-#      context: ./user_expiry
-#      dockerfile: Dockerfile
-#    container_name: ocserv-user-expiry
-#    networks:
-#      - ocserv
-#    environment:
-#      <<: *postgres
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      ocserv:
-#        condition: service_healthy
-
-#  ocserv-log-processor:
-#    build:
-#      context: ./log_processor
-#      dockerfile: Dockerfile
-#    container_name: ocserv-log-processor
-#    restart: unless-stopped
-#    volumes:
-#      - ocserv-log:/var/log/ocserv
-#    networks:
-#      - ocserv
-#    environment:
-#      <<: *postgres
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      ocserv:
-#        condition: service_healthy
-#
-#  ocserv-log-broadcaster:
-#    build:
-#      context: ./log_broadcaster
-#      dockerfile: Dockerfile
-#    container_name: ocserv-log-broadcaster
-#    restart: unless-stopped
-#    volumes:
-#      - ocserv-log:/var/log/ocserv
-#    networks:
-#      - ocserv
-#    ports:
-#      - "8082:8080"
-#    environment:
-#      <<: *postgres
-#    depends_on:
-#      postgres:
-#        condition: service_healthy
-#      ocserv:
-#        condition: service_healthy
-#
-
-
