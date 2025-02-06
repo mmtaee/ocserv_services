@@ -43,9 +43,9 @@ func (d *DockerReader) Start(ch chan string) {
 			ch <- msg
 		}
 	}
-	if err = scanner.Err(); err != nil {
-		logger.CriticalF("Error reading logs:", err)
-	}
+	//if err = scanner.Err(); err != nil {
+	//	logger.Logf(logger.WARNING, "Error reading logs: %v", err)
+	//}
 }
 
 func (d *DockerReader) Cancel() error {

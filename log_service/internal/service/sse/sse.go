@@ -2,7 +2,6 @@ package sse
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/mmtaee/go-oc-utils/database"
@@ -118,26 +117,26 @@ func (server *Server) ServerEventsHandler(w http.ResponseWriter, r *http.Request
 	w.Header().Set("Access-Control-Expose-Headers", "Content-Type")
 
 	ctx := r.Context()
-	queries := r.URL.Query()
-
-	if len(queries["token"]) != 1 {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": "Invalid or missing 'token' query parameter",
-			"code":  "Bad Request",
-		})
-		return
-	}
-	if err := checkToken(ctx, queries["token"][0]); err != nil {
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		_ = json.NewEncoder(w).Encode(map[string]string{
-			"error": "Invalid 'token' or SeeServerLog permission not permitted",
-			"code":  "Bad Request",
-		})
-		return
-	}
+	//queries := r.URL.Query()
+	//
+	//if len(queries["token"]) != 1 {
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusBadRequest)
+	//	_ = json.NewEncoder(w).Encode(map[string]string{
+	//		"error": "Invalid or missing 'token' query parameter",
+	//		"code":  "Bad Request",
+	//	})
+	//	return
+	//}
+	//if err := checkToken(ctx, queries["token"][0]); err != nil {
+	//	w.Header().Set("Content-Type", "application/json")
+	//	w.WriteHeader(http.StatusBadRequest)
+	//	_ = json.NewEncoder(w).Encode(map[string]string{
+	//		"error": "Invalid 'token' or SeeServerLog permission not permitted",
+	//		"code":  "Bad Request",
+	//	})
+	//	return
+	//}
 
 	w.Header().Set("Content-Type", "text/event-stream")
 	w.Header().Set("Cache-Control", "no-cache")
@@ -166,10 +165,10 @@ func (server *Server) ServerEventsHandler(w http.ResponseWriter, r *http.Request
 			flusher.Flush()
 			time.Sleep(500 * time.Millisecond)
 		case <-ctx.Done():
+			server.RemoveClient(ch)
 			return
 		}
 	}
-
 }
 
 // Shutdown closes all client channels.
@@ -187,4 +186,5 @@ func (server *Server) Shutdown() {
 	if err := server.WebServer.Shutdown(shutdownCtx); err != nil {
 		logger.CriticalF("Server Shutdown error: %v", err)
 	}
+
 }
