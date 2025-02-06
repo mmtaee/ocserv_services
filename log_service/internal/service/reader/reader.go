@@ -59,12 +59,11 @@ func (reader *Service) StartFetch() {
 
 func (reader *Service) ShotDown() error {
 	reader.SSE.Shutdown()
-
-	err := reader.Reader.Cancel()
-	if err != nil {
+	if err := reader.Reader.Cancel(); err != nil {
 		return err
 	}
-	// TODO : add context to cancel action
-
+	if err := reader.Action.Cancel(); err != nil {
+		return err
+	}
 	return nil
 }

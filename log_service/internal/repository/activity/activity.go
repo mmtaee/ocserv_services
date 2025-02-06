@@ -7,7 +7,6 @@ import (
 	"github.com/mmtaee/go-oc-utils/logger"
 	"github.com/mmtaee/go-oc-utils/models"
 	"regexp"
-	"time"
 )
 
 func getUser(c context.Context, username string) (*models.OcUser, error) {
@@ -25,7 +24,7 @@ func setActivity(c context.Context, activity *models.OcUserActivity) error {
 	return db.WithContext(c).Save(&activity).Error
 }
 
-func SetFailed(log string) {
+func SetFailed(c context.Context, log string) {
 	var username string
 
 	re := regexp.MustCompile(`worker\[(.*?)\].*?(failed.*)`)
@@ -37,9 +36,6 @@ func SetFailed(log string) {
 		logger.Logf(logger.ERROR, "Failed to get username from log: %s", log)
 		return
 	}
-
-	c, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	ocUser, err := getUser(c, username)
 	if err != nil {
@@ -55,10 +51,9 @@ func SetFailed(log string) {
 		logger.Logf(logger.ERROR, "Failed to set activity: %s for user %s, %v", log, username, err)
 		return
 	}
-	logger.InfoF("Successfully set activity: %s for user %s", log, username)
 }
 
-func SetDisconnect(log string) {
+func SetDisconnect(c context.Context, log string) {
 	var (
 		username string
 	)
@@ -70,9 +65,6 @@ func SetDisconnect(log string) {
 		logger.Logf(logger.ERROR, "Failed to get username and reson from log: %s", log)
 		return
 	}
-
-	c, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	ocUser, err := getUser(c, username)
 	if err != nil {
@@ -88,10 +80,9 @@ func SetDisconnect(log string) {
 		logger.Logf(logger.ERROR, "Failed to set activity: %s for user %s, %v", log, username, err)
 		return
 	}
-	logger.InfoF("Successfully set activity: %s for user %s", log, username)
 }
 
-func SetConnect(log string) {
+func SetConnect(c context.Context, log string) {
 	var username string
 
 	re := regexp.MustCompile(`main\[(.*?)\].*?(user logged in)`)
@@ -103,9 +94,6 @@ func SetConnect(log string) {
 		logger.Logf(logger.ERROR, "Failed to get username from log: %s", log)
 		return
 	}
-
-	c, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
 
 	ocUser, err := getUser(c, username)
 	if err != nil {
@@ -121,5 +109,4 @@ func SetConnect(log string) {
 		logger.Logf(logger.ERROR, "Failed to set activity: %s for user %s, %v", log, username, err)
 		return
 	}
-	logger.InfoF("Successfully set activity: %s for user %s", log, username)
 }

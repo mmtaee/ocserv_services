@@ -9,7 +9,6 @@ import (
 	"github.com/mmtaee/go-oc-utils/models"
 	"regexp"
 	"strconv"
-	"time"
 )
 
 func getUser(c context.Context, username string) (*models.OcUser, error) {
@@ -60,7 +59,7 @@ func disconnect(c context.Context, username string) error {
 	return oc.Disconnect(c, username)
 }
 
-func Calculator(log string) {
+func Calculator(c context.Context, log string) {
 	var (
 		username string
 		rx       int
@@ -74,9 +73,6 @@ func Calculator(log string) {
 		username = match[1]
 		rx, _ = strconv.Atoi(match[2])
 		tx, _ = strconv.Atoi(match[3])
-
-		c, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-		defer cancel()
 
 		ocUser, err := getUser(c, username)
 		if err != nil {
