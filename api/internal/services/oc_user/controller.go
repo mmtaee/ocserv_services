@@ -268,6 +268,9 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 
 	if dataStartStr == "" {
 		dateStart = time.Now()
+		dateStart = time.Date(
+			dateStart.Year(), dateStart.Month(), dateStart.Day(), 0, 0, 0, 0, dateStart.Location(),
+		)
 	} else {
 		dateStart, err = time.Parse("2006-01-02", dataStartStr)
 		if err != nil {
@@ -276,6 +279,9 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 	}
 	if dataEndStr == "" {
 		dateEnd = time.Now().AddDate(0, 1, 0)
+		dateEnd = time.Date(
+			dateEnd.Year(), dateEnd.Month(), dateEnd.Day(), 23, 59, 59, 59, dateEnd.Location(),
+		)
 	} else {
 		dateEnd, err = time.Parse("2006-01-02", dataEndStr)
 		if err != nil {
