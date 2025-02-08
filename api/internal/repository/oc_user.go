@@ -325,7 +325,7 @@ func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDa
 	err := o.db.WithContext(c).
 		Table("oc_user_traffic_statistics").
 		Joins("JOIN oc_users ON oc_users.id = oc_user_traffic_statistics.oc_user_id").
-		Where("oc_users.uid = ? AND oc_user_traffic_statistics.created_at BETWEEN ? AND ?", uid, startDate, endDate).
+		Where("oc_users.uid = ? AND DATE(oc_user_traffic_statistics.created_at) BETWEEN ? AND ?", uid, startDate, endDate).
 		Select(
 			"oc_user_traffic_statistics.created_at, " +
 				"SUM(oc_user_traffic_statistics.rx) as sum_rx, " +
