@@ -253,7 +253,7 @@ func (ctrl *Controller) Delete(c echo.Context) error {
 // @Param 		 uid path string true "Ocserv User UID"
 // @Param 		 start query string false "Start date in format YYYY-MM-DD, null=time.Now()"
 // @Param 		 end query string false "End date in format YYYY-MM-DD, null=time.Now().AddDate(0, 1, 0) 1 month"
-// @Success      200  {object} []repository.Statistics
+// @Success      200  {object} []models.OcUserTrafficStatistics
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/statistics [get]
@@ -281,7 +281,7 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 		}
 		dateEnd = dateEndObj.Format("2006-01-02")
 	}
-	
+
 	stats, err := ctrl.ocservUserRepo.Statistics(c.Request().Context(), c.Param("uid"), dateStart, dateEnd)
 	if err != nil {
 		return utils.BadRequest(c, err)

@@ -1,4 +1,4 @@
-basePath: /services
+basePath: /api
 definitions:
   api_internal_repository.MonthStatistics:
     properties:
@@ -10,15 +10,6 @@ definitions:
         type: number
       year:
         type: integer
-    type: object
-  api_internal_repository.Statistics:
-    properties:
-      created_at:
-        type: string
-      sum_rx:
-        type: number
-      sum_tx:
-        type: number
     type: object
   api_internal_repository.YearStatistics:
     properties:
@@ -180,6 +171,8 @@ definitions:
             type: boolean
           occtl:
             type: boolean
+          see_server_log:
+            type: boolean
           statistic:
             type: boolean
           system:
@@ -290,6 +283,8 @@ definitions:
     properties:
       created_at:
         type: string
+      deactivated_at:
+        type: string
       description:
         type: string
       expire_at:
@@ -339,6 +334,17 @@ definitions:
         - Failed
         type: string
     type: object
+  models.OcUserTrafficStatistics:
+    properties:
+      created_at:
+        type: string
+      rx:
+        description: in bytes
+        type: integer
+      tx:
+        description: in bytes
+        type: integer
+    type: object
   models.User:
     properties:
       is_admin:
@@ -357,6 +363,8 @@ definitions:
       oc_user:
         type: boolean
       occtl:
+        type: boolean
+      see_server_log:
         type: boolean
       statistic:
         type: boolean
@@ -1478,7 +1486,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/api_internal_repository.Statistics'
+              $ref: '#/definitions/models.OcUserTrafficStatistics'
             type: array
         "400":
           description: Bad Request

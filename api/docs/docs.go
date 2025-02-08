@@ -1443,7 +1443,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api_internal_repository.Statistics"
+                                "$ref": "#/definitions/models.OcUserTrafficStatistics"
                             }
                         }
                     },
@@ -2254,20 +2254,6 @@ const docTemplate = `{
                 }
             }
         },
-        "api_internal_repository.Statistics": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "sum_rx": {
-                    "type": "number"
-                },
-                "sum_tx": {
-                    "type": "number"
-                }
-            }
-        },
         "api_internal_repository.YearStatistics": {
             "type": "object",
             "properties": {
@@ -2509,6 +2495,9 @@ const docTemplate = `{
                         "occtl": {
                             "type": "boolean"
                         },
+                        "see_server_log": {
+                            "type": "boolean"
+                        },
                         "statistic": {
                             "type": "boolean"
                         },
@@ -2666,6 +2655,9 @@ const docTemplate = `{
                 "created_at": {
                     "type": "string"
                 },
+                "deactivated_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -2736,6 +2728,22 @@ const docTemplate = `{
                 }
             }
         },
+        "models.OcUserTrafficStatistics": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "rx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                },
+                "tx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -2763,6 +2771,9 @@ const docTemplate = `{
                     "type": "boolean"
                 },
                 "occtl": {
+                    "type": "boolean"
+                },
+                "see_server_log": {
                     "type": "boolean"
                 },
                 "statistic": {
@@ -3011,7 +3022,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "",
-	BasePath:         "/services",
+	BasePath:         "/api",
 	Schemes:          []string{},
 	Title:            "Ocserv User management Example Api",
 	Description:      "This is a sample Ocserv User management Api server.",

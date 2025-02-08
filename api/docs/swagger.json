@@ -6,7 +6,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "basePath": "/services",
+    "basePath": "/api",
     "paths": {
         "/api/v1/events/:event_type": {
             "get": {
@@ -1436,7 +1436,7 @@
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/api_internal_repository.Statistics"
+                                "$ref": "#/definitions/models.OcUserTrafficStatistics"
                             }
                         }
                     },
@@ -2247,20 +2247,6 @@
                 }
             }
         },
-        "api_internal_repository.Statistics": {
-            "type": "object",
-            "properties": {
-                "created_at": {
-                    "type": "string"
-                },
-                "sum_rx": {
-                    "type": "number"
-                },
-                "sum_tx": {
-                    "type": "number"
-                }
-            }
-        },
         "api_internal_repository.YearStatistics": {
             "type": "object",
             "properties": {
@@ -2502,6 +2488,9 @@
                         "occtl": {
                             "type": "boolean"
                         },
+                        "see_server_log": {
+                            "type": "boolean"
+                        },
                         "statistic": {
                             "type": "boolean"
                         },
@@ -2659,6 +2648,9 @@
                 "created_at": {
                     "type": "string"
                 },
+                "deactivated_at": {
+                    "type": "string"
+                },
                 "description": {
                     "type": "string"
                 },
@@ -2729,6 +2721,22 @@
                 }
             }
         },
+        "models.OcUserTrafficStatistics": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "rx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                },
+                "tx": {
+                    "description": "in bytes",
+                    "type": "integer"
+                }
+            }
+        },
         "models.User": {
             "type": "object",
             "properties": {
@@ -2756,6 +2764,9 @@
                     "type": "boolean"
                 },
                 "occtl": {
+                    "type": "boolean"
+                },
+                "see_server_log": {
                     "type": "boolean"
                 },
                 "statistic": {
