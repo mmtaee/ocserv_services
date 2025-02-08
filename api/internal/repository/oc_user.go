@@ -30,7 +30,7 @@ type OcservUserRepositoryInterface interface {
 	LockOrUnLock(c context.Context, uid string, lock bool) error
 	Disconnect(c context.Context, uid string) error
 	Delete(c context.Context, uid string) error
-	Statistics(c context.Context, uid string, startDate, endDate time.Time) (*[]Statistics, error)
+	Statistics(c context.Context, uid string, startDate, endDate string) (*[]Statistics, error)
 	Activity(c context.Context, uid string, date time.Time) (*[]models.OcUserActivity, error)
 }
 
@@ -318,7 +318,7 @@ func (o *OcservUserRepository) Delete(c context.Context, uid string) error {
 	return nil
 }
 
-func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDate, endDate time.Time) (
+func (o *OcservUserRepository) Statistics(c context.Context, uid string, startDate, endDate string) (
 	*[]Statistics, error,
 ) {
 	var results []Statistics

@@ -258,30 +258,30 @@ func (ctrl *Controller) Delete(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/statistics [get]
 func (ctrl *Controller) Statistics(c echo.Context) error {
-	var (
-		err       error
-		dateStart time.Time
-		dateEnd   time.Time
-	)
-	dataStartStr := c.QueryParam("start")
-	dataEndStr := c.QueryParam("end")
 
-	if dataStartStr == "" {
-		dataStartStr = time.Now().Truncate(24 * time.Hour).String()
-	}
-	dateStart, err = time.Parse("2006-01-02", dataStartStr)
-	if err != nil {
-		return utils.BadRequest(c, err)
+	dateStart := c.QueryParam("start")
+	dateEnd := c.QueryParam("end")
+
+	if dateStart == "" {
+		dateStart = time.Now().Format("2006-01-02")
+	} else {
+		dateStartObj, err := time.Parse("2006-01-02", dateStart)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+		dateStart = dateStartObj.Format("2006-01-02")
 	}
 
-	if dataEndStr == "" {
-		dataEndStr = time.Now().AddDate(0, 1, 0).Truncate(24 * time.Hour).String()
+	if dateEnd == "" {
+		dateEnd = time.Now().AddDate(0, 1, 0).Format("2006-01-02")
+	} else {
+		dateEndObj, err := time.Parse("2006-01-02", dateEnd)
+		if err != nil {
+			return utils.BadRequest(c, err)
+		}
+		dateEnd = dateEndObj.Format("2006-01-02")
 	}
-	dateEnd, err = time.Parse("2006-01-02", dataEndStr)
-	if err != nil {
-		return utils.BadRequest(c, err)
-	}
-
+	
 	stats, err := ctrl.ocservUserRepo.Statistics(c.Request().Context(), c.Param("uid"), dateStart, dateEnd)
 	if err != nil {
 		return utils.BadRequest(c, err)
