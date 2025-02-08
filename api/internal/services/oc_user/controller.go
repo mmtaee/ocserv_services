@@ -267,7 +267,7 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 	dataEndStr := c.QueryParam("end")
 
 	if dataStartStr == "" {
-		dataStartStr = time.Now().String()
+		dataStartStr = time.Now().Truncate(24 * time.Hour).String()
 	}
 	dateStart, err = time.Parse("2006-01-02", dataStartStr)
 	if err != nil {
@@ -275,7 +275,7 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 	}
 
 	if dataEndStr == "" {
-		dataEndStr = time.Now().AddDate(0, 1, 0).String()
+		dataEndStr = time.Now().AddDate(0, 1, 0).Truncate(24 * time.Hour).String()
 	}
 	dateEnd, err = time.Parse("2006-01-02", dataEndStr)
 	if err != nil {
