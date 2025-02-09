@@ -5,6 +5,7 @@ import (
 	_ "api/internal/routes/middlewares"
 	"api/pkg/utils"
 	"context"
+	"errors"
 	"github.com/labstack/echo/v4"
 	"github.com/mmtaee/go-oc-utils/models"
 	"net/http"
@@ -258,31 +259,38 @@ func (ctrl *Controller) Delete(c echo.Context) error {
 // @Failure      401 {object} middlewares.Unauthorized
 // @Router       /api/v1/ocserv/users/:uid/statistics [get]
 func (ctrl *Controller) Statistics(c echo.Context) error {
+	var (
+		dateStart, dateEnd time.Time
+		err                error
+	)
 
-	dateStart := c.QueryParam("start")
-	dateEnd := c.QueryParam("end")
-
-	if dateStart == "" {
-		dateStart = time.Now().Format("2006-01-02")
-	} else {
-		dateStartObj, err := time.Parse("2006-01-02", dateStart)
+	if dateStartQuery := c.QueryParam("start"); dateStartQuery != "" {
+		dateStart, err = time.Parse("2006-01-02", dateStartQuery)
 		if err != nil {
 			return utils.BadRequest(c, err)
 		}
-		dateStart = dateStartObj.Format("2006-01-02")
+	} else {
+		dateStart = time.Now().AddDate(0, -1, 0)
 	}
 
-	if dateEnd == "" {
-		dateEnd = time.Now().AddDate(0, 1, 0).Format("2006-01-02")
-	} else {
-		dateEndObj, err := time.Parse("2006-01-02", dateEnd)
+	if dateEndQuery := c.QueryParam("end"); dateEndQuery != "" {
+		dateEnd, err = time.Parse("2006-01-02", dateEndQuery)
 		if err != nil {
 			return utils.BadRequest(c, err)
 		}
-		dateEnd = dateEndObj.Format("2006-01-02")
+	} else {
+		dateEnd = time.Now()
 	}
 
-	stats, err := ctrl.ocservUserRepo.Statistics(c.Request().Context(), c.Param("uid"), dateStart, dateEnd)
+	if dateStart.After(dateEnd) {
+		return utils.BadRequest(c, errors.New("date start is after date end"))
+	}
+
+	stats, err := ctrl.ocservUserRepo.Statistics(
+		c.Request().Context(), c.Param("uid"),
+		dateStart.Format("2006-01-02"),
+		dateEnd.Format("2006-01-02"),
+	)
 	if err != nil {
 		return utils.BadRequest(c, err)
 	}
@@ -292,13 +300,13 @@ func (ctrl *Controller) Statistics(c echo.Context) error {
 // Activities  Ocserv User Activities
 //
 // @Summary      Activities for Ocserv User
-// @Description  Activities for Ocserv User by given user UID and Date
+// @Description  Activities for Ocserv User by given user UID and Date. It returns only activity of a user in a day with value or today
 // @Tags         Ocserv Users
 // @Accept       json
 // @Produce      json
 // @Param        Authorization header string true "Bearer TOKEN"
 // @Param 		 uid path string true "Ocserv User UID"
-// @Param 		 start query string true "Start date in format YYYY-MM-DD"
+// @Param 		 date query string true "date in format YYYY-MM-DD.Leave it empty set today"
 // @Success      200  {object} []models.OcUserActivity
 // @Failure      400 {object} utils.ErrorResponse
 // @Failure      401 {object} middlewares.Unauthorized

@@ -1347,7 +1347,8 @@ paths:
     get:
       consumes:
       - application/json
-      description: Activities for Ocserv User by given user UID and Date
+      description: Activities for Ocserv User by given user UID and Date. It returns
+        only activity of a user in a day with value or today
       parameters:
       - description: Bearer TOKEN
         in: header
@@ -1359,9 +1360,9 @@ paths:
         name: uid
         required: true
         type: string
-      - description: Start date in format YYYY-MM-DD
+      - description: date in format YYYY-MM-DD.Leave it empty set today
         in: query
-        name: start
+        name: date
         required: true
         type: string
       produces:

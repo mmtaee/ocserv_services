@@ -1232,7 +1232,7 @@ const docTemplate = `{
         },
         "/api/v1/ocserv/users/:uid/activities": {
             "get": {
-                "description": "Activities for Ocserv User by given user UID and Date",
+                "description": "Activities for Ocserv User by given user UID and Date. It returns only activity of a user in a day with value or today",
                 "consumes": [
                     "application/json"
                 ],
@@ -1260,8 +1260,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Start date in format YYYY-MM-DD",
-                        "name": "start",
+                        "description": "date in format YYYY-MM-DD.Leave it empty set today",
+                        "name": "date",
                         "in": "query",
                         "required": true
                     }
